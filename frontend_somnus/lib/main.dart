@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
@@ -29,8 +30,19 @@ class BleDevices extends StatefulWidget {
 }
 
 class _BleDevicesState extends State<BleDevices> {
+  Uint8List key = Uint8List.fromList([48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63]);
+  Uint8List setNotifTrue = Uint8List.fromList([1,0]);
+  Uint8List sendRandCmd = Uint8List.fromList([2,0]);
+  String uuidServiceMiBand = "0000fee1-0000-1000-8000-00805f9b34fb";
+  String uuidCharAuth = "00000009-0000-3512-2118-0009af100700";
+  String uuidCharAuthDesc = "00002902-0000-1000-8000-00805f9b34fb";
+
   BleManager bleManager;
   Peripheral peripheral;
+  List<Service> services;
+  Service miBandService;
+  List<Characteristic> miBandSrvChars;
+  Characteristic authChar;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +50,7 @@ class _BleDevicesState extends State<BleDevices> {
       style: Theme.of(context).textTheme.headline2,
       textAlign: TextAlign.center,
       child: FutureBuilder<Widget>(
-        future: _authenticateToMiBand(),
+        future: _bleTest(),
         builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
           List<Widget> children = <Widget>[Text("Ble scanning")];
           return Center(
@@ -50,21 +62,64 @@ class _BleDevicesState extends State<BleDevices> {
       );
   }
 
-  Future<Widget> _authenticateToMiBand() async {
+  Future<Widget> _bleTest() async {
     if (await _checkPermissions()){
       if (await _connectToMiBand()) {
         print("connected to mi band");
-        await _showCharacteristics();
+        await _getAllServices();
+        await _authenticateMiBand();
       }
     }
   }
 
-  Future<void> _showCharacteristics() async {
+  Future<void> _authenticateMiBand() async {
+    services.forEach((element) {
+      if (element.uuid == uuidServiceMiBand){
+        miBandService = element;
+      }
+    });
+
+    miBandSrvChars = await peripheral.characteristics(miBandService.uuid);
+    miBandSrvChars.forEach((element) {
+      if (element.uuid == uuidCharAuth){
+        authChar = element;
+      }
+    });
+
+    if (authChar.isNotifiable) {
+      authChar.monitor().listen((data) async {
+        await _handleAuthNotification(data);
+      });
+      authChar.write(setNotifTrue, false);
+      await _requestRand();
+    }
+  }
+  
+  Future<void> _handleAuthNotification(Uint8List data) async {
+    print("Notification received: $data");
+    if (data[0] == 16 && data[1] == 1 && data[2] == 1) {
+      await _requestRand();
+    } else if (data[0] == 16 && data[1] == 2 && data[2] == 1) {
+      _sendEncrRand(data.sublist(3));
+    } else if (data[0] == 16 && data[1] == 3 && data[2] == 1) {
+      print("AUTHENTICATED!!!");
+    }
+  }
+
+  Future<void> _requestRand() async {
+    print("Requesting number");
+    await authChar.write(sendRandCmd, false);
+  }
+
+  void _sendEncrRand(Uint8List randomNumber) {
+    print("list is: $randomNumber");
+  }
+
+  Future<void> _getAllServices() async {
     print("discovering services");
     await peripheral.discoverAllServicesAndCharacteristics();
     print("service discovery finished");
-    List<Service> services = await peripheral.services(); //getting all services
-
+    services = await peripheral.services(); //getting all services
     services.forEach((element) {print(element.uuid);});
   }
 

@@ -23,7 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  #starflut:
+    #path: C:\Users\N\Desktop\somnus\starcore_for_flutter\starflut\lib  
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -31,7 +32,15 @@ dependencies:
 
 dev_dependencies:
   flutter_test:
-    sdk: flutter
+    sdk: flutter 
+
+  starflut: 
+    #androidPackage: com.srplab.starflut
+    #pluginClass: StarflutPlugin
+    path: ../starflut
+    #./starcore_for_flutter/lib/starflut
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -44,6 +53,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  assets:
+
+   - starfiles/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

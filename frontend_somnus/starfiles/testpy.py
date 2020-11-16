@@ -4,6 +4,7 @@ def tt(a,b) :
 g1 = 123
 def yy(a,b,z) :
     print(a,b,z)
+     print("haaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalllllllllllllooooooooooooooooooooooooo")
     return {'jack': 4098, 'sape': 4139}
 
 class Multiply :
@@ -13,4 +14,5 @@ class Multiply :
     
     def multiply(self,a,b):
         print("multiply....",self,a,b)
+        print("fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuck")
         return a * b

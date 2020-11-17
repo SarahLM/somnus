@@ -26,6 +26,7 @@ dependencies:
   flutter_ble_lib: ^2.3.0
   permission_handler: ^5.0.1+1
   pointycastle: ^2.0.0
+  custom_navigator: ^0.3.0
 
 
   # The following adds the Cupertino Icons font to your application.

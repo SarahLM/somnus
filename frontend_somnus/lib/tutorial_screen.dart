@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'home_widget.dart';
+import 'home_screen.dart';
 
 class TuturialScreen extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -60,7 +60,7 @@ class _TutorialPageState extends State<TutorialPage> {
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Verbinden",
+          title: "Home",
           body: "Hier verbindest du dich mit dem XIOMI Device.",
           image: _buildImage('tutorial_connect'),
           decoration: pageDecoration,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'tutorial_widget.dart';
+import 'tutorial_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,7 +9,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Somnus',
       home: TutorialPage(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }

@@ -3,13 +3,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import './widgets/main_drawer.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/block/aes_fast.dart';
 import 'package:pointycastle/block/modes/ecb.dart';
 
-import 'hypnogram_widget.dart';
-import 'analysis_widget.dart';
+import 'hypnogram_screen.dart';
+import 'analysis_screen.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -30,23 +31,25 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Somnus',
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: Text('Somnus'),
           //title: Image.asset('assets/title.png', fit: BoxFit.cover),
           actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.more_vert,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                // do something
-              },
-            )
+            // IconButton(
+            //   icon: Icon(
+            //     Icons.more_vert,
+            //     color: Colors.white,
+            //   ),
+            //   onPressed: () {
+            //     // do something
+            //   },
+            // )
           ],
           backgroundColor: Colors.purple,
         ),
+        drawer: MainDrawer(),
         bottomNavigationBar: BottomNavigationBar(
           onTap: onTabTapped, // new
           currentIndex: _currentIndex,

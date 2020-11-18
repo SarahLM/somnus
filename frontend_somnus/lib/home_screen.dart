@@ -98,30 +98,74 @@ class _BleDevicesState extends State<BleDevices> {
   Uint8List cmdSendEncrKeyCmd = Uint8List.fromList([3, 0]);
   Uint8List cmdSendRandCmd = Uint8List.fromList([2, 0]);
   String uuidServiceMiBand = "0000fee1-0000-1000-8000-00805f9b34fb";
+  String uuidServiceImmediateAlert = "00001802-0000-1000-8000-00805f9b34fb";
   String uuidCharAuth = "00000009-0000-3512-2118-0009af100700";
   String uuidCharAuthDesc = "00002902-0000-1000-8000-00805f9b34fb";
+  String uuidCharImmediateAlert = "00002a06-0000-1000-8000-00805f9b34fb";
 
   BleManager bleManager;
   Peripheral peripheral;
   List<Service> services;
-  Service miBandService;
   List<Characteristic> miBandSrvChars;
+  Service miBandService;
+  Service immediateAlertService;
   Characteristic authChar;
+  Characteristic immediateAlertChar;
+
+  bool _authenticated = false;
+  bool _highAlerted = false;
+  Future _bleConnectFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _bleConnectFuture = _bleTest();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTextStyle(
-        style: Theme.of(context).textTheme.headline2,
-        textAlign: TextAlign.center,
-        child: FutureBuilder<Widget>(
-            future: _bleTest(),
-            builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-              List<Widget> children = <Widget>[Text("Ble scanning")];
-              return Center(
-                  child: Column(
-                children: children,
-              ));
-            }));
+    var _alertMildBtnOnPressed;
+    var _alertHighBtnOnPressed;
+
+    if (_authenticated) {
+      _alertMildBtnOnPressed = _alertMildMiBand;
+      _alertHighBtnOnPressed = _alertHighMiBand;
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("BLE Tests"),
+      ),
+      body: Center(
+          child: Column(
+              children: <Widget>[
+                FutureBuilder<Widget>(
+                    future: _bleConnectFuture,
+                    builder: (context, snapshot) {
+                      var msg = "Connecting to MiBand";
+
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        msg = "MiBand connected!";
+                        if (_authenticated) {
+                          msg = "MiBand connected and authenticated!";
+                        }
+                      }
+
+                      return Text(msg);
+                    }
+                ),
+                RaisedButton(
+                  onPressed: _alertMildBtnOnPressed,
+                  child: Text("Alert MiBand (Mild)"),
+                ),
+                RaisedButton(
+                  onPressed: _alertHighBtnOnPressed,
+                  child: Text("Alert MiBand (High)"),
+                ),
+              ]
+          )
+      ),
+    );
   }
 
   Future<Widget> _bleTest() async {
@@ -130,7 +174,31 @@ class _BleDevicesState extends State<BleDevices> {
         print("connected to mi band");
         await _getAllServices();
         await _authenticateMiBand();
+        await _printServicesAndChars();
       }
+    }
+
+    return Text("MiBand connected!");
+  }
+
+  Future<void> _alertMildMiBand() async {
+    immediateAlertService = services.firstWhere((e) => e.uuid == uuidServiceImmediateAlert);
+    immediateAlertChar = (await immediateAlertService.characteristics())
+        .firstWhere((e) => e.uuid == uuidCharImmediateAlert);
+    immediateAlertChar.write(Uint8List.fromList([1]), false);
+  }
+
+  Future<void> _alertHighMiBand() async {
+    immediateAlertService = services.firstWhere((e) => e.uuid == uuidServiceImmediateAlert);
+    immediateAlertChar = (await immediateAlertService.characteristics())
+        .firstWhere((e) => e.uuid == uuidCharImmediateAlert);
+
+    if (_highAlerted){
+      immediateAlertChar.write(Uint8List.fromList([0]), false);
+      _highAlerted = false;
+    } else {
+      immediateAlertChar.write(Uint8List.fromList([2]), false);
+      _highAlerted = true;
     }
   }
 
@@ -168,12 +236,31 @@ class _BleDevicesState extends State<BleDevices> {
     } else if (data[0] == 16 && data[1] == 2 && data[2] == 4) {
       print("Error - Request random number failed.");
     } else if (data[0] == 16 && data[1] == 3 && data[2] == 1) {
+      setState(() {
+        _authenticated = true;
+      });
       print("AUTHENTICATED!!!");
     } else if (data[0] == 16 && data[1] == 3 && data[2] == 4) {
       print("Error - Encryption failed.");
     } else {
       print("Error - Authentication failed for unknown reason.");
     }
+  }
+
+  Future<void> _printServicesAndChars() async {
+    List<Characteristic> chars;
+    String allServicesAndChars = "";
+
+    for (Service service in services) {
+      allServicesAndChars += "- ${service.uuid}\n";
+      chars = await peripheral.characteristics(service.uuid);
+      chars.forEach((characteristic) {
+        allServicesAndChars += "--- ${characteristic.uuid}\n";
+      });
+    }
+
+    print("Printing all services");
+    print(allServicesAndChars);
   }
 
   Future<void> _sendSecretKeyToBand() async {

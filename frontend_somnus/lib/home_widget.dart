@@ -51,17 +51,19 @@ class _HomeState extends State<Home> {
           onTap: onTabTapped, // new
           currentIndex: _currentIndex,
           backgroundColor: Colors.purple,
+          unselectedItemColor: Colors.white,
+          selectedItemColor: Colors.lightBlue,
           items: [
             BottomNavigationBarItem(
               icon: new Icon(Icons.home),
-              title: new Text('Home'),
+              label: 'Home',
             ),
             BottomNavigationBarItem(
               icon: new Icon(Icons.favorite),
-              title: new Text('Hypnogramm'),
+              label: 'Hypnogramm',
             ),
             BottomNavigationBarItem(
-                icon: Icon(Icons.analytics), title: Text('Analyse'))
+                icon: Icon(Icons.analytics), label: 'Analyse')
           ],
         ),
         body: //Center(
@@ -217,7 +219,6 @@ class _BleDevicesState extends State<BleDevices> {
           bleManager.stopPeripheralScan();
         }
       }
-      ;
 
       peripheral
           .observeConnectionState(

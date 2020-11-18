@@ -10,8 +10,7 @@ class TuturialScreen extends StatelessWidget {
     );
 
     return MaterialApp(
-      title: 'Introduction screen',
-      debugShowCheckedModeBanner: false,
+      title: 'Tutorial Screen',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: TutorialPage(),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend_somnus/tutorial_screen.dart';
+import 'package:frontend_somnus/screens/disclaimer_screen.dart';
+import '../screens/tutorial_screen.dart';
 
 class MainDrawer extends StatelessWidget {
   @override
@@ -38,7 +39,8 @@ class MainDrawer extends StatelessWidget {
               ),
             ),
             onTap: () {
-              //...,
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => DisclaimerScreen()));
             },
           ),
           ListTile(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class AnalysisWidget extends StatelessWidget {
+class AnalysisScreen extends StatelessWidget {
   final Color color;
 
-  AnalysisWidget(this.color);
+  AnalysisScreen(this.color);
 
   @override
   Widget build(BuildContext context) {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class HypnogramWidget extends StatelessWidget {
+class HypnogramScreen extends StatelessWidget {
   final Color color;
 
-  HypnogramWidget(this.color);
+  HypnogramScreen(this.color);
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend_somnus/screens/tabs_screen.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'home_screen.dart';
 
 class TuturialScreen extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class _TutorialPageState extends State<TutorialPage> {
 
   void _onIntroEnd(context) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => Home()),
+      MaterialPageRoute(builder: (_) => TabsScreen()),
     );
   }
 
@@ -81,7 +81,7 @@ class _TutorialPageState extends State<TutorialPage> {
         ),
       ],
       onDone: () => _onIntroEnd(context),
-      onSkip: () => _onIntroEnd(context), // You can override onSkip callback
+      onSkip: () => _onIntroEnd(context),
       showSkipButton: true,
       skipFlex: 0,
       nextFlex: 0,

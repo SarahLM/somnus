@@ -171,25 +171,29 @@ class _BleDevicesState extends State<BleDevices> {
 
     // set raw data output and notifications
     if (accelerometerChar.isNotifiable) {
-      // enable sensor raw data
-      await sensorChar.write(sensorRawDataCmd, false);
-      await sensorChar.write(Uint8List.fromList([2]), false);
+      Stopwatch s = new Stopwatch();
+
+      _enableSendingRawSensorData();
       _rawDataPacketsCounter = 0;
+      s.start();
       // start listening for accelerometer data
       accelerometerChar.monitor().listen((data) {
         _handleRawAccelerometerData(data);
+        print("elapsed seconds: ${s.elapsedMilliseconds/1000}");
       });
 
       // send alive packages so accelerometer data is continiously sent
-      accelDataAliveTimer = Timer.periodic((Duration(seconds:12)), (Timer t) => _sendAliveToSensor());
+      accelDataAliveTimer = Timer.periodic((Duration(seconds:30)), (Timer t) => _enableSendingRawSensorData());
       setState(() {
         _receivingRawSensorData = true;
       });
     }
   }
 
-  Future<void> _sendAliveToSensor() async {
-    await sensorChar.write(Uint8List.fromList([16]), false);
+  Future<void> _enableSendingRawSensorData() async {
+    // enable sensor raw data
+    await sensorChar.write(sensorRawDataCmd, false);
+    await sensorChar.write(Uint8List.fromList([2]), false);
   }
 
   Future<void> _stopReceivingRawSensorData() async {
@@ -208,7 +212,7 @@ class _BleDevicesState extends State<BleDevices> {
       if (data[1] == _rawDataPacketsCounter) {
         int counter = 0;
 
-        _rawDataPacketsCounter++;
+        _rawDataPacketsCounter = (_rawDataPacketsCounter == 255) ? 0 : ++_rawDataPacketsCounter;
 
         // the next 3 x 2 bytes are the accelerometer data
         // 2 bytes: first byte is the value, second is the sign (0=+, 255=-)

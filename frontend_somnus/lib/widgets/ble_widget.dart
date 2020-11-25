@@ -295,18 +295,19 @@ class _BleDevicesState extends State<BleDevices> {
 
   Future<void> _printServicesAndChars() async {
     List<Characteristic> chars;
-    String allServicesAndChars = "";
+    String serviceWithChars;
+    print("Printing all services");
 
     for (Service service in services) {
-      allServicesAndChars += "- ${service.uuid}\n";
+      serviceWithChars = "";
+      serviceWithChars += "- ${service.uuid}\n";
       chars = await peripheral.characteristics(service.uuid);
       chars.forEach((characteristic) {
-        allServicesAndChars += "--- ${characteristic.uuid}\n";
+        serviceWithChars += "--- ${characteristic.uuid}\n";
       });
-    }
 
-    print("Printing all services");
-    print(allServicesAndChars);
+      print(serviceWithChars);
+    }
   }
 
   Future<void> _sendSecretKeyToBand() async {

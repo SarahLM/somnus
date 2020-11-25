@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -16,28 +17,37 @@ class BleDevices extends StatefulWidget {
 class _BleDevicesState extends State<BleDevices> {
   Uint8List secretKey = Uint8List.fromList(
       [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 64, 65, 66, 67, 68, 69]);
-  Uint8List cmdSetNotifTrue = Uint8List.fromList([1, 0]);
-  Uint8List cmdSendSecretKeyCmd = Uint8List.fromList([1, 0]);
-  Uint8List cmdSendEncrKeyCmd = Uint8List.fromList([3, 0]);
-  Uint8List cmdSendRandCmd = Uint8List.fromList([2, 0]);
-  String uuidServiceMiBand = "0000fee1-0000-1000-8000-00805f9b34fb";
+  Uint8List setNotifTrueCmd = Uint8List.fromList([1, 0]);
+  Uint8List sendSecretKeyCmd = Uint8List.fromList([1, 0]);
+  Uint8List sendEncrKeyCmd = Uint8List.fromList([3, 0]);
+  Uint8List sendRandCmd = Uint8List.fromList([2, 0]);
+  Uint8List sensorRawDataCmd = Uint8List.fromList([1, 1, 25]);
+  String uuidMiBandService0 = "0000fee0-0000-1000-8000-00805f9b34fb";
+  String uuidMiBandService1 = "0000fee1-0000-1000-8000-00805f9b34fb";
   String uuidServiceImmediateAlert = "00001802-0000-1000-8000-00805f9b34fb";
   String uuidCharAuth = "00000009-0000-3512-2118-0009af100700";
   String uuidCharAuthDesc = "00002902-0000-1000-8000-00805f9b34fb";
   String uuidCharImmediateAlert = "00002a06-0000-1000-8000-00805f9b34fb";
+  String uuidCharSensor = "00000001-0000-3512-2118-0009af100700";
+  String uuidCharAccelerometer = "00000002-0000-3512-2118-0009af100700";
 
   BleManager bleManager;
   Peripheral peripheral;
   List<Service> services;
-  List<Characteristic> miBandSrvChars;
-  Service miBandService;
+  Service miBandService0;
+  Service miBandService1;
   Service immediateAlertService;
   Characteristic authChar;
   Characteristic immediateAlertChar;
+  Characteristic sensorChar;
+  Characteristic accelerometerChar;
 
   bool _authenticated = false;
   bool _highAlerted = false;
+  bool _receivingRawSensorData = false;
+  int _rawDataPacketsCounter;
   Future _bleConnectFuture;
+  Timer accelDataAliveTimer;
 
   @override
   void initState() {
@@ -49,45 +59,59 @@ class _BleDevicesState extends State<BleDevices> {
   Widget build(BuildContext context) {
     var _alertMildBtnOnPressed;
     var _alertHighBtnOnPressed;
+    var _startRawDataOnPressed;
+    var _stopRawDataOnPressed;
 
     if (_authenticated) {
       _alertMildBtnOnPressed = _alertMildMiBand;
       _alertHighBtnOnPressed = _alertHighMiBand;
+
+      if (_receivingRawSensorData) {
+        _startRawDataOnPressed = null;
+        _stopRawDataOnPressed = _stopReceivingRawSensorData;
+      } else {
+        _startRawDataOnPressed = _startReceivingRawSensorData;
+        _stopRawDataOnPressed = null;
+      }
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("BLE Tests"),
-      ),
-      body: Center(
-          child: Column(
-              children: <Widget>[
-                FutureBuilder<Widget>(
-                    future: _bleConnectFuture,
-                    builder: (context, snapshot) {
-                      var msg = "Connecting to MiBand";
+    return Container(
+        alignment: Alignment.topCenter,
+        child: Column(
+            children: <Widget>[
+              FutureBuilder<Widget>(
+                  future: _bleConnectFuture,
+                  builder: (context, snapshot) {
+                    var msg = "Connecting to MiBand";
 
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        msg = "MiBand connected!";
-                        if (_authenticated) {
-                          msg = "MiBand connected and authenticated!";
-                        }
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      msg = "MiBand connected!";
+                      if (_authenticated) {
+                        msg = "MiBand connected and authenticated!";
                       }
-
-                      return Text(msg);
                     }
-                ),
-                RaisedButton(
-                  onPressed: _alertMildBtnOnPressed,
-                  child: Text("Alert MiBand (Mild)"),
-                ),
-                RaisedButton(
-                  onPressed: _alertHighBtnOnPressed,
-                  child: Text("Alert MiBand (High)"),
-                ),
-              ]
-          )
-      ),
+
+                    return Text(msg);
+                  }
+              ),
+              RaisedButton(
+                onPressed: _alertMildBtnOnPressed,
+                child: Text("Alert MiBand (Mild)"),
+              ),
+              RaisedButton(
+                onPressed: _alertHighBtnOnPressed,
+                child: Text("Alert MiBand (High)"),
+              ),
+              RaisedButton(
+                onPressed: _startRawDataOnPressed,
+                child: Text("Get Accelerometer Raw Data"),
+              ),
+              RaisedButton(
+                onPressed: _stopRawDataOnPressed,
+                child: Text("Stop Accelerometer Raw Data"),
+              ),
+            ]
+        )
     );
   }
 
@@ -125,22 +149,117 @@ class _BleDevicesState extends State<BleDevices> {
     }
   }
 
-  Future<void> _authenticateMiBand() async {
+  Future<void> _startReceivingRawSensorData() async {
+    List<Characteristic> miBandSrvChars;
+    
+    // get main service of MiBand
     services.forEach((element) {
-      if (element.uuid == uuidServiceMiBand) {
-        miBandService = element;
+      if (element.uuid == uuidMiBandService0) {
+        miBandService0 = element;
       }
     });
 
-    miBandSrvChars = await peripheral.characteristics(miBandService.uuid);
+    // get characteristic for sensors
+    miBandSrvChars = await peripheral.characteristics(miBandService0.uuid);
+    miBandSrvChars.forEach((element) {
+      if (element.uuid == uuidCharSensor) {
+        sensorChar = element;
+      } else if (element.uuid == uuidCharAccelerometer) {
+        accelerometerChar = element;
+      }
+    });
+
+    // set raw data output and notifications
+    if (accelerometerChar.isNotifiable) {
+      // enable sensor raw data
+      await sensorChar.write(sensorRawDataCmd, false);
+      await sensorChar.write(Uint8List.fromList([2]), false);
+      _rawDataPacketsCounter = 0;
+      // start listening for accelerometer data
+      accelerometerChar.monitor().listen((data) {
+        _handleRawAccelerometerData(data);
+      });
+
+      // send alive packages so accelerometer data is continiously sent
+      accelDataAliveTimer = Timer.periodic((Duration(seconds:12)), (Timer t) => _sendAliveToSensor());
+      setState(() {
+        _receivingRawSensorData = true;
+      });
+    }
+  }
+
+  Future<void> _sendAliveToSensor() async {
+    await sensorChar.write(Uint8List.fromList([16]), false);
+  }
+
+  Future<void> _stopReceivingRawSensorData() async {
+    await sensorChar.write(Uint8List.fromList([3]), false);
+    setState(() {
+      _receivingRawSensorData = false;
+    });
+  }
+
+  void _handleRawAccelerometerData(Uint8List data) {
+    String accelData = "";
+    // first byte is always one
+    if (data[0] == 1) {
+      // second byte is a counter
+      // if counter is expected value, take the accelerometer data, else ignore
+      if (data[1] == _rawDataPacketsCounter) {
+        int counter = 0;
+
+        _rawDataPacketsCounter++;
+
+        // the next 3 x 2 bytes are the accelerometer data
+        // 2 bytes: first byte is the value, second is the sign (0=+, 255=-)
+        // first 2 bytes = x, second 2 bytes = y, third 2 bytes = z
+        // there can be 1, 2 or 3 XYZ values
+        for (int i=2; i<data.length; i++) {
+          // if even
+          if (i % 2 == 0) {
+            accelData += (counter == 0) ? "x:" : "";
+            accelData += (counter == 1) ? "y:" : "";
+            accelData += (counter == 2) ? "z:" : "";
+            counter = (counter == 2) ? 0 : ++counter;
+
+            accelData += (data[i+1] == 0) ? "+" : "-";
+            accelData += data[i].toString();
+          }
+        }
+
+        print("data packet nr. ${data[1]}");
+        print(accelData);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    accelDataAliveTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _authenticateMiBand() async {
+    List<Characteristic> miBandSrvChars;
+
+    // get main service of MiBand
+    services.forEach((element) {
+      if (element.uuid == uuidMiBandService1) {
+        miBandService1 = element;
+      }
+    });
+
+    // get authentication characteristic
+    miBandSrvChars = await peripheral.characteristics(miBandService1.uuid);
     miBandSrvChars.forEach((element) {
       if (element.uuid == uuidCharAuth) {
         authChar = element;
       }
     });
 
+    // set notifications on authentication char
     if (authChar.isNotifiable) {
-      await authChar.write(cmdSetNotifTrue, false);
+      await authChar.write(setNotifTrueCmd, false);
       authChar.monitor().listen((data) {
         _handleAuthNotification(data);
       });
@@ -188,18 +307,18 @@ class _BleDevicesState extends State<BleDevices> {
 
   Future<void> _sendSecretKeyToBand() async {
     Uint8List buffer = Uint8List.fromList(
-        [...cmdSendSecretKeyCmd.toList(), ...secretKey.toList()]);
+        [...sendSecretKeyCmd.toList(), ...secretKey.toList()]);
     await authChar.write(buffer, false);
   }
 
   Future<void> _requestRand() async {
-    await authChar.write(cmdSendRandCmd, false);
+    await authChar.write(sendRandCmd, false);
   }
 
   Future<void> _sendEncrRand(Uint8List randomNumber) async {
     Uint8List encryptedRandomNumber = _encrypt(randomNumber);
     Uint8List buffer =
-    Uint8List.fromList([...cmdSendEncrKeyCmd, ...encryptedRandomNumber]);
+    Uint8List.fromList([...sendEncrKeyCmd, ...encryptedRandomNumber]);
     await authChar.write(buffer, false);
   }
 

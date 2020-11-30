@@ -1,0 +1,308 @@
+running install
+running bdist_egg
+running egg_info
+writing requirements to sleeppy.egg-info/requires.txt
+writing sleeppy.egg-info/PKG-INFO
+writing top-level names to sleeppy.egg-info/top_level.txt
+writing dependency_links to sleeppy.egg-info/dependency_links.txt
+reading manifest file 'sleeppy.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'sleeppy.egg-info/SOURCES.txt'
+installing library code to build/bdist.linux-x86_64/egg
+running install_lib
+running build_py
+copying sleeppy/tests/demo2.py -> build/lib.linux-x86_64-2.7/sleeppy/tests
+creating build/bdist.linux-x86_64/egg
+creating build/bdist.linux-x86_64/egg/sleeppy
+creating build/bdist.linux-x86_64/egg/sleeppy/tests
+copying build/lib.linux-x86_64-2.7/sleeppy/tests/demo.py -> build/bdist.linux-x86_64/egg/sleeppy/tests
+copying build/lib.linux-x86_64-2.7/sleeppy/tests/demo.bin -> build/bdist.linux-x86_64/egg/sleeppy/tests
+copying build/lib.linux-x86_64-2.7/sleeppy/tests/demo2.py -> build/bdist.linux-x86_64/egg/sleeppy/tests
+copying build/lib.linux-x86_64-2.7/sleeppy/tests/test.py -> build/bdist.linux-x86_64/egg/sleeppy/tests
+copying build/lib.linux-x86_64-2.7/sleeppy/tests/__init__.py -> build/bdist.linux-x86_64/egg/sleeppy/tests
+copying build/lib.linux-x86_64-2.7/sleeppy/sleep.py -> build/bdist.linux-x86_64/egg/sleeppy
+copying build/lib.linux-x86_64-2.7/sleeppy/version.py -> build/bdist.linux-x86_64/egg/sleeppy
+copying build/lib.linux-x86_64-2.7/sleeppy/__init__.py -> build/bdist.linux-x86_64/egg/sleeppy
+byte-compiling build/bdist.linux-x86_64/egg/sleeppy/tests/demo.py to demo.pyc
+byte-compiling build/bdist.linux-x86_64/egg/sleeppy/tests/demo2.py to demo2.pyc
+byte-compiling build/bdist.linux-x86_64/egg/sleeppy/tests/test.py to test.pyc
+byte-compiling build/bdist.linux-x86_64/egg/sleeppy/tests/__init__.py to __init__.pyc
+byte-compiling build/bdist.linux-x86_64/egg/sleeppy/sleep.py to sleep.pyc
+byte-compiling build/bdist.linux-x86_64/egg/sleeppy/version.py to version.pyc
+byte-compiling build/bdist.linux-x86_64/egg/sleeppy/__init__.py to __init__.pyc
+creating build/bdist.linux-x86_64/egg/EGG-INFO
+copying sleeppy.egg-info/PKG-INFO -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying sleeppy.egg-info/SOURCES.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying sleeppy.egg-info/dependency_links.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying sleeppy.egg-info/not-zip-safe -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying sleeppy.egg-info/requires.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+copying sleeppy.egg-info/top_level.txt -> build/bdist.linux-x86_64/egg/EGG-INFO
+creating 'dist/sleeppy-0.2.21-py2.7.egg' and adding 'build/bdist.linux-x86_64/egg' to it
+removing 'build/bdist.linux-x86_64/egg' (and everything under it)
+Processing sleeppy-0.2.21-py2.7.egg
+removing '/usr/local/lib/python2.7/dist-packages/sleeppy-0.2.21-py2.7.egg' (and everything under it)
+creating /usr/local/lib/python2.7/dist-packages/sleeppy-0.2.21-py2.7.egg
+Extracting sleeppy-0.2.21-py2.7.egg to /usr/local/lib/python2.7/dist-packages
+sleeppy 0.2.21 is already the active version in easy-install.pth
+
+Installed /usr/local/lib/python2.7/dist-packages/sleeppy-0.2.21-py2.7.egg
+Processing dependencies for sleeppy==0.2.21
+Searching for tables==3.5.2
+Best match: tables 3.5.2
+Adding tables 3.5.2 to easy-install.pth file
+Installing ptdump script to /usr/local/bin
+Installing ptrepack script to /usr/local/bin
+Installing pt2to3 script to /usr/local/bin
+Installing pttree script to /usr/local/bin
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for argparse==1.1
+Best match: argparse 1.1
+Adding argparse 1.1 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for bitstring==3.1.5
+Best match: bitstring 3.1.5
+Adding bitstring 3.1.5 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for seaborn==0.9.0
+Best match: seaborn 0.9.0
+Adding seaborn 0.9.0 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for scipy==1.2.2
+Best match: scipy 1.2.2
+Adding scipy 1.2.2 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for matplotlib==2.2.4
+Best match: matplotlib 2.2.4
+Adding matplotlib 2.2.4 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for numpy==1.16.4
+Best match: numpy 1.16.4
+Adding numpy 1.16.4 to easy-install.pth file
+Installing f2py2 script to /usr/local/bin
+Installing f2py script to /usr/local/bin
+Installing f2py2.7 script to /usr/local/bin
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for pandas==0.23.4
+Best match: pandas 0.23.4
+Adding pandas 0.23.4 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for numexpr==2.7.1
+Best match: numexpr 2.7.1
+Adding numexpr 2.7.1 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for six==1.15.0
+Best match: six 1.15.0
+Adding six 1.15.0 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for mock==3.0.5
+Best match: mock 3.0.5
+Adding mock 3.0.5 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for subprocess32==3.5.4
+Best match: subprocess32 3.5.4
+Adding subprocess32 3.5.4 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for backports.functools-lru-cache==1.6.1
+Best match: backports.functools-lru-cache 1.6.1
+Adding backports.functools-lru-cache 1.6.1 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for pytz==2020.4
+Best match: pytz 2020.4
+Adding pytz 2020.4 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for pyparsing==2.4.7
+Best match: pyparsing 2.4.7
+Adding pyparsing 2.4.7 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for cycler==0.10.0
+Best match: cycler 0.10.0
+Adding cycler 0.10.0 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for kiwisolver==1.1.0
+Best match: kiwisolver 1.1.0
+Adding kiwisolver 1.1.0 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for python-dateutil==2.8.1
+Best match: python-dateutil 2.8.1
+Adding python-dateutil 2.8.1 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for funcsigs==1.0.2
+Best match: funcsigs 1.0.2
+Adding funcsigs 1.0.2 to easy-install.pth file
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Searching for setuptools==44.1.1
+Best match: setuptools 44.1.1
+Adding setuptools 44.1.1 to easy-install.pth file
+Installing easy_install script to /usr/local/bin
+Installing easy_install-3.8 script to /usr/local/bin
+
+Using /home/sarah/.local/lib/python2.7/site-packages
+Finished processing dependencies for sleeppy==0.2.21
+vorher: starttime: 
+vorher: stoptime: 
+days first)
+1
+days: <pandas.core.groupby.groupby.DataFrameGroupBy object at 0x7f0e0bd4c650>
+df: 75647
+available: 21.0130555556
+self.minimum_hours: 6
+dateib gescht
+df.day activity: bis hierhin alle rows vorhanden 
+in major rest methode
+major vor count
+major vor meps
+major vor header
+major nch header
+major nach days
+['/home/sarah/results/output2/raw_days/output2_day_01.h5']
+major nach pd.read_hdf(days)
+nach major rest
+day vor coleKripke: /home/sarah/results/output2/activity_index_days/output2_activity_index_day_01.h5
+vor colekreipke: Time
+2019-03-21 14:58:00.500    0.505665
+2019-03-21 14:59:00.500    0.181017
+2019-03-21 15:00:00.500    0.362803
+2019-03-21 15:01:00.500    0.330179
+2019-03-21 15:02:00.500    0.340821
+2019-03-21 15:03:00.500    0.267244
+2019-03-21 15:04:00.500    0.115803
+2019-03-21 15:05:00.500    0.006692
+2019-03-21 15:06:00.500    0.002751
+2019-03-21 15:07:00.500    0.227447
+2019-03-21 15:08:00.500    0.226544
+2019-03-21 15:09:00.500    0.176247
+2019-03-21 15:10:00.500    0.264660
+2019-03-21 15:11:00.500    0.130411
+2019-03-21 15:12:00.500    0.289489
+2019-03-21 15:13:00.500    0.228159
+2019-03-21 15:14:00.500    0.038042
+2019-03-21 15:15:00.500    0.098990
+2019-03-21 15:16:00.500    0.172703
+2019-03-21 15:17:00.500    0.067227
+2019-03-21 15:18:00.500    0.042604
+2019-03-21 15:19:00.500    0.170514
+2019-03-21 15:20:00.500    0.259429
+2019-03-21 15:21:00.500    0.339393
+2019-03-21 15:22:00.500    0.029004
+2019-03-21 15:23:00.500    0.235794
+2019-03-21 15:24:00.500    0.025017
+2019-03-21 15:25:00.500    0.139929
+2019-03-21 15:26:00.500    0.221237
+2019-03-21 15:27:00.500    0.325845
+                             ...   
+2019-03-22 11:28:00.500    0.146597
+2019-03-22 11:29:00.500    0.023316
+2019-03-22 11:30:00.500    0.059397
+2019-03-22 11:31:00.500    0.033687
+2019-03-22 11:32:00.500    0.178048
+2019-03-22 11:33:00.500    0.171097
+2019-03-22 11:34:00.500    0.423549
+2019-03-22 11:35:00.500    0.396886
+2019-03-22 11:36:00.500    0.081950
+2019-03-22 11:37:00.500    0.091175
+2019-03-22 11:38:00.500    0.043111
+2019-03-22 11:39:00.500    0.175207
+2019-03-22 11:40:00.500    0.528693
+2019-03-22 11:41:00.500    0.206635
+2019-03-22 11:42:00.500    0.176483
+2019-03-22 11:43:00.500    0.596792
+2019-03-22 11:44:00.500    0.217111
+2019-03-22 11:45:00.500    0.468152
+2019-03-22 11:46:00.500    0.333464
+2019-03-22 11:47:00.500    0.047691
+2019-03-22 11:48:00.500    0.225449
+2019-03-22 11:49:00.500    0.209257
+2019-03-22 11:50:00.500    0.066305
+2019-03-22 11:51:00.500    0.248299
+2019-03-22 11:52:00.500    0.127761
+2019-03-22 11:53:00.500    0.099892
+2019-03-22 11:54:00.500    0.045257
+2019-03-22 11:55:00.500    0.242763
+2019-03-22 11:56:00.500    0.066407
+2019-03-22 11:57:00.500    0.019883
+Name: activity_index, Length: 1260, dtype: float64
+df in prediction:                          sleep_predictions
+Time                                      
+2019-03-21 14:58:00.500                1.0
+2019-03-21 14:59:00.500                1.0
+2019-03-21 15:00:00.500                1.0
+2019-03-21 15:01:00.500                1.0
+2019-03-21 15:02:00.500                1.0
+2019-03-21 15:03:00.500                1.0
+2019-03-21 15:04:00.500                1.0
+2019-03-21 15:05:00.500                1.0
+2019-03-21 15:06:00.500                1.0
+2019-03-21 15:07:00.500                1.0
+2019-03-21 15:08:00.500                1.0
+2019-03-21 15:09:00.500                1.0
+2019-03-21 15:10:00.500                1.0
+2019-03-21 15:11:00.500                1.0
+2019-03-21 15:12:00.500                1.0
+2019-03-21 15:13:00.500                1.0
+2019-03-21 15:14:00.500                1.0
+2019-03-21 15:15:00.500                1.0
+2019-03-21 15:16:00.500                1.0
+2019-03-21 15:17:00.500                1.0
+2019-03-21 15:18:00.500                1.0
+2019-03-21 15:19:00.500                1.0
+2019-03-21 15:20:00.500                1.0
+2019-03-21 15:21:00.500                1.0
+2019-03-21 15:22:00.500                1.0
+2019-03-21 15:23:00.500                1.0
+2019-03-21 15:24:00.500                1.0
+2019-03-21 15:25:00.500                1.0
+2019-03-21 15:26:00.500                1.0
+2019-03-21 15:27:00.500                1.0
+...                                    ...
+2019-03-22 11:28:00.500                1.0
+2019-03-22 11:29:00.500                1.0
+2019-03-22 11:30:00.500                1.0
+2019-03-22 11:31:00.500                1.0
+2019-03-22 11:32:00.500                1.0
+2019-03-22 11:33:00.500                1.0
+2019-03-22 11:34:00.500                1.0
+2019-03-22 11:35:00.500                1.0
+2019-03-22 11:36:00.500                1.0
+2019-03-22 11:37:00.500                1.0
+2019-03-22 11:38:00.500                1.0
+2019-03-22 11:39:00.500                1.0
+2019-03-22 11:40:00.500                1.0
+2019-03-22 11:41:00.500                1.0
+2019-03-22 11:42:00.500                1.0
+2019-03-22 11:43:00.500                1.0
+2019-03-22 11:44:00.500                1.0
+2019-03-22 11:45:00.500                1.0
+2019-03-22 11:46:00.500                1.0
+2019-03-22 11:47:00.500                1.0
+2019-03-22 11:48:00.500                1.0
+2019-03-22 11:49:00.500                1.0
+2019-03-22 11:50:00.500                1.0
+2019-03-22 11:51:00.500                1.0
+2019-03-22 11:52:00.500                1.0
+2019-03-22 11:53:00.500                1.0
+2019-03-22 11:54:00.500                1.0
+2019-03-22 11:55:00.500                1.0
+2019-03-22 11:56:00.500                1.0
+2019-03-22 11:57:00.500                1.0
+
+[1260 rows x 1 columns]
+total run time: 0.313793083032 minutes

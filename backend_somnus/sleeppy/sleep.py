@@ -116,7 +116,7 @@ class SleepPy:
             results_directory + "/" + self.src_name
         )  # create output directory
         self.fs = sampling_frequency  # save sampling frequency
-        self.window_size = 60  # define window size in seconds
+        self.window_size = 30  # define window size in seconds
         self.band_pass_cutoff = (
             0.25,
             12.0,
@@ -149,7 +149,7 @@ class SleepPy:
         if self.run_config <= 0:
             # split the data into 24 hour periods
             if self.verbose:
-                print("Loading data...")
+                print("Loading dataGulasch...")
             if ".bin" in self.src:
                 self.split_days_geneactiv_bin()
             elif ".csv" in self.src:
@@ -159,16 +159,18 @@ class SleepPy:
             if self.verbose:
                 print("Extracting activity index...")
             self.extract_activity_index()
-        if self.run_config <= 2:
+        """if self.run_config <= 2:
             # run wear/on-body detection
             if self.verbose:
                 print("Running off-body detection...")
-            self.wear_detection()
+            self.wear_detection()"""
         if self.run_config <= 3:
             # run major rest period detection
             if self.verbose:
                 print("Detecting major rest period...")
+                print("nach detect")
             self.major_rest_period()
+            print("nach major rest")
         if self.run_config <= 4:
             # run sleep wake predictions on the major rest period
             if self.verbose:
@@ -179,11 +181,11 @@ class SleepPy:
             if self.verbose:
                 print("Calculating endpoints...")
             self.calculate_endpoints()
-        if self.run_config <= 6:
+        """if self.run_config <= 6:
             # generates visual reports
             if self.verbose:
                 print("Generating visual reports...")
-            self.visualize_results()
+            self.visualize_results()"""
 
         # aggregate results
         if self.verbose:
@@ -208,10 +210,11 @@ class SleepPy:
         # load data and fix time_stamps
         data = pd.read_csv(
             self.src,
+            # Column(s) to use as the row labels of the DataFrame, either given as string name or column index.
             index_col=0,
             skiprows=100,
             header=None,
-            names=["Time", "X", "Y", "Z", "LUX", "Button", "T"],
+            names=["Time", "X", "Y", "Z", "LUX", "Button", "T", "A", "B", "C", "D", "E"],
             usecols=["Time", "X", "Y", "Z", "LUX", "T"],
             dtype={
                 "Time": object,
@@ -221,19 +224,29 @@ class SleepPy:
                 "LUX": np.int64,
                 "Button": bool,
                 "T": np.float64,
+                "A": np.float64,
+                "B": np.float64,
+                "C": np.float64,
+                "D": np.float64,
+                "E": np.float64
+
             },
             low_memory=False,
         )
+        # print("data ")
+        # print(data)
         data.index = pd.to_datetime(data.index, format="%Y-%m-%d %H:%M:%S:%f").values
-
+        # print("data spaeter: " + str(data))
         # remove any specified time periods from the beginning and end of the file
         data = data.loc[
             data.index[0]
             + pd.Timedelta(self.start_buffer) : data.index[-1]
             - pd.Timedelta(self.stop_buffer)
         ]
-
+        # print("data nch loc: " + str(data))
         # cut to defined start and end times if specified
+        print("vorher: starttime: " + str(self.start_time))
+        print("vorher: stoptime: " + str(self.stop_time))
         if self.start_time and self.stop_time:
             self.start_time = pd.to_datetime(
                 self.start_time, format="%Y-%m-%d %H:%M:%S:%f"
@@ -251,23 +264,36 @@ class SleepPy:
             self.stop_time = pd.to_datetime(
                 self.stop_time, format="%Y-%m-%d %H:%M:%S:%f"
             )
+            print("nachher: starttime: " + str(self.start_time))
+            print("nachher: stoptime: " + str(self.stop_time))
             data = data.loc[: self.stop_time]
-
+            print("data gulasch")
         # split data into days from noon to noon
+        # print("data vor days" + str(data))
         days = data.groupby(pd.Grouper(level=0, freq="24h", base=12))
 
         # iterate through days keeping track of the day
         count = 0
+        print("days first)")
+        print(len(days))
+        print("days: " + str(days))
         for day in days:
             # save each 24 hour day separately if there's enough data to analyze
+            # print("vor df" + str(day[1]))
             df = day[1].copy()
-            available_hours = (len(df) / float(self.fs)) / 3600.0
+            print("df: " + str(len(df)))
+            # print("nach df" + str(day[1]))
+            # available_hours = (len(df) / float(self.fs)) / 3600.0
+            available_hours = len(df) / 3600.0
+            print("available: " + str(available_hours))
+            print("self.minimum_hours: " + str(self.minimum_hours))
             if available_hours >= self.minimum_hours:
                 count += 1
                 dst = "/raw_days/{}_day_{}.h5".format(
                     self.src_name, str(count).zfill(2)
                 )
                 df.to_hdf(self.sub_dst + dst, key="raw_geneactiv_data_24hr", mode="w")
+                print("dateib gescht")
         return
 
     def split_days_geneactiv_bin(self):
@@ -275,6 +301,7 @@ class SleepPy:
         Splits the GeneActiv accelerometer data into 24 hour chunks, defined from noon to noon.
 
         """
+        print("in split days bin")
         try:
             os.mkdir(self.sub_dst + "/raw_days")  # set up output directory
         except OSError:
@@ -314,6 +341,8 @@ class SleepPy:
 
         # iterate through days keeping track of the day
         count = 0
+        print("in days forschleife")
+        print("days eintraege: " + str(days))
         for day in days:
             # save each 24 hour day separately if there's enough data to analyze
             df = day[1].copy()
@@ -347,21 +376,23 @@ class SleepPy:
         )
         for day in days:
             count += 1
-
             # load data
             df = pd.read_hdf(day)
+            print("df.day activity: bis hierhin alle rows vorhanden ")
             activity = []
             header = ["Time", "activity_index"]
             idx = 0
-            window = int(self.window_size * self.fs)
-            incrementer = int(self.window_size * self.fs)
+            # window = int(self.window_size * self.fs)
+            # incrementer = int(self.window_size * self.fs)
+            window = int(self.window_size)
+            incrementer = int(self.window_size)
 
             # iterate through windows
             while idx < len(df) - incrementer:
                 # preprocessing: BP Filter
                 temp = df[["X", "Y", "Z"]].iloc[idx : idx + window]
                 start_time = temp.index[0]
-                temp.index = list(range(len(temp.index)))  # reset index
+                temp.index = range(len(temp.index))  # reset index
                 temp = band_pass_filter(
                     temp, self.fs, bp_cutoff=self.band_pass_cutoff, order=3
                 )
@@ -463,13 +494,19 @@ class SleepPy:
         """
         Determines the major rest period,
         """
+        print("in major rest methode")
         try:
             os.mkdir(self.sub_dst + "/major_rest_period")  # set up output directory
+            print("major ordner erstellt")
         except OSError:
             pass
+        print("major vor count")
         count = 0
+        print("major vor meps")
         mrps = []
+        print("major vor header")
         header = ["day", "major_rest_period", "available_hours"]
+        print("major nch header")
 
         # get days
         days = sorted(
@@ -479,10 +516,14 @@ class SleepPy:
                 if ".DS_Store" not in i
             ]
         )
+        print("major nach days")
+        print(days)
         for day in days:
             df = pd.read_hdf(day)
+            print("major nach pd.read_hdf(days)")
             df = df[["X", "Y", "Z", "T"]]
-            available_hours = (len(df) / float(self.fs)) / 3600.0
+            available_hours = len(df) / 3600.0
+            # available_hours = (len(df) / float(self.fs)) / 3600.0
             count += 1
 
             # process data
@@ -609,14 +650,20 @@ class SleepPy:
         )
         for day in days:
             count += 1
+            print("day vor coleKripke: " + str(day))
             df = pd.read_hdf(day)
 
             # run the sleep wake predictions
+            print("vor colekreipke: " + str(df.activity_index))
             ck = ColeKripke(df.activity_index)
             df["sleep_predictions"] = ck.predict()
-
+            print("df_sleep_predictions: "+ str(df["sleep_predictions"]))
             # save predictions
             df.drop(inplace=True, columns=["activity_index"])
+            print("df in prediction: " + str(df))
+            print("jetzt kommt loc")
+            print(df.loc['2019-03-22 02:03:00.500'])
+            # [[]])
             df.to_hdf(
                 self.sub_dst
                 + "/sleep_wake_predictions/sleep_wake_day_{}.h5".format(
@@ -864,7 +911,7 @@ class SleepPy:
             index_col="day",
         )
 
-        days = list(range(0, len(rdays)))
+        days = range(0, len(rdays))
         for day in days:
             # read the raw data, downsample for plotting
             raw = pd.read_hdf(rdays[day])
@@ -973,7 +1020,7 @@ class SleepPy:
             ).legend(bbox_to_anchor=(0, 1), fontsize=20)
             ax1.axhline(y=self.min_t, color="r", linestyle="--", lw=2)
             props = dict(boxstyle="round", facecolor="lavender", alpha=0.35)
-            textstr = "max: {}\xb0C\nmin: {}\xb0C\nthresh: {}\xb0C".format(
+            textstr = u"max: {}\xb0C\nmin: {}\xb0C\nthresh: {}\xb0C".format(
                 raw[["Temperature"]].max().values[0],
                 raw[["Temperature"]].min().values[0],
                 self.min_t,

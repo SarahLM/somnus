@@ -5,6 +5,9 @@ import pandas as pd
 from flask import Flask
 app = Flask(__name__)
 #testvariable = 'hhh'
+# pathToResultFolder = '/home/sarah/results'
+pathToResultFolder = '/home/nele/Schreibtisch/results'
+
 
 @app.route('/')
 def hello_world():
@@ -20,7 +23,7 @@ def run_demo(testvariable):
 
     st = time.time()
     try:
-     SleepPy(input_file=src, results_directory='/home/sarah/results', sampling_frequency=100, run_config=4, verbose=False)
+     SleepPy(input_file=src, results_directory=pathToResultFolder, sampling_frequency=100, run_config=4, verbose=False)
     except Exception as e:
         print("Error processing: {}\nError: {}".format(src, e))
     stp = time.time()

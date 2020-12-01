@@ -3,6 +3,9 @@ import os
 from sleeppy.sleep import SleepPy
 import pandas as pd
 
+# pathToResults = '/home/sarah/results'
+pathToResults = '/home/nele/Schreibtisch/results'
+
 
 def run_demo(binder_demo=False):
     # src = __file__.split(".py")[0] + ".bin"
@@ -26,10 +29,10 @@ def run_demo(binder_demo=False):
     try:
         if not binder_demo:
             # SleepPy(input_file=src, results_directory=dst, sampling_frequency=100, verbose=True)
-            SleepPy(input_file=src, results_directory='/home/sarah/results', sampling_frequency=100, verbose=False)
+            SleepPy(input_file=src, results_directory=pathToResults, sampling_frequency=100, verbose=False)
         else:
             # SleepPy(input_file=src, results_directory=dst, sampling_frequency=100, run_config=4, verbose=True)
-            SleepPy(input_file=src, results_directory='/home/sarah/results', sampling_frequency=100, run_config=4, verbose=False)
+            SleepPy(input_file=src, results_directory=pathToResults, sampling_frequency=100, run_config=4, verbose=False)
     except Exception as e:
         print("Error processing: {}\nError: {}".format(src, e))
     stp = time.time()

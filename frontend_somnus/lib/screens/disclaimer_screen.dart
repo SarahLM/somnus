@@ -1,7 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_somnus/screens/tutorial_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'tabs_screen.dart';
 
-class DisclaimerScreen extends StatelessWidget {
+int tutorialScreen;
+
+class DisclaimerScreen extends StatefulWidget {
+  @override
+  _DisclaimerScreenState createState() => _DisclaimerScreenState();
+}
+
+class _DisclaimerScreenState extends State<DisclaimerScreen> {
+  @override
+  void initState() {
+    _getTutorialScreenStatus().then((value) {
+      print('Async done');
+    });
+    super.initState();
+  }
+
+  Future<void> _getTutorialScreenStatus() async {
+    print('I am in _getTutorialScreen Status');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //Return int
+    tutorialScreen = await prefs.getInt('tutorialScreen');
+    print('int tutorialScreen is ');
+    print(tutorialScreen);
+    return tutorialScreen;
+  }
+
   @override
   Widget build(BuildContext context) {
     const bodyStyle = TextStyle(fontSize: 19.0, color: Colors.black);
@@ -12,36 +39,44 @@ class DisclaimerScreen extends StatelessWidget {
         'Die Entwickler von SOMNUS übernehemen keine Haftung für Unannehmlichkeiten oder Schäden, die sich aus der Anwendung der in der SOMNUS App dargestellten Information ergeben.\n\n';
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           'DISCLAIMER',
           style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.fromLTRB(20, 40, 20, 20),
-          color: Colors.white,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  disclaimer,
-                  style: bodyStyle,
-                ),
-                const SizedBox(height: 30),
-                RaisedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => TabsScreen()));
-                  },
-                  child: const Text(
-                    'Verstanden',
-                    style: TextStyle(fontSize: 20),
+      body: Scrollbar(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+            color: Colors.white,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    disclaimer,
+                    style: bodyStyle,
                   ),
-                ),
-                const SizedBox(height: 20),
-              ],
+                  const SizedBox(height: 10),
+                  RaisedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => tutorialScreen == 1
+                              ? TabsScreen()
+                              : TutorialPage(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'Verstanden',
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),

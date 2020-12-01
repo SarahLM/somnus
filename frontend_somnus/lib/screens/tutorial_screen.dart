@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend_somnus/screens/tabs_screen.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class TuturialScreen extends StatelessWidget {
+class TutorialScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
@@ -23,9 +24,17 @@ class TutorialPage extends StatefulWidget {
 }
 
 class _TutorialPageState extends State<TutorialPage> {
+  int tutorialScreen;
   final introKey = GlobalKey<IntroductionScreenState>();
 
-  void _onIntroEnd(context) {
+  Future<void> _onIntroEnd(context) async {
+    WidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    tutorialScreen = prefs.getInt("tutorialScreen");
+    await prefs.setInt("tutorialScreen", 1);
+    print('Value of TutorialScreen: ');
+    print(tutorialScreen);
+
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => TabsScreen()),
     );

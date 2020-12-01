@@ -29,6 +29,9 @@ dependencies:
   custom_navigator: ^0.3.0
   introduction_screen: ^1.0.9
   shared_preferences: ^0.5.12+4
+  date_range_picker: ^1.0.6
+  flutter_localizations: # Add this line
+    sdk: flutter
 
 
   # The following adds the Cupertino Icons font to your application.

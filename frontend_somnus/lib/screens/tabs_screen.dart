@@ -18,7 +18,7 @@ class _TabsScreenState extends State<TabsScreen> {
       'title': 'Home',
     },
     {
-      'page': HypnogramScreen(Colors.green),
+      'page': HypnogramScreen(Colors.white),
       'title': 'Hypnogramm',
     },
     {

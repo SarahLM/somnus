@@ -181,6 +181,10 @@ class SleepPy:
             if self.verbose:
                 print("Calculating endpoints...")
             self.calculate_endpoints()
+        try:
+            os.mkdir(self.sub_dst + "/reports")  # set up output directory
+        except OSError:
+            pass
         """if self.run_config <= 6:
             # generates visual reports
             if self.verbose:

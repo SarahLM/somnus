@@ -14,23 +14,9 @@ def hello_world():
     return run_demo('lalelu')
 
 
-def run_demo(testvariable, binder_demo=False):
+def run_demo(testvariable):
     # src = __file__.split(".py")[0] + ".bin"
-    src = "output2.csv"
-    """dst = raw_input("Please provide a path to a results Gulasch directory:    ")
-    while not os.path.isdir(dst):
-        if not binder_demo:
-            dst = raw_input(
-                "\nYour previous entry was not appropriate."
-                "\nIt should follow a format similar to /Users/username/Desktop/Results"
-                "\nPlease provide a path to a results directory:    "
-            )
-        else:
-            dst = raw_input(
-                "\nYour previous entry was not appropriate."
-                "\nIt should follow a format similar to /home/jovyan/example_notebook"
-                "\nPlease provide a path to a results directory:    "
-            )"""
+    src = "inputAccelero.csv"
 
     st = time.time()
     try:
@@ -40,5 +26,5 @@ def run_demo(testvariable, binder_demo=False):
     stp = time.time()
     print("total run time: {} minutes".format((stp - st) / 60.0))
     print("Test" + testvariable)
-    #return testvariable
-    return 'neuerReturn'
+    return testvariable
+    #return 'neuerReturn'

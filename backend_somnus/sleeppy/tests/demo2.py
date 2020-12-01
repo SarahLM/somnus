@@ -6,7 +6,7 @@ import pandas as pd
 
 def run_demo(binder_demo=False):
     # src = __file__.split(".py")[0] + ".bin"
-    src = "output2.csv"
+    src = "inputAccelero.csv"
     """dst = raw_input("Please provide a path to a results Gulasch directory:    ")
     while not os.path.isdir(dst):
         if not binder_demo:

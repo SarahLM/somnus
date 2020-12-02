@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:frontend_somnus/widgets/theme.dart';
@@ -15,6 +13,32 @@ class HypnogramScreen extends StatefulWidget {
 }
 
 class _HypnogramScreenState extends State<HypnogramScreen> {
+  bool _pressedButton1 = true;
+  bool _pressedButton2 = false;
+  bool _pressedButton3 = false;
+  bool _pressedButton4 = false;
+
+  Widget buildFlatButton(String title, bool button) {
+    return FlatButton(
+      child: Text(
+        title,
+        style: TextStyle(
+          color: button ? Colors.white : Colors.purple,
+        ),
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18.0),
+        side: BorderSide(color: Colors.purple),
+      ),
+      color: button ? Colors.purple : Colors.white,
+      onPressed: () {
+        setState(() {
+          button = true;
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -28,52 +52,87 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
               FlatButton(
                 child: Text(
                   'Letzte Aufnahme',
-                  style: TextStyle(color: Colors.purple),
+                  style: TextStyle(
+                    color: _pressedButton1 ? Colors.white : Colors.purple,
+                  ),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
                   side: BorderSide(color: Colors.purple),
                 ),
-                color: Colors.white,
-                onPressed: () {/** */},
+                color: _pressedButton1 ? Colors.purple : Colors.white,
+                onPressed: () {
+                  setState(() {
+                    _pressedButton1 = true;
+                    _pressedButton2 = false;
+                    _pressedButton3 = false;
+                    _pressedButton4 = false;
+                  });
+                },
               ),
               FlatButton(
                 child: Text(
                   '24 Stunden',
-                  style: TextStyle(color: Colors.purple),
+                  style: TextStyle(
+                    color: _pressedButton2 ? Colors.white : Colors.purple,
+                  ),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
                   side: BorderSide(color: Colors.purple),
                 ),
-                color: Colors.white,
-                onPressed: () {/** */},
+                color: _pressedButton2 ? Colors.purple : Colors.white,
+                onPressed: () {
+                  setState(() {
+                    _pressedButton2 = true;
+                    _pressedButton1 = false;
+                    _pressedButton3 = false;
+                    _pressedButton4 = false;
+                  });
+                },
               ),
               FlatButton(
                 child: Text(
                   '7 Tage',
-                  style: TextStyle(color: Colors.purple),
+                  style: TextStyle(
+                    color: _pressedButton3 ? Colors.white : Colors.purple,
+                  ),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
                   side: BorderSide(color: Colors.purple),
                 ),
-                color: Colors.white,
-                onPressed: () {/** */},
+                color: _pressedButton3 ? Colors.purple : Colors.white,
+                onPressed: () {
+                  setState(() {
+                    _pressedButton3 = true;
+                    _pressedButton1 = false;
+                    _pressedButton2 = false;
+                    _pressedButton4 = false;
+                  });
+                },
               ),
               DatePickerTheme(
                 Builder(
                   builder: (context) => FlatButton(
                     child: new Text(
                       "Custom",
-                      style: TextStyle(color: Colors.purple),
+                      style: TextStyle(
+                        color: _pressedButton4 ? Colors.white : Colors.purple,
+                      ),
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18.0),
                       side: BorderSide(color: Colors.purple),
                     ),
-                    color: Colors.white,
+                    color: _pressedButton4 ? Colors.purple : Colors.white,
                     onPressed: () async {
+                      setState(() {
+                        _pressedButton4 = true;
+                        _pressedButton1 = false;
+                        _pressedButton2 = false;
+                        _pressedButton3 = false;
+                      });
                       final List<DateTime> picked =
                           await DateRagePicker.showDatePicker(
                         locale: const Locale("de", "DE"),

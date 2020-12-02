@@ -22,7 +22,6 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
   Future<void> _getTutorialScreenStatus() async {
     print('I am in _getTutorialScreen Status');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    //Return int
     tutorialScreen = await prefs.getInt('tutorialScreen');
     print('int tutorialScreen is ');
     print(tutorialScreen);
@@ -59,7 +58,11 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                     style: bodyStyle,
                   ),
                   const SizedBox(height: 10),
-                  RaisedButton(
+                  FlatButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                      side: BorderSide(color: Colors.blue),
+                    ),
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -71,7 +74,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                     },
                     child: const Text(
                       'Verstanden',
-                      style: TextStyle(fontSize: 24),
+                      style: TextStyle(fontSize: 24, color: Colors.blue),
                     ),
                   ),
                   const SizedBox(height: 20),

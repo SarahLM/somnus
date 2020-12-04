@@ -10,13 +10,15 @@ class TabsScreen extends StatefulWidget {
 }
 
 class _TabsScreenState extends State<TabsScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   final List<Map<String, Object>> _pages = [
     {
       'page': HomeScreen(),
       'title': 'Home',
     },
     {
-      'page': HypnogramScreen(Colors.green),
+      'page': HypnogramScreen(Colors.white),
       'title': 'Hypnogramm',
     },
     {
@@ -35,11 +37,20 @@ class _TabsScreenState extends State<TabsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(_pages[_selectedPageIndex]['title']),
         backgroundColor: Colors.purple,
+        automaticallyImplyLeading: false,
+        actions: <Widget>[
+          new IconButton(
+            icon: new Icon(Icons.more_vert),
+            onPressed: () => _scaffoldKey.currentState.openEndDrawer(),
+          ),
+        ],
       ),
-      drawer: MainDrawer(),
+      endDrawer: MainDrawer(),
+      // endDrawer: MainDrawer(),
       body: _pages[_selectedPageIndex]['page'],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.purple,

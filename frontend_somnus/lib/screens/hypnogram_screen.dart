@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
+import 'package:frontend_somnus/widgets/animated_line.dart';
+import 'package:frontend_somnus/widgets/line_area_page.dart';
+import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:frontend_somnus/widgets/theme.dart';
 
 class HypnogramScreen extends StatefulWidget {
@@ -161,7 +164,10 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
             ],
           ),
         ),
-        Text(selectedText),
+        //LineAreaPage(),
+        //LineAreaPage(),
+        Sync(),
+        //LineAreaPage()
       ],
     );
   }

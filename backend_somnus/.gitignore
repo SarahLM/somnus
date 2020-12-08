@@ -7,4 +7,5 @@
 .idea/
 .eggs/
 build/
-sleeppy/tests/fileUploads/
+sleeppy/tests/fileUpload
+venv

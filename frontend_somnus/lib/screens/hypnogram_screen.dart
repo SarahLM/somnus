@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
+//import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
+import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
 import 'package:frontend_somnus/widgets/animated_line.dart';
 import 'package:frontend_somnus/widgets/line_area_page.dart';
 import 'package:frontend_somnus/widgets/syncfusion.dart';
@@ -153,7 +154,9 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
 
                       if (picked != null && picked.length == 2) {
                         print(picked);
+                        print(picked.runtimeType);
                       }
+
                       setState(() {
                         title = picked.toString();
                       });

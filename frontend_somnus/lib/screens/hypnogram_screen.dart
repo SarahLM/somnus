@@ -187,6 +187,10 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                         lastDate: new DateTime(2022),
                       );
 
+                      final dataPoints =
+                          Provider.of<DataStates>(context, listen: false)
+                              .findByDate((picked[0]), (picked[1]));
+
                       if (picked != null && picked.length == 2) {
                         print(picked);
                         print(picked.runtimeType);
@@ -194,6 +198,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
 
                       setState(() {
                         title = picked.toString();
+                        sleepData = dataPoints;
                       });
                     },
                   ),

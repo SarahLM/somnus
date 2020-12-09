@@ -142,11 +142,16 @@ class SleepPy:
         Runs the full package on the provided file.
 
         """
+        print('anfang run')
+        print('run_config sollte 0 sein, ist: ' + str(self.run_config))
         try:
+            print('mach output dir')
             os.mkdir(self.sub_dst)  # set up output directory
         except OSError:
             pass
+        print('run_config sollte 0 sein, ist: ' + str(self.run_config))
         if self.run_config <= 0:
+            print('run_config sollte 0 sein, ist: ' + str(self.run_config))
             # split the data into 24 hour periods
             if self.verbose:
                 print("Loading dataGulasch...")
@@ -156,6 +161,7 @@ class SleepPy:
                 self.split_days_geneactiv_csv()
         if self.run_config <= 1:
             # extract the activity index feature
+            print('run_config sollte 1 sein, ist: ' + str(self.run_config))
             if self.verbose:
                 print("Extracting activity index...")
             self.extract_activity_index()
@@ -165,6 +171,7 @@ class SleepPy:
                 print("Running off-body detection...")
             self.wear_detection()"""
         if self.run_config <= 3:
+            print('run_config sollte 3 sein, ist: ' + str(self.run_config))
             # run major rest period detection
             if self.verbose:
                 print("Detecting major rest period...")

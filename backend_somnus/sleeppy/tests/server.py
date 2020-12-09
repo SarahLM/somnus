@@ -6,9 +6,10 @@ from flask import Flask
 app = Flask(__name__)
 #testvariable = 'hhh'
 #pathToResultFolder = '/home/sarah/results'
-# pathToResultFolder = '/home/nele/Schreibtisch/results'
+pathToResultFolder = 'results'
 
 
+# noinspection PyInterpreter
 @app.route('/')
 def hello_world():
     # if __name__ == "__main__":
@@ -23,7 +24,7 @@ def run_demo(testvariable):
 
     st = time.time()
     try:
-     SleepPy(input_file=src, results_directory='/home/sarah/results', sampling_frequency=100, run_config=4, verbose=False)
+     SleepPy(input_file=src, results_directory=pathToResultFolder, sampling_frequency=100, verbose=True)
     except Exception as e:
         print("Error processing: {}\nError: {}".format(src, e))
     stp = time.time()

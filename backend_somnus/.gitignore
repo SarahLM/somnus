@@ -7,5 +7,5 @@
 .idea/
 .eggs/
 build/
-sleeppy/tests/fileUpload
+backend_somnus/sleeppy/tests/fileUpload
 venv

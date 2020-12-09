@@ -5,9 +5,8 @@ import os
 from sleeppy.sleep import SleepPy
 
 # pathToResultFolder = '/home/sarah/results'
-pathToResultFolder = '/home/nele/Schreibtisch/results'
-
-pathToUploadFolder = '/home/nele/somnus/backend_somnus/sleeppy/tests/fileUploads'
+pathToResultFolder = 'results'
+pathToUploadFolder = 'fileUploads'
 ALLOWED_EXTENSIONS = {'txt', 'csv'}
 
 app = Flask(__name__)
@@ -31,8 +30,6 @@ def upload_csv_file():
         if file and allowed_file(file.filename):
             filename = file.filename 
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            # run_sleepPrediction()
-            # test(file)
             return redirect(url_for('uploaded_file', filename=filename))
     return '''
     <!doctype html>
@@ -47,6 +44,7 @@ def upload_csv_file():
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     # return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    run_sleepPrediction()
     return '''
         <!doctype html>
         <title>Uploaded new file</title>
@@ -54,15 +52,11 @@ def uploaded_file(filename):
         '''
 
 
-def test(file):
-    file.save(os.path.join(app.config['UPLOAD_FOLDER2'], 'lama.csv'))
-
-
 def run_sleepPrediction():
-    src = "fileUpload/inputAccelero2.csv"
+    src = "fileUploads/inputAccelero2.csv"
     st = time.time()
     try:
-     SleepPy(input_file=src, results_directory=pathToResultFolder, sampling_frequency=100, run_config=4, verbose=False)
+     SleepPy(input_file=src, results_directory=pathToResultFolder, sampling_frequency=100, verbose=False)
     except Exception as e:
         print("Error processing: {}\nError: {}".format(src, e))
     stp = time.time()

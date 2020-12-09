@@ -168,11 +168,6 @@ class SleepPy:
         if self.verbose:
             print("Calculating endpoints...")
         self.calculate_endpoints()
-        # kann wahrscheinlich noch weg:
-        try:
-            os.mkdir(self.sub_dst + "/reports")  # set up output directory
-        except OSError:
-            pass
         #
         # aggregate results
         if self.verbose:
@@ -254,7 +249,6 @@ class SleepPy:
             print("nachher: starttime: " + str(self.start_time))
             print("nachher: stoptime: " + str(self.stop_time))
             data = data.loc[: self.stop_time]
-            print("data gulasch")
         # split data into days from noon to noon
         # print("data vor days" + str(data))
         days = data.groupby(pd.Grouper(level=0, freq="24h", base=12))
@@ -512,13 +506,13 @@ class SleepPy:
             df = pd.read_hdf(day)
 
             # run the sleep wake predictions
-            print("vor colekreipke: " + str(df.activity_index))
+            # print("vor colekreipke: " + str(df.activity_index))
             ck = ColeKripke(df.activity_index)
             df["sleep_predictions"] = ck.predict()
-            print("df_sleep_predictions: "+ str(df["sleep_predictions"]))
+            # print("df_sleep_predictions: " + str(df["sleep_predictions"]))
             # save predictions
             df.drop(inplace=True, columns=["activity_index"])
-            print("df in prediction: " + str(df))
+            # print("df in prediction: " + str(df))
             print("jetzt kommt loc")
             print(df.loc['2019-03-22 02:03:00.500'])
             # [[]])
@@ -656,11 +650,6 @@ class SleepPy:
 
         # collect results files
         srcs = []
-        srcs += [
-            self.sub_dst + "/reports/" + x
-            for x in os.listdir(self.sub_dst + "/reports")
-            if ".DS_Store" not in x
-        ]
         srcs += [
             self.sub_dst + "/major_rest_period/" + x
             for x in os.listdir(self.sub_dst + "/major_rest_period")

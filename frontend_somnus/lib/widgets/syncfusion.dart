@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_somnus/providers/states.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 
@@ -9,6 +11,8 @@ class Sync extends StatelessWidget {
   final f = new DateFormat('dd.MM.yyyy hh:mm');
   @override
   Widget build(BuildContext context) {
+    final dataStatesData = Provider.of<DataStates>(context);
+    final dataPoints = dataStatesData.items;
     return Container(
       padding: EdgeInsets.all(15),
       child: Center(
@@ -74,130 +78,16 @@ class Sync extends StatelessWidget {
                   ),
                   series: <ChartSeries>[
                     // Initialize line series
-                    StepAreaSeries<SalesData, DateTime>(
+                    StepAreaSeries<DataPoint, DateTime>(
                         color: const Color.fromRGBO(
                             252, 176, 28, 1), //Color of awake periods
                         opacity: 1.0,
                         //emptyPointSettings: EmptyPointSettings(color: Colors.black),
-                        dataSource: [
-                          // Bind data source
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 31),
-                            1.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 32),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 33),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 34),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 35),
-                            1.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 36),
-                            1.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 37),
-                            1.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 38),
-                            1.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 39),
-                            1.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 40),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 41),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 42),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 43),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 44),
-                            1.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 45),
-                            1.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 46),
-                            1.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 47),
-                            1.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 48),
-                            1.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 49),
-                            1.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 50),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 51),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 52),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 53),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 54),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 55),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 56),
-                            0.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 57),
-                            1.0,
-                          ),
-                          SalesData(
-                            DateTime(2017, 9, 7, 17, 58),
-                            0.0,
-                          ),
-                        ],
+                        dataSource: dataPoints,
                         //pointColorMapper: (SalesData sales, _) =>
                         //   sales.segmentColor,
-                        xValueMapper: (SalesData sales, _) => sales.year,
-                        yValueMapper: (SalesData sales, _) => sales.state,
+                        xValueMapper: (DataPoint sales, _) => sales.date,
+                        yValueMapper: (DataPoint sales, _) => sales.state,
                         // dataLabelSettings: DataLabelSettings(isVisible: true),
                         name: '24 Stunden')
                   ]),
@@ -246,9 +136,9 @@ class Sync extends StatelessWidget {
   }
 }
 
-class SalesData {
-  SalesData(this.year, this.state);
-  final DateTime year;
+class DataPoint {
+  DataPoint(this.date, this.state);
+  final DateTime date;
   final double state;
   // final Color segmentColor;
 }

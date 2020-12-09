@@ -32,22 +32,38 @@ class Sync extends StatelessWidget {
                     interval: 4,
                     labelRotation: 90,
                     plotBands: <PlotBand>[
+                      /*   Plot band different height for sleep and awake */
+
                       PlotBand(
                         isVisible: true,
                         // start: DateTime(2017, 9, 7, 17, 31),
                         // end: DateTime(2017, 9, 7, 17, 58),
-                        associatedAxisStart: 0,
-                        associatedAxisEnd: 1,
+                        associatedAxisStart: 0.5,
+                        associatedAxisEnd: 0,
                         shouldRenderAboveSeries: false,
                         color: const Color.fromRGBO(
                             0, 0, 139, 0.2), //Color of the sleep periods
                         opacity: 0.6,
                       ),
+
+                      /* Plot band same height for sleep and awake */
+
+                      // PlotBand(
+                      //   isVisible: true,
+                      //   // start: DateTime(2017, 9, 7, 17, 31),
+                      //   // end: DateTime(2017, 9, 7, 17, 58),
+                      //   associatedAxisStart: 0,
+                      //   associatedAxisEnd: 1,
+                      //   shouldRenderAboveSeries: false,
+                      //   color: const Color.fromRGBO(
+                      //       0, 0, 139, 0.2), //Color of the sleep periods
+                      //   opacity: 0.6,
+                      // ),
                     ],
                   ),
                   primaryYAxis: NumericAxis(
                     interval: 1,
-                    maximum: 1.0,
+                    //maximum: 1.0,
                     //minimum: -0.5,
                     //maximum: 5.1,
                     //rangePadding: ChartRangePadding.additional,
@@ -58,7 +74,7 @@ class Sync extends StatelessWidget {
                     StepAreaSeries<SalesData, DateTime>(
                         color: const Color.fromRGBO(
                             252, 176, 28, 1), //Color of awake periods
-                        opacity: 0.7,
+                        opacity: 1.0,
                         //emptyPointSettings: EmptyPointSettings(color: Colors.black),
                         dataSource: [
                           // Bind data source

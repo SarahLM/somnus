@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
+import 'package:frontend_somnus/providers/states.dart';
+import 'package:provider/provider.dart';
+//import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
+import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
+import 'package:frontend_somnus/widgets/animated_line.dart';
+import 'package:frontend_somnus/widgets/line_area_page.dart';
+import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:frontend_somnus/widgets/theme.dart';
 
 class HypnogramScreen extends StatefulWidget {
@@ -17,7 +23,24 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
   bool _pressedButton2 = false;
   bool _pressedButton3 = false;
   bool _pressedButton4 = false;
-  var selectedText = '';
+  var title = 'Letzte Aufnahme';
+
+  List<DataPoint> sleepData;
+
+  @override
+  initState() {
+    final dataStatesData = Provider.of<DataStates>(context, listen: false);
+    final dataPoints = dataStatesData.items;
+    setState(() {
+      _pressedButton1 = true;
+      _pressedButton2 = false;
+      _pressedButton3 = false;
+      _pressedButton4 = false;
+      title = 'Letzte Aufnahme';
+      sleepData = dataPoints;
+    });
+    super.initState();
+  }
 
   Widget buildFlatButton(String title, bool button) {
     return FlatButton(
@@ -63,12 +86,16 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                 ),
                 color: _pressedButton1 ? Colors.purple : Colors.white,
                 onPressed: () {
+                  final dataStatesData =
+                      Provider.of<DataStates>(context, listen: false);
+                  final dataPoints = dataStatesData.items;
                   setState(() {
                     _pressedButton1 = true;
                     _pressedButton2 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
-                    selectedText = 'Letzte Aufnahme';
+                    title = 'Letzte Aufnahme';
+                    sleepData = dataPoints;
                   });
                 },
               ),
@@ -85,12 +112,18 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                 ),
                 color: _pressedButton2 ? Colors.purple : Colors.white,
                 onPressed: () {
+                  final dataPoints =
+                      Provider.of<DataStates>(context, listen: false)
+                          .findByDate(
+                              (new DateTime.now()).add(new Duration(days: -2)),
+                              DateTime.now());
                   setState(() {
                     _pressedButton2 = true;
                     _pressedButton1 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
-                    selectedText = '24 Stunden';
+                    title = '24 Stunden';
+                    sleepData = dataPoints;
                   });
                 },
               ),
@@ -107,12 +140,18 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                 ),
                 color: _pressedButton3 ? Colors.purple : Colors.white,
                 onPressed: () {
+                  final dataPoints =
+                      Provider.of<DataStates>(context, listen: false)
+                          .findByDate(
+                              (new DateTime.now()).add(new Duration(days: -7)),
+                              DateTime.now());
                   setState(() {
                     _pressedButton3 = true;
                     _pressedButton1 = false;
                     _pressedButton2 = false;
                     _pressedButton4 = false;
-                    selectedText = '7 Tage';
+                    title = '7 Tage';
+                    sleepData = dataPoints;
                   });
                 },
               ),
@@ -148,11 +187,18 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                         lastDate: new DateTime(2022),
                       );
 
+                      final dataPoints =
+                          Provider.of<DataStates>(context, listen: false)
+                              .findByDate((picked[0]), (picked[1]));
+
                       if (picked != null && picked.length == 2) {
                         print(picked);
+                        print(picked.runtimeType);
                       }
+
                       setState(() {
-                        selectedText = picked.toString();
+                        title = picked.toString();
+                        sleepData = dataPoints;
                       });
                     },
                   ),
@@ -161,7 +207,13 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
             ],
           ),
         ),
-        Text(selectedText),
+        //LineAreaPage(),
+        //LineAreaPage(),
+        Sync(
+          title: this.title,
+          sleepData: this.sleepData,
+        ),
+        //LineAreaPage()
       ],
     );
   }

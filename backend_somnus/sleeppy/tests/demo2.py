@@ -3,8 +3,8 @@ import os
 from sleeppy.sleep import SleepPy
 import pandas as pd
 
-# pathToResults = '/home/sarah/results'
-pathToResults = '/home/nele/Schreibtisch/results'
+pathToResults = '/home/sarah/results'
+# pathToResults = '/home/nele/Schreibtisch/results'
 
 
 def run_demo(binder_demo=False):

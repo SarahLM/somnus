@@ -185,6 +185,7 @@ class SleepPy:
             os.mkdir(self.sub_dst + "/reports")  # set up output directory
         except OSError:
             pass
+
         """if self.run_config <= 6:
             # generates visual reports
             if self.verbose:

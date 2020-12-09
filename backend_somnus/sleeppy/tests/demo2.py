@@ -9,7 +9,7 @@ def run_demo():
     src = "inputAccelero.csv"
     st = time.time()
     try:
-        SleepPy(input_file=src, results_directory=pathToResults, sampling_frequency=100, verbose=False)
+        SleepPy(input_file=src, results_directory=pathToResults, sampling_frequency=100, verbose=True)
     except Exception as e:
         print("Error processing: {}\nError: {}".format(src, e))
     stp = time.time()

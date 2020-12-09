@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:provider/provider.dart';
@@ -6,13 +8,12 @@ import 'package:intl/intl.dart';
 
 class Sync extends StatelessWidget {
   final String title;
-  Sync({this.title});
+  final List<DataPoint> sleepData;
+  Sync({this.title, this.sleepData});
 
   final f = new DateFormat('dd.MM.yyyy hh:mm');
   @override
   Widget build(BuildContext context) {
-    final dataStatesData = Provider.of<DataStates>(context);
-    final dataPoints = dataStatesData.items;
     return Container(
       padding: EdgeInsets.all(15),
       child: Center(
@@ -36,7 +37,7 @@ class Sync extends StatelessWidget {
                   primaryXAxis: DateTimeAxis(
                     majorGridLines: MajorGridLines(width: 0),
                     dateFormat: f,
-                    interval: 4,
+                    // interval: 1,
                     labelRotation: 90,
                     plotBands: <PlotBand>[
                       /*   Plot band different height for sleep and awake */
@@ -79,11 +80,12 @@ class Sync extends StatelessWidget {
                   series: <ChartSeries>[
                     // Initialize line series
                     StepAreaSeries<DataPoint, DateTime>(
+                        animationDuration: 2000,
                         color: const Color.fromRGBO(
                             252, 176, 28, 1), //Color of awake periods
                         opacity: 1.0,
                         //emptyPointSettings: EmptyPointSettings(color: Colors.black),
-                        dataSource: dataPoints,
+                        dataSource: sleepData,
                         //pointColorMapper: (SalesData sales, _) =>
                         //   sales.segmentColor,
                         xValueMapper: (DataPoint sales, _) => sales.date,
@@ -128,7 +130,8 @@ class Sync extends StatelessWidget {
                   ],
                 ),
               ],
-            )
+            ),
+            Text(sleepData.length.toString()),
           ],
         ),
       ),

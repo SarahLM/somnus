@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_somnus/providers/states.dart';
+import 'package:provider/provider.dart';
 //import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
 import 'package:frontend_somnus/widgets/animated_line.dart';
@@ -22,6 +24,23 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
   bool _pressedButton3 = false;
   bool _pressedButton4 = false;
   var title = 'Letzte Aufnahme';
+
+  List<DataPoint> sleepData;
+
+  @override
+  initState() {
+    final dataStatesData = Provider.of<DataStates>(context, listen: false);
+    final dataPoints = dataStatesData.items;
+    setState(() {
+      _pressedButton1 = true;
+      _pressedButton2 = false;
+      _pressedButton3 = false;
+      _pressedButton4 = false;
+      title = 'Letzte Aufnahme';
+      sleepData = dataPoints;
+    });
+    super.initState();
+  }
 
   Widget buildFlatButton(String title, bool button) {
     return FlatButton(
@@ -67,12 +86,16 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                 ),
                 color: _pressedButton1 ? Colors.purple : Colors.white,
                 onPressed: () {
+                  final dataStatesData =
+                      Provider.of<DataStates>(context, listen: false);
+                  final dataPoints = dataStatesData.items;
                   setState(() {
                     _pressedButton1 = true;
                     _pressedButton2 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
                     title = 'Letzte Aufnahme';
+                    sleepData = dataPoints;
                   });
                 },
               ),
@@ -89,12 +112,18 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                 ),
                 color: _pressedButton2 ? Colors.purple : Colors.white,
                 onPressed: () {
+                  final dataPoints =
+                      Provider.of<DataStates>(context, listen: false)
+                          .findByDate(
+                              (new DateTime.now()).add(new Duration(days: -2)),
+                              DateTime.now());
                   setState(() {
                     _pressedButton2 = true;
                     _pressedButton1 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
                     title = '24 Stunden';
+                    sleepData = dataPoints;
                   });
                 },
               ),
@@ -111,12 +140,18 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                 ),
                 color: _pressedButton3 ? Colors.purple : Colors.white,
                 onPressed: () {
+                  final dataPoints =
+                      Provider.of<DataStates>(context, listen: false)
+                          .findByDate(
+                              (new DateTime.now()).add(new Duration(days: -7)),
+                              DateTime.now());
                   setState(() {
                     _pressedButton3 = true;
                     _pressedButton1 = false;
                     _pressedButton2 = false;
                     _pressedButton4 = false;
                     title = '7 Tage';
+                    sleepData = dataPoints;
                   });
                 },
               ),
@@ -171,6 +206,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
         //LineAreaPage(),
         Sync(
           title: this.title,
+          sleepData: this.sleepData,
         ),
         //LineAreaPage()
       ],

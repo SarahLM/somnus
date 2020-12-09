@@ -20,7 +20,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
   bool _pressedButton2 = false;
   bool _pressedButton3 = false;
   bool _pressedButton4 = false;
-  var selectedText = '';
+  var title = 'Letzte Aufnahme';
 
   Widget buildFlatButton(String title, bool button) {
     return FlatButton(
@@ -71,7 +71,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton2 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
-                    selectedText = 'Letzte Aufnahme';
+                    title = 'Letzte Aufnahme';
                   });
                 },
               ),
@@ -93,7 +93,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton1 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
-                    selectedText = '24 Stunden';
+                    title = '24 Stunden';
                   });
                 },
               ),
@@ -115,7 +115,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton1 = false;
                     _pressedButton2 = false;
                     _pressedButton4 = false;
-                    selectedText = '7 Tage';
+                    title = '7 Tage';
                   });
                 },
               ),
@@ -155,7 +155,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                         print(picked);
                       }
                       setState(() {
-                        selectedText = picked.toString();
+                        title = picked.toString();
                       });
                     },
                   ),
@@ -166,7 +166,9 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
         ),
         //LineAreaPage(),
         //LineAreaPage(),
-        Sync(),
+        Sync(
+          title: this.title,
+        ),
         //LineAreaPage()
       ],
     );

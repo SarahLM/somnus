@@ -3,6 +3,9 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 
 class Sync extends StatelessWidget {
+  final String title;
+  Sync({this.title});
+
   final f = new DateFormat('dd.MM.yyyy hh:mm');
   @override
   Widget build(BuildContext context) {
@@ -25,7 +28,7 @@ class Sync extends StatelessWidget {
                       selectionRectColor: Colors.grey),
                   enableAxisAnimation: true,
                   tooltipBehavior: TooltipBehavior(enable: true),
-                  title: ChartTitle(text: '24 Stunden'),
+                  title: ChartTitle(text: this.title),
                   primaryXAxis: DateTimeAxis(
                     majorGridLines: MajorGridLines(width: 0),
                     dateFormat: f,

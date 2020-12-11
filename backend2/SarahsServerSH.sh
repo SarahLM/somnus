@@ -9,4 +9,4 @@ rm -R *
 cd ..
 
 #start server
-python2.7 RESTserver2.py
+python RESTserver.py

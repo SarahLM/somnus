@@ -586,19 +586,20 @@ def clear_data():
         rmtree(direc)
 
 
-print('Sleep Detection gestartet')
-print('mach output dir')
-os.mkdir(sub_dst)  # set up output directory
-# split the data into 24 hour periods
-print("Loading CSV data...")
-split_days_geneactiv_csv()
-print("Extracting activity index...")
-extract_activity_index()
-print("Detecting major rest period...")
-major_rest_period()
-print("Running sleep/wake predictions...")
-sleep_wake_predict()
-print("Calculating endpoints...")
-calculate_endpoints()
-print("Aggregating results...")
-aggregate_results()
+def run_sleep_detection():
+    print('Sleep Detection gestartet')
+    print('mach output dir')
+    os.mkdir(sub_dst)  # set up output directory
+    # split the data into 24 hour periods
+    print("Loading CSV data...")
+    split_days_geneactiv_csv()
+    print("Extracting activity index...")
+    extract_activity_index()
+    print("Detecting major rest period...")
+    major_rest_period()
+    print("Running sleep/wake predictions...")
+    sleep_wake_predict()
+    print("Calculating endpoints...")
+    calculate_endpoints()
+    print("Aggregating results...")
+    aggregate_results()

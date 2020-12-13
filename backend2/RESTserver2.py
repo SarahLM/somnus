@@ -8,6 +8,7 @@ ALLOWED_EXTENSIONS = {'txt', 'csv'}
 app.config['UPLOAD_FOLDER'] = 'fileUploads'
 
 
+
 @app.route('/', methods=['GET', 'POST'])
 def upload_csv_file():
     if request.method == 'POST':
@@ -45,9 +46,6 @@ def uploaded_file(filename):
         <title>Uploaded new file</title>
         <h1>You uploaded a new file!</h1>
         '''
-
-
-
 
 
 def allowed_file(filename):

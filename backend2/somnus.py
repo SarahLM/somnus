@@ -456,7 +456,7 @@ def sleep_wake_predict():
         df["sleep_predictions"] = ck.predict()
         # save predictions
         df.drop(inplace=True, columns=["activity_index"])
-        # [[]])
+        print("sleep prediction result: " + str(df))
         df.to_hdf(
             sub_dst
             + "/sleep_wake_predictions/sleep_wake_day_{}.h5".format(
@@ -465,9 +465,10 @@ def sleep_wake_predict():
             key="sleep_wake_data_24hr",
             mode="w",
         )
+        df.to_csv(sub_dst + "/result_sleep_prediction.csv")
 
 
-def calculate_endpoints():
+'''def calculate_endpoints():
     """Calculate the metrics and endpoints of interest."""
     os.mkdir(sub_dst + "/sleep_endpoints")  # set up output directory
     count = 0
@@ -549,10 +550,10 @@ def calculate_endpoints():
     endpoints.columns = hdr
     endpoints.set_index(endpoints.day, inplace=True)
     endpoints.drop(columns="day", inplace=True)
-    endpoints.to_csv(sub_dst + "/sleep_endpoints/sleep_endpoints_summary.csv")
+    endpoints.to_csv(sub_dst + "/sleep_endpoints/sleep_endpoints_summary.csv")'''
 
 
-def aggregate_results():
+'''def aggregate_results():
     """Aggregates all results in a single folder."""
     os.mkdir(sub_dst + "/results")  # set up output directory
     # collect results files
@@ -570,7 +571,7 @@ def aggregate_results():
 
     # aggregate
     for src in srcs:
-        copy(src, sub_dst + "/results")
+        copy(src, sub_dst + "/results")'''
 
 
 def clear_data():
@@ -583,11 +584,19 @@ def clear_data():
     ]
     # delete
     for direc in direcs:
-        rmtree(direc)
+        try:
+            rmtree(direc)
+        except OSError:
+            pass
 
 
 def run_sleep_detection():
     print('Sleep Detection gestartet')
+    try:
+        rmtree(sub_dst)
+        print('result Ordner geleert')
+    except OSError:
+        print('result Ordner war schon leer')
     print('mach output dir')
     os.mkdir(sub_dst)  # set up output directory
     # split the data into 24 hour periods
@@ -595,11 +604,16 @@ def run_sleep_detection():
     split_days_geneactiv_csv()
     print("Extracting activity index...")
     extract_activity_index()
-    print("Detecting major rest period...")
-    major_rest_period()
+    # print("Detecting major rest period...")
+    # major_rest_period()
     print("Running sleep/wake predictions...")
     sleep_wake_predict()
-    print("Calculating endpoints...")
-    calculate_endpoints()
-    print("Aggregating results...")
-    aggregate_results()
+    # print("Calculating endpoints...")
+    # calculate_endpoints()
+    # print("Aggregating results...")
+    # aggregate_results()
+    print("Clearing intermediate data...")
+    clear_data()
+    result = os.open(sub_dst + "/result_sleep_prediction.csv", os.O_RDONLY)
+    print(str(result))
+    return str(result)

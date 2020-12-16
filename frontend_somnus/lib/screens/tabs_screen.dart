@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_somnus/screens/db_analyse_screen.dart';
 import 'package:frontend_somnus/screens/home_screen.dart';
 import '../widgets/main_drawer.dart';
 import 'analysis_screen.dart';
@@ -21,9 +22,13 @@ class _TabsScreenState extends State<TabsScreen> {
       'page': HypnogramScreen(Colors.white),
       'title': 'Hypnogramm',
     },
-    {
+    /* {
       'page': AnalysisScreen(Colors.red),
       'title': 'Analyse',
+    }, */
+    {
+      'page': DbScreen(Colors.blue),
+      'title': 'DbScreen',
     },
   ];
 
@@ -67,9 +72,13 @@ class _TabsScreenState extends State<TabsScreen> {
             icon: Icon(Icons.favorite),
             label: 'Hypnogramm',
           ),
-          BottomNavigationBarItem(
+          /* BottomNavigationBarItem(
             icon: Icon(Icons.analytics),
             label: 'Analyse',
+          ), */
+          BottomNavigationBarItem(
+            icon: Icon(Icons.data_usage),
+            label: 'Database',
           )
         ],
       ),

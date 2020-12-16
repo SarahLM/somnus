@@ -18,9 +18,10 @@ from shutil import copy, rmtree
 
 sns.set()
 pd.options.mode.chained_assignment = None
-__all__ = ["SleepPy", "ColeKripke", "band_pass_filter", "activity_index", "bin2df"]
+__all__ = ["SleepPy", "ColeKripke", "band_pass_filter", "activity_index"]
 
 
+# noinspection PyInterpreter,PyInterpreter
 class SleepPy:
     """
     Processes raw GeneActiv accelerometer data from the wrist to determine various sleep metrics and endpoints.
@@ -73,7 +74,6 @@ class SleepPy:
         stop_buffer="0s",
         start_time="",
         stop_time="",
-        run_config=0,
         temperature_threshold=25.0,
         minimum_rest_block=30,
         allowed_rest_break=60,
@@ -81,7 +81,6 @@ class SleepPy:
         maximum_rest_threshold=1000.0,
         minimum_hours=6,
         clear_intermediate_data=False,
-        aws_object=None,
         verbose=False,
     ):
         """
@@ -94,7 +93,6 @@ class SleepPy:
         :param stop_buffer: number of seconds to ignore from the end of the recording
         :param start_time: time stamp from which to start looking at data (str) format: "%Y-%m-%d %H:%M:%S:%f"
         :param stop_time: time stamp at which to stop looking at data (str) format: "%Y-%m-%d %H:%M:%S:%f"
-        :param run_config: int in range 0-6, dictates which stage of sleeppy to run from (see self.run())
         :param temperature_threshold: Minimum temperature at which to accept a candidate rest period.
         :param minimum_rest_block: number of minutes required to consider a rest period valid (int)
         :param allowed_rest_break: number of minutes allowed to interrupt major rest period (int)
@@ -105,10 +103,7 @@ class SleepPy:
         :param aws_object: data object to be processed from aws (in place of source file path
         :param verbose: boolean for printing status
         """
-        if aws_object is not None:
-            self.src = aws_object
-        else:
-            self.src = input_file  # save input location
+        self.src = input_file  # save input location
         self.extension = input_file.split(".")[-1]
         self.dst = results_directory  # save output location
         self.src_name = input_file.split("/")[-1][0:-4]  # save naming convention
@@ -126,7 +121,6 @@ class SleepPy:
         self.stop_buffer = stop_buffer
         self.start_time = start_time
         self.stop_time = stop_time
-        self.run_config = run_config
         self.min_t = temperature_threshold
         self.minimum_rest_block = minimum_rest_block
         self.allowed_rest_break = allowed_rest_break
@@ -143,67 +137,43 @@ class SleepPy:
 
         """
         print('anfang run')
-        print('run_config sollte 0 sein, ist: ' + str(self.run_config))
         try:
             print('mach output dir')
             os.mkdir(self.sub_dst)  # set up output directory
         except OSError:
             pass
-        print('run_config sollte 0 sein, ist: ' + str(self.run_config))
-        if self.run_config <= 0:
-            print('run_config sollte 0 sein, ist: ' + str(self.run_config))
-            # split the data into 24 hour periods
-            if self.verbose:
-                print("Loading dataGulasch...")
-            if ".bin" in self.src:
-                self.split_days_geneactiv_bin()
-            elif ".csv" in self.src:
-                self.split_days_geneactiv_csv()
-        if self.run_config <= 1:
-            # extract the activity index feature
-            print('run_config sollte 1 sein, ist: ' + str(self.run_config))
-            if self.verbose:
-                print("Extracting activity index...")
-            self.extract_activity_index()
-        """if self.run_config <= 2:
-            # run wear/on-body detection
-            if self.verbose:
-                print("Running off-body detection...")
-            self.wear_detection()"""
-        if self.run_config <= 3:
-            print('run_config sollte 3 sein, ist: ' + str(self.run_config))
-            # run major rest period detection
-            if self.verbose:
-                print("Detecting major rest period...")
-                print("nach detect")
-            self.major_rest_period()
-            print("nach major rest")
-        if self.run_config <= 4:
-            # run sleep wake predictions on the major rest period
-            if self.verbose:
-                print("Running sleep/wake predictions...")
-            self.sleep_wake_predict()
-        if self.run_config <= 5:
-            # calculate endpoints based on the above predictions
-            if self.verbose:
-                print("Calculating endpoints...")
-            self.calculate_endpoints()
-        try:
-            os.mkdir(self.sub_dst + "/reports")  # set up output directory
-        except OSError:
-            pass
-
-        """if self.run_config <= 6:
-            # generates visual reports
-            if self.verbose:
-                print("Generating visual reports...")
-            self.visualize_results()"""
-
+        #
+        # split the data into 24 hour periods
+        if self.verbose:
+            print("Loading CSV data...")
+        self.split_days_geneactiv_csv()
+        #
+        # extract the activity index feature
+        if self.verbose:
+            print("Extracting activity index...")
+        self.extract_activity_index()
+        #
+        # run major rest period detection
+        if self.verbose:
+            print("Detecting major rest period...")
+        self.major_rest_period()
+        print("nach major rest")
+        #
+        # run sleep wake predictions on the major rest period
+        if self.verbose:
+            print("Running sleep/wake predictions...")
+        self.sleep_wake_predict()
+        #
+        # calculate endpoints based on the above predictions
+        if self.verbose:
+            print("Calculating endpoints...")
+        self.calculate_endpoints()
+        #
         # aggregate results
         if self.verbose:
             print("Aggregating results...")
         self.aggregate_results()
-
+        #
         # clear data
         if self.clear:
             if self.verbose:
@@ -279,7 +249,6 @@ class SleepPy:
             print("nachher: starttime: " + str(self.start_time))
             print("nachher: stoptime: " + str(self.stop_time))
             data = data.loc[: self.stop_time]
-            print("data gulasch")
         # split data into days from noon to noon
         # print("data vor days" + str(data))
         days = data.groupby(pd.Grouper(level=0, freq="24h", base=12))
@@ -306,65 +275,6 @@ class SleepPy:
                 )
                 df.to_hdf(self.sub_dst + dst, key="raw_geneactiv_data_24hr", mode="w")
                 print("dateib gescht")
-        return
-
-    def split_days_geneactiv_bin(self):
-        """
-        Splits the GeneActiv accelerometer data into 24 hour chunks, defined from noon to noon.
-
-        """
-        print("in split days bin")
-        try:
-            os.mkdir(self.sub_dst + "/raw_days")  # set up output directory
-        except OSError:
-            pass
-        # load data and fix time_stamps
-        data = bin2df(self.src)
-
-        # remove any specified time periods from the beginning and end of the file
-        data = data.loc[
-            data.index[0]
-            + pd.Timedelta(self.start_buffer) : data.index[-1]
-            - pd.Timedelta(self.stop_buffer)
-        ]
-
-        # cut to defined start and end times if specified
-        if self.start_time and self.stop_time:
-            self.start_time = pd.to_datetime(
-                self.start_time, format="%Y-%m-%d %H:%M:%S:%f"
-            )
-            self.stop_time = pd.to_datetime(
-                self.stop_time, format="%Y-%m-%d %H:%M:%S:%f"
-            )
-            data = data.loc[self.start_time : self.stop_time]
-        elif self.start_time:
-            self.start_time = pd.to_datetime(
-                self.start_time, format="%Y-%m-%d %H:%M:%S:%f"
-            )
-            data = data.loc[self.start_time :]
-        elif self.stop_time:
-            self.stop_time = pd.to_datetime(
-                self.stop_time, format="%Y-%m-%d %H:%M:%S:%f"
-            )
-            data = data.loc[: self.stop_time]
-
-        # split data into days from noon to noon
-        days = data.groupby(pd.Grouper(level=0, freq="24h", base=12))
-
-        # iterate through days keeping track of the day
-        count = 0
-        print("in days forschleife")
-        print("days eintraege: " + str(days))
-        for day in days:
-            # save each 24 hour day separately if there's enough data to analyze
-            df = day[1].copy()
-            available_hours = (len(df) / float(self.fs)) / 3600.0
-            if available_hours >= self.minimum_hours:
-                count += 1
-                dst = "/raw_days/{}_day_{}.h5".format(
-                    self.src_name, str(count).zfill(2)
-                )
-                df.to_hdf(self.sub_dst + dst, key="raw_geneactiv_data_24hr", mode="w")
         return
 
     def extract_activity_index(self):
@@ -430,76 +340,6 @@ class SleepPy:
             )
             activity.to_hdf(
                 self.sub_dst + dst, key="activity_index_data_24hr", mode="w"
-            )
-
-    def wear_detection(self):
-        """
-        Runs wear detection per each 24 hour chunk, saves both the raw predictions of wear, as well as the
-        rescored predictions.
-
-        """
-        try:
-            os.mkdir(self.sub_dst + "/wear_detection")  # set up output directory
-        except OSError:
-            pass
-        count = 0
-
-        # get days
-        days = sorted(
-            [
-                self.sub_dst + "/raw_days/" + i
-                for i in os.listdir(self.sub_dst + "/raw_days/")
-                if ".DS_Store" not in i
-            ]
-        )
-        for day in days:
-            df = pd.read_hdf(day)[["X", "Y", "Z"]]
-            count += 1
-
-            # get std based classification criteria
-            df_std = self.roll_std_60_minute(df)
-            df_std[df_std >= 0.013] = 1
-            df_std[df_std < 0.013] = 0
-            df_std = df_std.sum(axis=1)
-
-            # get range based classification criteria
-            df_range = self.roll_max_range_60_minute(df)
-            df_range[df_range >= 0.15] = 1
-            df_range[df_range < 0.15] = 0
-            df_range = df_range.sum(axis=1)
-
-            # classify
-            df_wear = pd.DataFrame(df_std.copy()) * 0 + 1
-            df_wear.columns = ["wear"]
-            for i in range(len(df_wear)):
-                if df_range.ix[i] <= 1 or df_std.ix[i] <= 1:
-                    df_wear.ix[i] = 0
-
-            # save before rescoring
-            df_wear.to_hdf(
-                self.sub_dst
-                + "/wear_detection/wear_detection_day_{}.h5".format(
-                    str(count).zfill(2)
-                ),
-                key="wear_detection_24hr",
-                mode="w",
-            )
-
-            # apply rescoring
-            df_wear = self.rescore(df_wear)
-            df_wear = self.rescore(df_wear)
-            df_wear = self.rescore(df_wear)
-            if count == len(days):
-                df_wear = self.rescore_last_day(df_wear)
-
-            # save post rescoring
-            df_wear.to_hdf(
-                self.sub_dst
-                + "/wear_detection/wear_detection_rescored_day_{}.h5".format(
-                    str(count).zfill(2)
-                ),
-                key="wear_detection_rescored_24hr",
-                mode="w",
             )
 
     def major_rest_period(self):
@@ -666,13 +506,13 @@ class SleepPy:
             df = pd.read_hdf(day)
 
             # run the sleep wake predictions
-            print("vor colekreipke: " + str(df.activity_index))
+            # print("vor colekreipke: " + str(df.activity_index))
             ck = ColeKripke(df.activity_index)
             df["sleep_predictions"] = ck.predict()
-            print("df_sleep_predictions: "+ str(df["sleep_predictions"]))
+            # print("df_sleep_predictions: " + str(df["sleep_predictions"]))
             # save predictions
             df.drop(inplace=True, columns=["activity_index"])
-            print("df in prediction: " + str(df))
+            # print("df in prediction: " + str(df))
             print("jetzt kommt loc")
             print(df.loc['2019-03-22 02:03:00.500'])
             # [[]])
@@ -798,444 +638,6 @@ class SleepPy:
         df.drop(inplace=True, columns="Time")
         return df
 
-    def roll_std_60_minute(self, df):
-        """
-        Calculate the rolling 60 minute standard deviation of a pandas dataframe.
-
-        :param df: pandas dataframe
-        :return: pandas dataframe containing the rolling std values
-        """
-        # initialize indexer and rolling std list
-        idx = 0
-        rstd = []
-
-        # calculate std for all windows
-        while idx < len(df) - int(900 * self.fs):  # run until we reach the end
-            xyz = (
-                df.ix[idx : idx + int(3600 * self.fs)].std().values
-            )  # save std in x y and z
-            rstd.append(
-                [df.index[idx], xyz[0], xyz[1], xyz[2]]
-            )  # get start index of window, std values
-            idx += int(900 * self.fs)  # increment indexer by 15 minutes
-
-        # format dataframe
-        df = pd.DataFrame(rstd, columns=["Time", "X", "Y", "Z"])
-        df.set_index(df.Time, inplace=True)
-        df.drop(inplace=True, columns="Time")
-        return df
-
-    def roll_max_range_60_minute(self, df):
-        """
-        Calculate the rolling 60 minute max range of a pandas dataframe.
-
-        :param df: pandas dataframe
-        :return: pandas dataframe containing the rolling std values.
-        """
-        # initialize indexer and rolling range list
-        idx = 0
-        rr = []
-
-        # calculate range for all windows
-        while idx < len(df) - int(900 * self.fs):  # run until we reach the end
-            xyz = (
-                df.ix[idx : idx + int(3600 * self.fs)].max().values
-                - df.ix[idx : idx + int(3600 * self.fs)].min().values
-            )  # save range in x y z
-            rr.append(
-                [df.index[idx], xyz[0], xyz[1], xyz[2]]
-            )  # get start index of window, range values
-            idx += int(900 * self.fs)  # increment indexer by 15 minutes
-
-        # format dataframe
-        df = pd.DataFrame(rr, columns=["Time", "X", "Y", "Z"])
-        df.set_index(df.Time, inplace=True)
-        df.drop(inplace=True, columns="Time")
-        return df
-
-    def visualize_results(self):
-        """
-        Generates reports to visualize endpoint summary and day to day endpoint behaviors.
-        """
-        try:
-            os.mkdir(self.sub_dst + "/reports")  # set up output directory
-        except OSError:
-            pass
-        # raw (all 3 axes, temp, light)
-        rdays = sorted(
-            [
-                self.sub_dst + "/raw_days/" + i
-                for i in os.listdir(self.sub_dst + "/raw_days/")
-                if ".DS_Store" not in i
-            ]
-        )
-        # wear (no rescoring)
-        wdays = sorted(
-            [
-                self.sub_dst + "/wear_detection/" + i
-                for i in os.listdir(self.sub_dst + "/wear_detection/")
-                if "rescored" not in i and ".h5" in i and ".DS_Store" not in i
-            ]
-        )
-        # wear (with rescoring)
-        wdays_re = sorted(
-            [
-                self.sub_dst + "/wear_detection/" + i
-                for i in os.listdir(self.sub_dst + "/wear_detection/")
-                if "rescored" in i and ".DS_Store" not in i
-            ]
-        )
-        # major rest (arm angle)
-        mrdays_aa = sorted(
-            [
-                self.sub_dst + "/major_rest_period/" + i
-                for i in os.listdir(self.sub_dst + "/major_rest_period/")
-                if "angle" in i and ".DS_Store" not in i
-            ]
-        )
-        # major rest (periods)
-        mrdays_rp = sorted(
-            [
-                self.sub_dst + "/major_rest_period/" + i
-                for i in os.listdir(self.sub_dst + "/major_rest_period/")
-                if "angle" not in i and "h5" in i and ".DS_Store" not in i
-            ]
-        )
-        # activity index (full 24 hours)
-        aidays = sorted(
-            [
-                self.sub_dst + "/activity_index_days/" + i
-                for i in os.listdir(self.sub_dst + "/activity_index_days/")
-                if ".DS_Store" not in i
-            ]
-        )
-        # sleep wake (full 24 hours)
-        swdays = sorted(
-            [
-                self.sub_dst + "/sleep_wake_predictions/" + i
-                for i in os.listdir(self.sub_dst + "/sleep_wake_predictions/")
-                if ".DS_Store" not in i
-            ]
-        )
-        # endpoints (graphs/charts per day)
-        endpoints = pd.read_csv(
-            self.sub_dst + "/sleep_endpoints/sleep_endpoints_summary.csv",
-            index_col="day",
-        )
-
-        days = range(0, len(rdays))
-        for day in days:
-            # read the raw data, downsample for plotting
-            raw = pd.read_hdf(rdays[day])
-            raw = raw.resample("60s").median()
-
-            # get shared index
-            idx = pd.date_range(
-                start=raw.index[0].replace(hour=12, minute=0, second=0, microsecond=0),
-                periods=1440,
-                freq="60s",
-            )
-            raw = raw.reindex(idx, fill_value=float("nan"))
-
-            # read the wear data, resample and match index with the raw data
-            wear = pd.read_hdf(wdays[day])  # 15 minute period
-            wear[wear == 0] = float("nan")
-            wear = wear.resample("60s").ffill()
-            wear = wear.reindex(idx, fill_value=float("nan"))
-
-            # read the wear data with rescoring, resample and match the raw index
-            wear_re = pd.read_hdf(wdays_re[day])  # 15 minute period
-            wear_re[wear_re == 0] = float("nan")
-            wear_re = wear_re.resample("60s").ffill()
-            wear_re = wear_re.reindex(idx, fill_value=float("nan"))
-
-            # read the arm angle data, resample and match the raw index
-            angle = pd.read_hdf(mrdays_aa[day])  # 5 second period
-            angle = angle.resample("60s").max()
-            angle = angle.reindex(idx, fill_value=float("nan"))
-
-            # read the major rest period data, resample and match the raw index
-            periods = pd.read_hdf(mrdays_rp[day])  # 5 second period
-            periods[periods == 1] = float("nan")
-            periods[periods == 0] = 1
-            periods = periods.resample("60s").max()
-            periods = periods.reindex(idx, fill_value=float("nan"))
-
-            # read the acvitity index data, resample and match the raw index
-            aindex = pd.read_hdf(aidays[day])  # 1 minute period
-            aindex = aindex.resample("60s").max()
-            aindex = aindex.reindex(idx, fill_value=float("nan"))
-
-            # read the sleep wake predictions, resample and match the raw index
-            swake = pd.read_hdf(swdays[day])  # 1 minute period
-            swake[swake == 0] = float("nan")
-            swake = swake.resample("60s").max()
-            swake = swake.reindex(idx, fill_value=float("nan"))
-
-            # build a dataframe for plotting certain data streams as straight lines
-            df = swake.copy()
-            df.columns = ["wake"]
-            df["rest periods"] = periods.values - 0.05
-            df["on body"] = wear.values - 0.1
-            df["on body(rescore)"] = wear_re.values - 0.15
-            swake, wear, wear_re, periods = [], [], [], []
-
-            # get day endpoints for plotting of table
-            t_labels = (
-                "Total Sleep Time(minutes)",
-                "Percent Time Asleep",
-                "Wake After Sleep Onset(minutes)",
-                "Sleep Onset Latency(minutes)",
-                "Number of Wake Bouts",
-            )
-            t_vals = [endpoints.loc[day + 1].values]
-
-            # plotting
-            fig, (axt, ax0, ax1, ax2, ax3, ax4, ax5) = plt.subplots(
-                7, 1, figsize=(30, 15)
-            )
-            plt.suptitle(
-                "Visual Report for Source: {}\nDay: {}\nDate: {}".format(
-                    self.src_name, day + 1, idx[0].date()
-                ),
-                fontsize=25,
-            )
-            hours = mdates.HourLocator(interval=1)
-            h_fmt = mdates.DateFormatter("%H:%M")
-            all_axes = (ax0, ax1, ax2, ax3, ax4, ax5)
-
-            # plot table
-            tbl = axt.table(
-                cellText=t_vals,
-                colLabels=t_labels,
-                cellLoc="center",
-                rowLoc="center",
-                loc="center",
-                fontsize=20,
-            )
-            tbl.auto_set_font_size(False)
-            tbl.set_fontsize(24)
-            tbl.scale(1.1, 2.4)
-            axt.axis("off")
-
-            # plot raw
-            raw.rename(columns={"T": "Temperature", "LUX": "Light"}, inplace=True)
-            raw[["X", "Y", "Z"]].plot(ax=ax0, lw=1).legend(
-                bbox_to_anchor=(0, 1), fontsize=20
-            )
-            ax0.set_ylabel("")
-            ax0.set_xlabel("")
-
-            # plot temperature
-            raw[["Temperature"]].plot(
-                ax=ax1, lw=1, color=sns.xkcd_rgb["pale red"]
-            ).legend(bbox_to_anchor=(0, 1), fontsize=20)
-            ax1.axhline(y=self.min_t, color="r", linestyle="--", lw=2)
-            props = dict(boxstyle="round", facecolor="lavender", alpha=0.35)
-            textstr = u"max: {}\xb0C\nmin: {}\xb0C\nthresh: {}\xb0C".format(
-                raw[["Temperature"]].max().values[0],
-                raw[["Temperature"]].min().values[0],
-                self.min_t,
-            )
-            ax1.text(
-                0.005,
-                0.95,
-                textstr,
-                transform=ax1.transAxes,
-                fontsize=14,
-                verticalalignment="top",
-                bbox=props,
-            )
-            ax1.set_ylabel("")
-            ax1.set_xlabel("")
-
-            # plot light
-            raw[["Light"]].plot(ax=ax2, lw=1, color=sns.xkcd_rgb["pale orange"]).legend(
-                bbox_to_anchor=(0, 1), fontsize=20
-            )
-            ax2.set_ylabel("")
-            ax2.set_xlabel("")
-
-            # plot activity index
-            aindex.plot(ax=ax3, lw=1, color="#6fc276").legend(
-                labels=["activity"], bbox_to_anchor=(0, 0.75), fontsize=20
-            )
-            ax3.set_ylabel("")
-            ax3.set_xlabel("")
-
-            # plot arm angle
-            angle.plot(ax=ax4, lw=1, color="#b36ff6").legend(
-                labels=["arm angle"], bbox_to_anchor=(0, 0.75), fontsize=20
-            )
-            ax4.set_ylabel("")
-            ax4.set_xlabel("")
-
-            # plot dataframe of 4 streams
-            df.plot(ax=ax5, lw=8, x_compat=True).legend(
-                bbox_to_anchor=(0, 1.3), fontsize=20
-            )
-            ax5.set_ylabel("")
-            ax5.set_xlabel("")
-
-            # plot formatting
-            plt.draw()
-            count = 0
-            for ax in all_axes:
-                count += 1
-                ax.spines["top"].set_visible(False)
-                ax.spines["right"].set_visible(False)
-                ax.spines["bottom"].set_visible(False)
-                ax.spines["left"].set_visible(False)
-                ax.grid(False)
-                if count < 6:
-                    ax.get_xaxis().set_ticks([])
-                ax.get_yaxis().set_ticks([])
-            ax5.xaxis.set_major_locator(hours)
-            ax5.xaxis.set_major_formatter(h_fmt)
-            plt.subplots_adjust(wspace=0, hspace=0)
-            fig.autofmt_xdate()
-            for tick in ax5.xaxis.get_major_ticks():
-                tick.label.set_fontsize(16)
-            plt.savefig(
-                self.sub_dst + "/reports/Visual_Results_Day_{}.pdf".format(day + 1)
-            )
-            plt.close()
-
-        # generate a summary plot from endpoint data
-        fig, (ax0, ax1, ax2, ax3, ax4) = plt.subplots(5, 1, figsize=(12, 12))
-        plt.suptitle("Summary Report for Source: {}".format(self.src_name), fontsize=16)
-        all_axes = (ax0, ax1, ax2, ax3, ax4)
-        ylabels = [
-            "Total Sleep\nTime(min)\nMean: {}".format(
-                int(np.round(endpoints.total_sleep_time.mean()))
-            ),
-            "Percent Time\nAsleep\nMean: {}".format(
-                int(np.round(endpoints.percent_time_asleep.mean()))
-            ),
-            "Wake After\nSleep Onset(min)\nMean: {}".format(
-                int(np.round(endpoints.waso.mean()))
-            ),
-            "Sleep Onset\nLatency(min)\nMean: {}".format(
-                int(np.round(endpoints.sleep_onset_latency.mean()))
-            ),
-            "Number of\nWake Bouts\nMean: {}".format(
-                int(np.round(endpoints.number_wake_bouts.mean()))
-            ),
-        ]
-
-        # plot total sleep time
-        endpoints.total_sleep_time.plot.bar(ax=ax0, title="")
-        # plot percent time asleep
-        endpoints.percent_time_asleep.plot.bar(ax=ax1, title="")
-        # plot wake after sleep onset
-        endpoints.waso.plot.bar(ax=ax2, title="")
-        # plot sleep onset latency
-        endpoints.sleep_onset_latency.plot.bar(ax=ax3, title="")
-        # plot the number of wake bouts
-        endpoints.number_wake_bouts.plot.bar(ax=ax4, title="")
-        # plot formatting
-        count = 0
-        for ax in all_axes:
-            count += 1
-            ax.spines["top"].set_visible(False)
-            ax.spines["right"].set_visible(False)
-            ax.spines["bottom"].set_visible(False)
-            ax.spines["left"].set_visible(False)
-            ax.grid(False)
-            ax.set_ylabel(ylabels[count - 1], rotation=0, fontsize=12, labelpad=50)
-            if count < 5:
-                ax.set_xlabel("")
-                ax.get_xaxis().set_ticks([])
-                ax.get_yaxis().set_ticks([])
-            else:
-                ax.set_xlabel("Day", fontsize=20)
-                ax.get_yaxis().set_ticks([])
-            plt.setp(ax.xaxis.get_majorticklabels(), rotation=0)
-            for p in ax.patches:
-                ax.annotate(
-                    np.round(p.get_height(), decimals=2),
-                    (p.get_x() + p.get_width() / 2.0, 0),
-                    ha="center",
-                    va="center",
-                    xytext=(0, 10),
-                    textcoords="offset points",
-                    fontweight="bold",
-                )
-        plt.subplots_adjust(wspace=0, hspace=0.01)
-        plt.xticks(fontsize=20)
-        plt.draw()
-        plt.savefig(self.sub_dst + "/reports/Summary_Report.pdf")
-        plt.close()
-
-    def rescore(self, df):
-        """
-        Rescores wear detection data saved in a pandas dataframe.
-
-        :param df: pandas dataframe containing wear/nonwear predictions
-        :return: rescored pandas dataframe of wear/nonwear predictions
-        """
-        # group classifications into wear and nonwear blocks
-        df["block"] = (df.wear.diff().ne(0)).cumsum()
-        blocks = list(df.groupby("block"))
-
-        # iterate through blocks
-        for i in range(1, len(blocks) - 1):
-            wear = blocks[i][1]["wear"].values[
-                0
-            ]  # get whether or not the block is wear
-            if wear:
-                # get hour lengths of the previous, current, and next blocks
-                prev, current, post = (
-                    len(blocks[i - 1][1]) * 0.25,
-                    len(blocks[i][1]) * 0.25,
-                    len(blocks[i + 1][1]) * 0.25,
-                )
-                # if the current block is less than 3 hours and the ratio to previous and post blocks is less than 80%
-                if current < 3 and current / (prev + post) < 0.8:
-                    df["wear"][
-                        df.block == blocks[i][0]
-                    ] = 0  # rescore the wear period as non wear
-                # if the current block is less than 6 hours and the ratio to previous and post blocks is less than 30%
-                elif current < 6 and current / (prev + post) < 0.3:
-                    df["wear"][
-                        df.block == blocks[i][0]
-                    ] = 0  # rescore the wear period as non wear
-        df.drop(columns=["block"], inplace=True)
-        return df
-
-    def rescore_last_day(self, df):
-        """
-        Rescores wear detection data saved in a pandas dataframe. Rescoring rules specific to the
-        last day of recorded data.
-
-        :param df: pandas dataframe containing wear/nonwear predictions
-        :return: rescored pandas dataframe of wear/nonwear predictions
-        """
-        # group classifications into wear and nonwear blocks
-        df["block"] = (df.wear.diff().ne(0)).cumsum()
-        blocks = list(df.groupby("block"))
-
-        # get the start index of the last day
-        last_day_index = df.index[-1] - pd.to_timedelta("24h")
-
-        # iterate through blocks
-        for i in range(1, len(blocks)):
-            wear = blocks[i][1]["wear"].values[
-                0
-            ]  # get whether or not the block is wear
-            if (
-                wear and blocks[i][1].index[0] > last_day_index
-            ):  # if wear, and it's the last day
-                # get hour lengths of the previous and current blocks
-                prev, current = len(blocks[i - 1][1]) * 0.25, len(blocks[i][1]) * 0.25
-                # if the current block is less than 3 hours and the previous block is greater or equal to 1 hour
-                if current < 3 and prev >= 1:
-                    df["wear"][
-                        df.block == blocks[i][0]
-                    ] = 0  # rescore the wear period as non wear
-        df.drop(columns=["block"], inplace=True)
-        return df
-
     def aggregate_results(self):
         """
         Aggregates all results in a single folder.
@@ -1248,11 +650,6 @@ class SleepPy:
 
         # collect results files
         srcs = []
-        srcs += [
-            self.sub_dst + "/reports/" + x
-            for x in os.listdir(self.sub_dst + "/reports")
-            if ".DS_Store" not in x
-        ]
         srcs += [
             self.sub_dst + "/major_rest_period/" + x
             for x in os.listdir(self.sub_dst + "/major_rest_period")
@@ -1368,7 +765,6 @@ class ColeKripke:
                 sleep_bin = 0
         self.predictions = rescored
 
-
 def band_pass_filter(
     data_df, sampling_rate, bp_cutoff, order, channels=["X", "Y", "Z"]
 ):
@@ -1404,7 +800,6 @@ def band_pass_filter(
 
     return data_df
 
-
 def activity_index(signal_df, channels=["X", "Y", "Z"]):
     """
     Compute activity index of sensor signals.
@@ -1416,101 +811,3 @@ def activity_index(signal_df, channels=["X", "Y", "Z"]):
     ai_df = pd.DataFrame()
     ai_df["activity_index"] = [np.var(signal_df[channels], axis=0).mean() ** 0.5]
     return ai_df
-
-
-def bin2df(full_path):
-    """
-
-    Reads geneactiv .bin files into a pandas dataframe
-
-    :param full_path: full path to geneactiv .bin file
-
-    :return decode: pandas dataframe of GA data
-
-    """
-    with open(full_path, "rb") as in_file:
-        full_line = in_file.readline()
-        count = 0
-        fs = ""
-        df = []
-        while full_line:
-            full_line = in_file.readline()
-            line = full_line[:].split("\r\n")[0]
-            count += 1
-            if count < 60:
-                if "x gain" in line:
-                    x_gain = int(line.split(":")[-1])
-
-                if "x offset" in line:
-                    x_offset = int(line.split(":")[-1])
-
-                if "y gain" in line:
-                    y_gain = int(line.split(":")[-1])
-
-                if "y offset" in line:
-                    y_offset = int(line.split(":")[-1])
-
-                if "z gain" in line:
-                    z_gain = int(line.split(":")[-1])
-
-                if "z offset" in line:
-                    z_offset = int(line.split(":")[-1])
-
-                if "Volts" in line:
-                    volts = int(line.split(":")[-1])
-
-                if "Lux" in line:
-                    lux = int(line.split(":")[-1])
-
-            if "Page Time:" in line:
-                time = pd.to_datetime(
-                    ":".join(line.split(":")[1:])[0:-2], format="%Y-%m-%d %H:%M:%S:%f"
-                )
-
-            if "Temperature:" in line:
-                temp = float(line.split(":")[-1])
-
-            if not fs:
-                if "Measurement Frequency:" in line:
-                    fs = float(line.split(":")[-1].split(" ")[0])
-                    offset = np.array([1 / fs] * 300) * np.arange(0, 300)
-                    delta = pd.to_timedelta(offset, unit="s")
-
-            if len(line) == 3600:
-                # hex to bin
-                hexes = struct.unpack("12s " * 300, line)
-                bins = (
-                    struct.unpack(
-                        "12s 12s 12s 10s 1s 1s", bin(int(hx, 16))[2:].zfill(48)
-                    )
-                    for hx in hexes
-                )
-                decode = pd.DataFrame(
-                    bins,
-                    columns=["X", "Y", "Z", "LUX", "Button", "_"],
-                    index=pd.DatetimeIndex([time] * 300) + delta,
-                )
-
-                # binary to decimal and calibration
-                decode.X = decode.X.apply(
-                    lambda x: round(
-                        (BitArray(bin=x).int * 100.0 - x_offset) / x_gain, 4
-                    )
-                )
-                decode.Y = decode.Y.apply(
-                    lambda x: round(
-                        (BitArray(bin=x).int * 100.0 - y_offset) / y_gain, 4
-                    )
-                )
-                decode.Z = decode.Z.apply(
-                    lambda x: round(
-                        (BitArray(bin=x).int * 100.0 - z_offset) / z_gain, 4
-                    )
-                )
-                decode.LUX = decode.LUX.apply(lambda x: int(x, 2) * lux / volts)
-                decode["T"] = temp
-                df.append(decode)
-
-        df = pd.concat(df, axis=0)
-        df.index.name = "Time"
-        return df[["X", "Y", "Z", "LUX", "T"]]

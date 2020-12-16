@@ -3,8 +3,6 @@ import 'package:frontend_somnus/providers/states.dart';
 import 'package:provider/provider.dart';
 //import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
-import 'package:frontend_somnus/widgets/animated_line.dart';
-import 'package:frontend_somnus/widgets/line_area_page.dart';
 import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:frontend_somnus/widgets/theme.dart';
 

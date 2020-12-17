@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/syncfusion.dart';
+//import '../widgets/syncfusion.dart';
+import 'datapoint.dart';
 
 class DataStates with ChangeNotifier {
   List<DataPoint> _items = [

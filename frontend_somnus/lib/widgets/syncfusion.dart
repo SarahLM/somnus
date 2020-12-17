@@ -1,6 +1,8 @@
 //import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:frontend_somnus/providers/datapoint.dart';
+import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
 //import 'package:frontend_somnus/providers/states.dart';
 //import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -83,7 +85,7 @@ class Sync extends StatelessWidget {
                     series: <ChartSeries>[
                       // Initialize line series
                       StepAreaSeries<DataPoint, DateTime>(
-                          animationDuration: 2000,
+                          //animationDuration: 2000,
                           color: const Color.fromRGBO(
                               252, 176, 28, 1), //Color of awake periods
                           opacity: 1.0,
@@ -162,7 +164,10 @@ class Sync extends StatelessWidget {
                     .toList()
                     .length
                     .toString() +
-                ' Minuten')
+                ' Minuten'),
+            HypnogramPieChart(
+              sleepData: this.sleepData,
+            ),
           ],
         ),
       ),
@@ -170,9 +175,9 @@ class Sync extends StatelessWidget {
   }
 }
 
-class DataPoint {
-  DataPoint(this.date, this.state);
-  final DateTime date;
-  final double state;
-  // final Color segmentColor;
-}
+// class DataPoint {
+//   DataPoint(this.date, this.state);
+//   final DateTime date;
+//   final double state;
+//   // final Color segmentColor;
+// }

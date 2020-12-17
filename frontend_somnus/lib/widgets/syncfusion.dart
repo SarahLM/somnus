@@ -17,7 +17,7 @@ class Sync extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(15),
+      // padding: EdgeInsets.all(15),
       child: Center(
         child: Column(
           children: [
@@ -165,9 +165,9 @@ class Sync extends StatelessWidget {
                     .length
                     .toString() +
                 ' Minuten'),
-            HypnogramPieChart(
-              sleepData: this.sleepData,
-            ),
+            // HypnogramPieChart(
+            //   sleepData: this.sleepData,
+            // ),
           ],
         ),
       ),

@@ -18,6 +18,11 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
   // ignore: non_constant_identifier_names
   bool time_percent = false;
 
+  List<Color> colorList = [
+    Color.fromRGBO(252, 176, 28, 1.0),
+    Color.fromRGBO(0, 0, 139, 0.6),
+  ];
+
   Map<String, double> getDataList() {
     return dataMap = {
       "Wach": (widget.sleepData.where((dataPoint) => dataPoint.state == 1.0))
@@ -78,10 +83,10 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
           Container(
               child: PieChart(
             dataMap: getDataList(),
-            animationDuration: Duration(milliseconds: 800),
+            animationDuration: Duration(milliseconds: 3000),
             chartLegendSpacing: 32,
             chartRadius: MediaQuery.of(context).size.width / 3.2,
-            //colorList: colorList,
+            colorList: colorList,
             initialAngleInDegree: 0,
             chartType: ChartType.ring,
             ringStrokeWidth: 32,
@@ -99,7 +104,7 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
               showChartValueBackground: true,
               showChartValues: true,
               showChartValuesInPercentage: this.time_percent,
-              showChartValuesOutside: false,
+              showChartValuesOutside: true,
             ),
           )
               //SfCircularChart(

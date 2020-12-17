@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/providers/states.dart';
+import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
 import 'package:provider/provider.dart';
 //import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
@@ -212,9 +213,19 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
           //LineAreaPage(),
           ((this.sleepData.length == 0)
               ? Text('Für den ausgewählten Zeitraum liegen keine Daten vor.')
-              : Sync(
-                  title: this.title,
-                  sleepData: this.sleepData,
+              : Container(
+                  padding: EdgeInsets.all(15),
+                  child: Column(
+                    children: [
+                      Sync(
+                        title: this.title,
+                        sleepData: this.sleepData,
+                      ),
+                      HypnogramPieChart(
+                        sleepData: this.sleepData,
+                      )
+                    ],
+                  ),
                 )
           //LineAreaPage()
           ),

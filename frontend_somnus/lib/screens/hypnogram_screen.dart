@@ -65,171 +65,179 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Container(
-            alignment: Alignment.center,
-            color: widget.color,
-            child: ButtonBar(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                FlatButton(
-                  child: Text(
-                    'Letzte Aufnahme',
-                    style: TextStyle(
-                      color: _pressedButton1 ? Colors.white : Colors.purple,
-                    ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        actions: [
+          ButtonBar(
+            //mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              FlatButton(
+                child: Text(
+                  'Letzte Aufnahme',
+                  style: TextStyle(
+                    color: _pressedButton1 ? Colors.white : Colors.purple,
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                    side: BorderSide(color: Colors.purple),
-                  ),
-                  color: _pressedButton1 ? Colors.purple : Colors.white,
-                  onPressed: () {
-                    final dataStatesData =
-                        Provider.of<DataStates>(context, listen: false);
-                    final dataPoints = dataStatesData.items;
-                    setState(() {
-                      _pressedButton1 = true;
-                      _pressedButton2 = false;
-                      _pressedButton3 = false;
-                      _pressedButton4 = false;
-                      title = 'Letzte Aufnahme';
-                      sleepData = dataPoints;
-                    });
-                  },
                 ),
-                FlatButton(
-                  child: Text(
-                    '24 Stunden',
-                    style: TextStyle(
-                      color: _pressedButton2 ? Colors.white : Colors.purple,
-                    ),
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                    side: BorderSide(color: Colors.purple),
-                  ),
-                  color: _pressedButton2 ? Colors.purple : Colors.white,
-                  onPressed: () {
-                    final dataPoints = Provider.of<DataStates>(context,
-                            listen: false)
-                        .findByDate(
-                            (new DateTime.now()).add(new Duration(days: -2)),
-                            DateTime.now());
-                    setState(() {
-                      _pressedButton2 = true;
-                      _pressedButton1 = false;
-                      _pressedButton3 = false;
-                      _pressedButton4 = false;
-                      title = '24 Stunden';
-                      sleepData = dataPoints;
-                    });
-                  },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Colors.purple),
                 ),
-                FlatButton(
-                  child: Text(
-                    '7 Tage',
-                    style: TextStyle(
-                      color: _pressedButton3 ? Colors.white : Colors.purple,
-                    ),
+                color: _pressedButton1 ? Colors.purple : Colors.white,
+                onPressed: () {
+                  final dataStatesData =
+                      Provider.of<DataStates>(context, listen: false);
+                  final dataPoints = dataStatesData.items;
+                  setState(() {
+                    _pressedButton1 = true;
+                    _pressedButton2 = false;
+                    _pressedButton3 = false;
+                    _pressedButton4 = false;
+                    title = 'Letzte Aufnahme';
+                    sleepData = dataPoints;
+                  });
+                },
+              ),
+              FlatButton(
+                child: Text(
+                  '24 Stunden',
+                  style: TextStyle(
+                    color: _pressedButton2 ? Colors.white : Colors.purple,
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                    side: BorderSide(color: Colors.purple),
-                  ),
-                  color: _pressedButton3 ? Colors.purple : Colors.white,
-                  onPressed: () {
-                    final dataPoints = Provider.of<DataStates>(context,
-                            listen: false)
-                        .findByDate(
-                            (new DateTime.now()).add(new Duration(days: -7)),
-                            DateTime.now());
-                    setState(() {
-                      _pressedButton3 = true;
-                      _pressedButton1 = false;
-                      _pressedButton2 = false;
-                      _pressedButton4 = false;
-                      title = '7 Tage';
-                      sleepData = dataPoints;
-                      print(sleepData);
-                    });
-                  },
                 ),
-                DatePickerTheme(
-                  Builder(
-                    builder: (context) => FlatButton(
-                      child: new Text(
-                        "Custom",
-                        style: TextStyle(
-                          color: _pressedButton4 ? Colors.white : Colors.purple,
-                        ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Colors.purple),
+                ),
+                color: _pressedButton2 ? Colors.purple : Colors.white,
+                onPressed: () {
+                  final dataPoints =
+                      Provider.of<DataStates>(context, listen: false)
+                          .findByDate(
+                              (new DateTime.now()).add(new Duration(days: -2)),
+                              DateTime.now());
+                  setState(() {
+                    _pressedButton2 = true;
+                    _pressedButton1 = false;
+                    _pressedButton3 = false;
+                    _pressedButton4 = false;
+                    title = '24 Stunden';
+                    sleepData = dataPoints;
+                  });
+                },
+              ),
+              FlatButton(
+                child: Text(
+                  '7 Tage',
+                  style: TextStyle(
+                    color: _pressedButton3 ? Colors.white : Colors.purple,
+                  ),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Colors.purple),
+                ),
+                color: _pressedButton3 ? Colors.purple : Colors.white,
+                onPressed: () {
+                  final dataPoints =
+                      Provider.of<DataStates>(context, listen: false)
+                          .findByDate(
+                              (new DateTime.now()).add(new Duration(days: -7)),
+                              DateTime.now());
+                  setState(() {
+                    _pressedButton3 = true;
+                    _pressedButton1 = false;
+                    _pressedButton2 = false;
+                    _pressedButton4 = false;
+                    title = '7 Tage';
+                    sleepData = dataPoints;
+                    print(sleepData);
+                  });
+                },
+              ),
+              DatePickerTheme(
+                Builder(
+                  builder: (context) => FlatButton(
+                    child: new Text(
+                      "Custom",
+                      style: TextStyle(
+                        color: _pressedButton4 ? Colors.white : Colors.purple,
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                        side: BorderSide(color: Colors.purple),
-                      ),
-                      color: _pressedButton4 ? Colors.purple : Colors.white,
-                      onPressed: () async {
-                        setState(() {
-                          _pressedButton4 = true;
-                          _pressedButton1 = false;
-                          _pressedButton2 = false;
-                          _pressedButton3 = false;
-                        });
-                        final List<DateTime> picked =
-                            await DateRagePicker.showDatePicker(
-                          locale: const Locale("de", "DE"),
-                          context: context,
-                          initialFirstDate: new DateTime.now(),
-                          initialLastDate:
-                              (new DateTime.now()).add(new Duration(days: 7)),
-                          firstDate: new DateTime(2020),
-                          lastDate: new DateTime(2022),
-                        );
-
-                        final dataPoints =
-                            Provider.of<DataStates>(context, listen: false)
-                                .findByDate((picked[0]), (picked[1]));
-
-                        if (picked != null && picked.length == 2) {
-                          print(picked);
-                          print(picked.runtimeType);
-                        }
-
-                        setState(() {
-                          title = picked.toString();
-                          sleepData = dataPoints;
-                        });
-                      },
                     ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                      side: BorderSide(color: Colors.purple),
+                    ),
+                    color: _pressedButton4 ? Colors.purple : Colors.white,
+                    onPressed: () async {
+                      setState(() {
+                        _pressedButton4 = true;
+                        _pressedButton1 = false;
+                        _pressedButton2 = false;
+                        _pressedButton3 = false;
+                      });
+                      final List<DateTime> picked =
+                          await DateRagePicker.showDatePicker(
+                        locale: const Locale("de", "DE"),
+                        context: context,
+                        initialFirstDate: new DateTime.now(),
+                        initialLastDate:
+                            (new DateTime.now()).add(new Duration(days: 7)),
+                        firstDate: new DateTime(2020),
+                        lastDate: new DateTime(2022),
+                      );
+
+                      final dataPoints =
+                          Provider.of<DataStates>(context, listen: false)
+                              .findByDate((picked[0]), (picked[1]));
+
+                      if (picked != null && picked.length == 2) {
+                        print(picked);
+                        print(picked.runtimeType);
+                      }
+
+                      setState(() {
+                        title = picked.toString();
+                        sleepData = dataPoints;
+                      });
+                    },
                   ),
                 ),
-              ],
-            ),
-          ),
-          //LineAreaPage(),
-          //LineAreaPage(),
-          ((this.sleepData.length == 0)
-              ? Text('Für den ausgewählten Zeitraum liegen keine Daten vor.')
-              : Container(
-                  padding: EdgeInsets.all(15),
-                  child: Column(
-                    children: [
-                      Sync(
-                        title: this.title,
-                        sleepData: this.sleepData,
-                      ),
-                      HypnogramPieChart(
-                        sleepData: this.sleepData,
-                      )
-                    ],
-                  ),
-                )
-          //LineAreaPage()
+              ),
+            ],
           ),
         ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              color: widget.color,
+              child: Container(),
+            ),
+            //LineAreaPage(),
+            //LineAreaPage(),
+            ((this.sleepData.length == 0)
+                ? Text('Für den ausgewählten Zeitraum liegen keine Daten vor.')
+                : Container(
+                    padding: EdgeInsets.all(15),
+                    child: Column(
+                      children: [
+                        Sync(
+                          title: this.title,
+                          sleepData: this.sleepData,
+                        ),
+                        HypnogramPieChart(
+                          sleepData: this.sleepData,
+                        )
+                      ],
+                    ),
+                  )
+            //LineAreaPage()
+            ),
+          ],
+        ),
       ),
     );
   }

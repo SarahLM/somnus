@@ -7,6 +7,7 @@ import 'package:pie_chart/pie_chart.dart';
 class HypnogramPieChart extends StatelessWidget {
   final List<DataPoint> sleepData;
   Map<String, double> dataMap;
+  String textLabel;
 
   Map<String, double> getDataList() {
     return dataMap = {
@@ -26,13 +27,29 @@ class HypnogramPieChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        FlatButton(
-          onPressed: null,
-          child: Text('Schlafdauer ganze Zahlen'),
-        ),
-        FlatButton(
-          onPressed: null,
-          child: Text('Schlafdauer in Prozent'),
+        Text('Schlafdauer'),
+        ButtonBar(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            FlatButton(
+                child: Text(
+                  'in Zeit',
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Colors.purple),
+                ),
+                onPressed: () {}),
+            FlatButton(
+                child: Text(
+                  'in Prozent',
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Colors.purple),
+                ),
+                onPressed: () {}),
+          ],
         ),
         Container(
             child: PieChart(
@@ -44,7 +61,7 @@ class HypnogramPieChart extends StatelessWidget {
           initialAngleInDegree: 0,
           chartType: ChartType.ring,
           ringStrokeWidth: 32,
-          centerText: "HYBRID",
+          centerText: textLabel,
           legendOptions: LegendOptions(
             showLegendsInRow: true,
             // legendPosition: LegendPosition.right,

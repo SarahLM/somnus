@@ -152,6 +152,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                       _pressedButton4 = false;
                       title = '7 Tage';
                       sleepData = dataPoints;
+                      print(sleepData);
                     });
                   },
                 ),
@@ -209,11 +210,14 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
           ),
           //LineAreaPage(),
           //LineAreaPage(),
-          Sync(
-            title: this.title,
-            sleepData: this.sleepData,
-          ),
+          ((this.sleepData.length == 0)
+              ? Text('Für den ausgewählten Zeitraum liegen keine Daten vor.')
+              : Sync(
+                  title: this.title,
+                  sleepData: this.sleepData,
+                )
           //LineAreaPage()
+          ),
         ],
       ),
     );

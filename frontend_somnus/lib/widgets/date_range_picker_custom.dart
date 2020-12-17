@@ -1125,6 +1125,39 @@ class _DatePickerDialogState extends State<_DatePickerDialog> {
     Navigator.pop(context, result);
   }
 
+  void _handleOk1() {
+    List<DateTime> result = [];
+    if (_selectedFirstDate != null) {
+      result.add(_selectedFirstDate);
+      if (_selectedLastDate != null) {
+        result.add(_selectedLastDate);
+        Navigator.pop(context, result);
+      } else {
+        _showDialog1(context);
+      }
+    }
+  }
+
+  Future<void> _showDialog1(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Zweites Datum fehlt'),
+          content: const Text('Bitte wähle ein zweites Datum aus!'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Ok'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildPicker() {
     assert(_mode != null);
     switch (_mode) {
@@ -1170,69 +1203,71 @@ class _DatePickerDialogState extends State<_DatePickerDialog> {
           ),
           new FlatButton(
             child: new Text(localizations.okButtonLabel),
-            onPressed: _handleOk,
+            onPressed: _handleOk1,
           ),
         ],
       ),
     );
-    final Dialog dialog = new Dialog(child: new OrientationBuilder(
-        builder: (BuildContext context, Orientation orientation) {
-      assert(orientation != null);
-      final Widget header = new _DatePickerHeader(
-        selectedFirstDate: _selectedFirstDate,
-        selectedLastDate: _selectedLastDate,
-        mode: _mode,
-        onModeChanged: _handleModeChanged,
-        orientation: orientation,
-      );
-      switch (orientation) {
-        case Orientation.portrait:
-          return new SizedBox(
-            width: _kMonthPickerPortraitWidth,
-            child: new Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                header,
-                new Container(
-                  color: theme.dialogBackgroundColor,
-                  child: new Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      picker,
-                      actions,
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        case Orientation.landscape:
-          return new SizedBox(
-            height: _kDatePickerLandscapeHeight,
-            child: new Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                header,
-                new Flexible(
-                  child: new Container(
-                    width: _kMonthPickerLandscapeWidth,
+    final Dialog dialog = new Dialog(
+      child: new OrientationBuilder(
+          builder: (BuildContext context, Orientation orientation) {
+        assert(orientation != null);
+        final Widget header = new _DatePickerHeader(
+          selectedFirstDate: _selectedFirstDate,
+          selectedLastDate: _selectedLastDate,
+          mode: _mode,
+          onModeChanged: _handleModeChanged,
+          orientation: orientation,
+        );
+        switch (orientation) {
+          case Orientation.portrait:
+            return new SizedBox(
+              width: _kMonthPickerPortraitWidth,
+              child: new Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  header,
+                  new Container(
                     color: theme.dialogBackgroundColor,
                     child: new Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[picker, actions],
+                      children: <Widget>[
+                        picker,
+                        actions,
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
-          );
-      }
-      return null;
-    }));
+                ],
+              ),
+            );
+          case Orientation.landscape:
+            return new SizedBox(
+              height: _kDatePickerLandscapeHeight,
+              child: new Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  header,
+                  new Flexible(
+                    child: new Container(
+                      width: _kMonthPickerLandscapeWidth,
+                      color: theme.dialogBackgroundColor,
+                      child: new Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[picker, actions],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+        }
+        return null;
+      }),
+    );
 
     return new Theme(
       data: theme.copyWith(
@@ -1328,6 +1363,7 @@ Future<List<DateTime>> showDatePicker({
   }
 
   return await showDialog<List<DateTime>>(
+    barrierDismissible: true,
     context: context,
     builder: (BuildContext context) => child,
   );

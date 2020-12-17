@@ -1198,8 +1198,8 @@ class _DatePickerDialogState extends State<_DatePickerDialog> {
         children: <Widget>[
           new FlatButton(
             child: new Text(localizations.cancelButtonLabel),
-            //onPressed: _handleCancel,
-            onPressed: _handleCancel1,
+            onPressed: _handleCancel,
+            //onPressed: _handleCancel1,
           ),
           new FlatButton(
             child: new Text(localizations.okButtonLabel),

@@ -26,6 +26,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
   var title = '';
 
   List<DataPoint> sleepData;
+  List<DataPoint> dataPoints;
 
   @override
   initState() {
@@ -187,19 +188,17 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                         lastDate: new DateTime(2022),
                       );
 
-                      final dataPoints =
-                          Provider.of<DataStates>(context, listen: false)
-                              .findByDate((picked[0]), (picked[1]));
-
                       if (picked != null && picked.length == 2) {
                         print(picked);
                         print(picked.runtimeType);
+                        dataPoints =
+                            Provider.of<DataStates>(context, listen: false)
+                                .findByDate((picked[0]), (picked[1]));
+                        setState(() {
+                          title = picked.toString();
+                          sleepData = dataPoints;
+                        });
                       }
-
-                      setState(() {
-                        title = picked.toString();
-                        sleepData = dataPoints;
-                      });
                     },
                   ),
                 ),

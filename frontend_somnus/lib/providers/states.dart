@@ -226,6 +226,30 @@ class DataStates with ChangeNotifier {
       DateTime(2020, 12, 9, 20, 58),
       0.0,
     ),
+    DataPoint(
+      DateTime(2020, 12, 15, 03, 32),
+      1.0,
+    ),
+    DataPoint(
+      DateTime(2020, 12, 15, 03, 33),
+      1.0,
+    ),
+    DataPoint(
+      DateTime(2020, 12, 15, 15, 34),
+      1.0,
+    ),
+    DataPoint(
+      DateTime(2020, 12, 15, 15, 35),
+      1.0,
+    ),
+    DataPoint(
+      DateTime(2020, 12, 15, 15, 36),
+      1.0,
+    ),
+    DataPoint(
+      DateTime(2020, 12, 15, 15, 37),
+      1.0,
+    ),
   ];
 
   List<DataPoint> get items {

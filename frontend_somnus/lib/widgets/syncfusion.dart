@@ -24,6 +24,7 @@ class Sync extends StatelessWidget {
       child: Center(
         child: Column(
           children: [
+            this.title != '' ? Text(this.title) : Text(''),
             Container(
               height: 341,
               child: Card(

@@ -23,7 +23,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
   bool _pressedButton2 = false;
   bool _pressedButton3 = false;
   bool _pressedButton4 = false;
-  var title = 'Letzte Aufnahme';
+  var title = '';
 
   List<DataPoint> sleepData;
 
@@ -36,7 +36,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
       _pressedButton2 = false;
       _pressedButton3 = false;
       _pressedButton4 = false;
-      title = 'Letzte Aufnahme';
+      // title = 'Letzte Aufnahme';
       sleepData = dataPoints;
     });
     super.initState();
@@ -93,7 +93,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton2 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
-                    title = 'Letzte Aufnahme';
+                    title = '';
                     sleepData = dataPoints;
                   });
                 },
@@ -121,7 +121,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton1 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
-                    title = '24 Stunden';
+                    //title = '24 Stunden';
                     sleepData = dataPoints;
                   });
                 },
@@ -149,7 +149,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton1 = false;
                     _pressedButton2 = false;
                     _pressedButton4 = false;
-                    title = '7 Tage';
+                    // title = '7 Tage';
                     sleepData = dataPoints;
                     print(sleepData);
                   });

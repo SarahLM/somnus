@@ -1339,21 +1339,14 @@ Future<List<DateTime>> showDatePicker({
   assert(
       initialDatePickerMode != null, 'initialDatePickerMode must not be null');
 
-  Widget child = Stack(children: [
-    new Opacity(
-      opacity: 0.3,
-      child: const ModalBarrier(dismissible: false, color: Colors.grey),
-    ),
-    Center(
-        child: new _DatePickerDialog(
-      initialFirstDate: initialFirstDate,
-      initialLastDate: initialLastDate,
-      firstDate: firstDate,
-      lastDate: lastDate,
-      selectableDayPredicate: selectableDayPredicate,
-      initialDatePickerMode: initialDatePickerMode,
-    ))
-  ]);
+  Widget child = new _DatePickerDialog(
+    initialFirstDate: initialFirstDate,
+    initialLastDate: initialLastDate,
+    firstDate: firstDate,
+    lastDate: lastDate,
+    selectableDayPredicate: selectableDayPredicate,
+    initialDatePickerMode: initialDatePickerMode,
+  );
 
   if (textDirection != null) {
     child = new Directionality(

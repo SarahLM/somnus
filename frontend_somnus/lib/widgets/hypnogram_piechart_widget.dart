@@ -19,17 +19,17 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
   bool time_percent = false;
 
   List<Color> colorList = [
-    Color.fromRGBO(252, 176, 28, 1.0),
     Color.fromRGBO(0, 0, 139, 0.6),
+    Color.fromRGBO(252, 176, 28, 1.0),
   ];
 
   Map<String, double> getDataList() {
     return dataMap = {
-      "Wach": (widget.sleepData.where((dataPoint) => dataPoint.state == 1.0))
+      "Schlaf": (widget.sleepData.where((dataPoint) => dataPoint.state == 0.0))
           .toList()
           .length
           .toDouble(),
-      "Schlaf": (widget.sleepData.where((dataPoint) => dataPoint.state == 0.0))
+      "Wach": (widget.sleepData.where((dataPoint) => dataPoint.state == 1.0))
           .toList()
           .length
           .toDouble(),

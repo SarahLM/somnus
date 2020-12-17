@@ -1311,6 +1311,7 @@ typedef bool SelectableDayPredicate(DateTime day);
 ///
 ///  * [showTimePicker]
 ///  * <https://material.google.com/components/pickers.html#pickers-date-pickers>
+///
 Future<List<DateTime>> showDatePicker({
   @required BuildContext context,
   @required DateTime initialFirstDate,
@@ -1338,14 +1339,21 @@ Future<List<DateTime>> showDatePicker({
   assert(
       initialDatePickerMode != null, 'initialDatePickerMode must not be null');
 
-  Widget child = new _DatePickerDialog(
-    initialFirstDate: initialFirstDate,
-    initialLastDate: initialLastDate,
-    firstDate: firstDate,
-    lastDate: lastDate,
-    selectableDayPredicate: selectableDayPredicate,
-    initialDatePickerMode: initialDatePickerMode,
-  );
+  Widget child = Stack(children: [
+    new Opacity(
+      opacity: 0.3,
+      child: const ModalBarrier(dismissible: false, color: Colors.grey),
+    ),
+    Center(
+        child: new _DatePickerDialog(
+      initialFirstDate: initialFirstDate,
+      initialLastDate: initialLastDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      selectableDayPredicate: selectableDayPredicate,
+      initialDatePickerMode: initialDatePickerMode,
+    ))
+  ]);
 
   if (textDirection != null) {
     child = new Directionality(
@@ -1363,7 +1371,6 @@ Future<List<DateTime>> showDatePicker({
   }
 
   return await showDialog<List<DateTime>>(
-    barrierDismissible: true,
     context: context,
     builder: (BuildContext context) => child,
   );

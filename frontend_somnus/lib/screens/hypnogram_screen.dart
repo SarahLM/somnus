@@ -37,7 +37,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
       _pressedButton2 = false;
       _pressedButton3 = false;
       _pressedButton4 = false;
-      // title = 'Letzte Aufnahme';
+      title = '';
       sleepData = dataPoints;
     });
     super.initState();
@@ -122,7 +122,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton1 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
-                    //title = '24 Stunden';
+                    title = '';
                     sleepData = dataPoints;
                   });
                 },
@@ -150,7 +150,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton1 = false;
                     _pressedButton2 = false;
                     _pressedButton4 = false;
-                    // title = '7 Tage';
+                    title = '';
                     sleepData = dataPoints;
                     print(sleepData);
                   });
@@ -218,7 +218,9 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
             //LineAreaPage(),
             //LineAreaPage(),
             ((this.sleepData.length == 0)
-                ? Text('Für den ausgewählten Zeitraum liegen keine Daten vor.')
+                ? Text('Für den ausgewählten Zeitraum ' +
+                    title +
+                    ' liegen keine Daten vor.')
                 : Container(
                     padding: EdgeInsets.all(15),
                     child: Column(

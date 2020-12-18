@@ -1,6 +1,8 @@
 //import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:frontend_somnus/providers/datapoint.dart';
+import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
 //import 'package:frontend_somnus/providers/states.dart';
 //import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -9,93 +11,111 @@ import 'package:intl/intl.dart';
 class Sync extends StatelessWidget {
   final String title;
   final List<DataPoint> sleepData;
-  Sync({this.title, this.sleepData});
+  Sync({
+    this.title,
+    this.sleepData,
+  });
 
   final f = new DateFormat('dd.MM.yyyy hh:mm');
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(15),
+      // padding: EdgeInsets.all(15),
       child: Center(
         child: Column(
           children: [
+            this.title != '' ? Text(this.title) : Text(''),
             Container(
-              height: 300,
+              height: 341,
               child: Card(
                 elevation: 8,
                 //Initialize chart
-                child: SfCartesianChart(
-                    plotAreaBorderColor: Colors.transparent,
-                    //plotAreaBackgroundColor: Colors.grey,
-                    zoomPanBehavior: ZoomPanBehavior(
-                        // Performs zooming on double tap
-                        enableSelectionZooming: true,
-                        selectionRectBorderColor: Colors.red,
-                        selectionRectBorderWidth: 1,
-                        selectionRectColor: Colors.grey),
-                    enableAxisAnimation: true,
-                    tooltipBehavior: TooltipBehavior(enable: true),
-                    title: ChartTitle(text: this.title),
-                    primaryXAxis: DateTimeAxis(
-                      isVisible: false,
-                      majorGridLines: MajorGridLines(width: 0),
-                      dateFormat: f,
-                      // interval: 1,
-                      labelRotation: 90,
-                      plotBands: <PlotBand>[
-                        /*   Plot band different height for sleep and awake */
-
-                        PlotBand(
-                          isVisible: true,
-                          // start: DateTime(2017, 9, 7, 17, 31),
-                          // end: DateTime(2017, 9, 7, 17, 58),
-                          associatedAxisStart: 0.5,
-                          associatedAxisEnd: 0,
-                          shouldRenderAboveSeries: false,
-                          color: const Color.fromRGBO(
-                              0, 0, 139, 0.2), //Color of the sleep periods
-                          opacity: 0.6,
-                        ),
-
-                        /* Plot band same height for sleep and awake */
-
-                        // PlotBand(
-                        //   isVisible: true,
-                        //   // start: DateTime(2017, 9, 7, 17, 31),
-                        //   // end: DateTime(2017, 9, 7, 17, 58),
-                        //   associatedAxisStart: 0,
-                        //   associatedAxisEnd: 1,
-                        //   shouldRenderAboveSeries: false,
-                        //   color: const Color.fromRGBO(
-                        //       0, 0, 139, 0.2), //Color of the sleep periods
-                        //   opacity: 0.6,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      'Hypnogramm',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    SfCartesianChart(
+                        plotAreaBorderColor: Colors.transparent,
+                        //plotAreaBackgroundColor: Colors.grey,
+                        zoomPanBehavior: ZoomPanBehavior(
+                            // Performs zooming on double tap
+                            enableSelectionZooming: true,
+                            selectionRectBorderColor: Colors.red,
+                            selectionRectBorderWidth: 1,
+                            selectionRectColor: Colors.grey),
+                        enableAxisAnimation: true,
+                        tooltipBehavior: TooltipBehavior(enable: true),
+                        // title: ChartTitle(
+                        //   text: this.title,
                         // ),
-                      ],
-                    ),
-                    primaryYAxis: NumericAxis(
-                      interval: 1,
-                      maximum: 1.0,
-                      //minimum: -0.5,
-                      //maximum: 5.1,
-                      //rangePadding: ChartRangePadding.additional,
-                      isVisible: false,
-                    ),
-                    series: <ChartSeries>[
-                      // Initialize line series
-                      StepAreaSeries<DataPoint, DateTime>(
-                          animationDuration: 2000,
-                          color: const Color.fromRGBO(
-                              252, 176, 28, 1), //Color of awake periods
-                          opacity: 1.0,
-                          //emptyPointSettings: EmptyPointSettings(color: Colors.black),
-                          dataSource: sleepData,
-                          //pointColorMapper: (SalesData sales, _) =>
-                          //   sales.segmentColor,
-                          xValueMapper: (DataPoint sales, _) => sales.date,
-                          yValueMapper: (DataPoint sales, _) => sales.state,
-                          // dataLabelSettings: DataLabelSettings(isVisible: true),
-                          name: '24 Stunden')
-                    ]),
+                        primaryXAxis: DateTimeAxis(
+                          isVisible: true,
+                          majorGridLines: MajorGridLines(width: 0),
+                          dateFormat: f,
+                          interval: 1,
+                          labelRotation: 90,
+                          plotBands: <PlotBand>[
+                            /*   Plot band different height for sleep and awake */
+
+                            PlotBand(
+                              isVisible: true,
+                              // start: DateTime(2017, 9, 7, 17, 31),
+                              // end: DateTime(2017, 9, 7, 17, 58),
+                              associatedAxisStart: 0.5,
+                              associatedAxisEnd: 0,
+                              shouldRenderAboveSeries: false,
+                              color: const Color.fromRGBO(
+                                  0, 0, 139, 0.2), //Color of the sleep periods
+                              opacity: 0.6,
+                            ),
+
+                            /* Plot band same height for sleep and awake */
+
+                            // PlotBand(
+                            //   isVisible: true,
+                            //   // start: DateTime(2017, 9, 7, 17, 31),
+                            //   // end: DateTime(2017, 9, 7, 17, 58),
+                            //   associatedAxisStart: 0,
+                            //   associatedAxisEnd: 1,
+                            //   shouldRenderAboveSeries: false,
+                            //   color: const Color.fromRGBO(
+                            //       0, 0, 139, 0.2), //Color of the sleep periods
+                            //   opacity: 0.6,
+                            // ),
+                          ],
+                        ),
+                        primaryYAxis: NumericAxis(
+                          interval: 1,
+                          maximum: 1.0,
+                          //minimum: -0.5,
+                          //maximum: 5.1,
+                          //rangePadding: ChartRangePadding.additional,
+                          isVisible: false,
+                        ),
+                        series: <ChartSeries>[
+                          // Initialize line series
+                          StepAreaSeries<DataPoint, DateTime>(
+                              //animationDuration: 2000,
+                              color: const Color.fromRGBO(
+                                  252, 176, 28, 1), //Color of awake periods
+                              opacity: 1.0,
+                              //emptyPointSettings: EmptyPointSettings(color: Colors.black),
+                              dataSource: sleepData,
+                              //pointColorMapper: (SalesData sales, _) =>
+                              //   sales.segmentColor,
+                              xValueMapper: (DataPoint sales, _) => sales.date,
+                              yValueMapper: (DataPoint sales, _) => sales.state,
+                              // dataLabelSettings: DataLabelSettings(isVisible: true),
+                              name: '24 Stunden')
+                        ]),
+                  ],
+                ),
               ),
             ),
             SizedBox(
@@ -162,7 +182,10 @@ class Sync extends StatelessWidget {
                     .toList()
                     .length
                     .toString() +
-                ' Minuten')
+                ' Minuten'),
+            // HypnogramPieChart(
+            //   sleepData: this.sleepData,
+            // ),
           ],
         ),
       ),
@@ -170,9 +193,9 @@ class Sync extends StatelessWidget {
   }
 }
 
-class DataPoint {
-  DataPoint(this.date, this.state);
-  final DateTime date;
-  final double state;
-  // final Color segmentColor;
-}
+// class DataPoint {
+//   DataPoint(this.date, this.state);
+//   final DateTime date;
+//   final double state;
+//   // final Color segmentColor;
+// }

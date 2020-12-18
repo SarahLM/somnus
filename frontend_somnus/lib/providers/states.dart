@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/syncfusion.dart';
+//import '../widgets/syncfusion.dart';
+import 'datapoint.dart';
 
 class DataStates with ChangeNotifier {
   List<DataPoint> _items = [
@@ -224,6 +225,30 @@ class DataStates with ChangeNotifier {
     DataPoint(
       DateTime(2020, 12, 9, 20, 58),
       0.0,
+    ),
+    DataPoint(
+      DateTime(2020, 12, 15, 03, 32),
+      1.0,
+    ),
+    DataPoint(
+      DateTime(2020, 12, 15, 03, 33),
+      1.0,
+    ),
+    DataPoint(
+      DateTime(2020, 12, 15, 15, 34),
+      1.0,
+    ),
+    DataPoint(
+      DateTime(2020, 12, 15, 15, 35),
+      1.0,
+    ),
+    DataPoint(
+      DateTime(2020, 12, 15, 15, 36),
+      1.0,
+    ),
+    DataPoint(
+      DateTime(2020, 12, 15, 15, 37),
+      1.0,
     ),
   ];
 

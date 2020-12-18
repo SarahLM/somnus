@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/providers/states.dart';
+import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
 import 'package:provider/provider.dart';
 //import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
@@ -21,9 +23,10 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
   bool _pressedButton2 = false;
   bool _pressedButton3 = false;
   bool _pressedButton4 = false;
-  var title = 'Letzte Aufnahme';
+  var title = '';
 
   List<DataPoint> sleepData;
+  List<DataPoint> dataPoints;
 
   @override
   initState() {
@@ -34,7 +37,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
       _pressedButton2 = false;
       _pressedButton3 = false;
       _pressedButton4 = false;
-      title = 'Letzte Aufnahme';
+      title = '';
       sleepData = dataPoints;
     });
     super.initState();
@@ -63,13 +66,12 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          alignment: Alignment.center,
-          color: widget.color,
-          child: ButtonBar(
-            mainAxisSize: MainAxisSize.min,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        actions: [
+          ButtonBar(
+            //mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               FlatButton(
                 child: Text(
@@ -92,7 +94,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton2 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
-                    title = 'Letzte Aufnahme';
+                    title = '';
                     sleepData = dataPoints;
                   });
                 },
@@ -120,7 +122,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton1 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
-                    title = '24 Stunden';
+                    title = '';
                     sleepData = dataPoints;
                   });
                 },
@@ -148,8 +150,9 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton1 = false;
                     _pressedButton2 = false;
                     _pressedButton4 = false;
-                    title = '7 Tage';
+                    title = '';
                     sleepData = dataPoints;
+                    print(sleepData);
                   });
                 },
               ),
@@ -185,34 +188,58 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                         lastDate: new DateTime(2022),
                       );
 
-                      final dataPoints =
-                          Provider.of<DataStates>(context, listen: false)
-                              .findByDate((picked[0]), (picked[1]));
-
                       if (picked != null && picked.length == 2) {
                         print(picked);
                         print(picked.runtimeType);
+                        dataPoints =
+                            Provider.of<DataStates>(context, listen: false)
+                                .findByDate((picked[0]), (picked[1]));
+                        setState(() {
+                          title = picked.toString();
+                          sleepData = dataPoints;
+                        });
                       }
-
-                      setState(() {
-                        title = picked.toString();
-                        sleepData = dataPoints;
-                      });
                     },
                   ),
                 ),
               ),
             ],
           ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              color: widget.color,
+              child: Container(),
+            ),
+            //LineAreaPage(),
+            //LineAreaPage(),
+            ((this.sleepData.length == 0)
+                ? Text('Für den ausgewählten Zeitraum ' +
+                    title +
+                    ' liegen keine Daten vor.')
+                : Container(
+                    padding: EdgeInsets.all(15),
+                    child: Column(
+                      children: [
+                        Sync(
+                          title: this.title,
+                          sleepData: this.sleepData,
+                        ),
+                        HypnogramPieChart(
+                          sleepData: this.sleepData,
+                        )
+                      ],
+                    ),
+                  )
+            //LineAreaPage()
+            ),
+          ],
         ),
-        //LineAreaPage(),
-        //LineAreaPage(),
-        Sync(
-          title: this.title,
-          sleepData: this.sleepData,
-        ),
-        //LineAreaPage()
-      ],
+      ),
     );
   }
 }

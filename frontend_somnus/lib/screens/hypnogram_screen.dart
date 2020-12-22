@@ -264,20 +264,20 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     title +
                     ' liegen keine Daten vor.')
                 : Container(
-                    padding: EdgeInsets.all(15),
-                    child: Column(
-                      children: [
-                        RepaintBoundary(
-                          key: _printKey,
-                          child: Sync(
+                    padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                    child: RepaintBoundary(
+                      key: _printKey,
+                      child: Column(
+                        children: [
+                          Sync(
                             title: this.title,
                             sleepData: this.sleepData,
                           ),
-                        ),
-                        HypnogramPieChart(
-                          sleepData: this.sleepData,
-                        )
-                      ],
+                          HypnogramPieChart(
+                            sleepData: this.sleepData,
+                          ),
+                        ],
+                      ),
                     ),
                   )
             //LineAreaPage()

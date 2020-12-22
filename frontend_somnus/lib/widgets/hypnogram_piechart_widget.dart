@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter/foundation.dart';
 
-// ignore: must_be_immutable
 class HypnogramPieChart extends StatefulWidget {
   final List<DataPoint> sleepData;
   HypnogramPieChart({this.sleepData});
@@ -16,8 +16,6 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
   Map<String, double> dataMap;
 
   String textLabel = "Zeit";
-  // ignore: non_constant_identifier_names
-  bool time_percent = false;
   bool buttonTime = true;
   bool buttonPercent = false;
 
@@ -45,6 +43,32 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
     return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
   }
 
+  Map<String, IconData> iconMapping = {
+    'time': FontAwesomeIcons.clock,
+    'percent': FontAwesomeIcons.twitter,
+  };
+
+  Widget buildButton(
+      {@required bool buttonUsed,
+      @required String text,
+      @required bool timeButton,
+      @required bool percentButton,
+      @required String icon}) {
+    return IconButton(
+        icon: FaIcon(iconMapping[icon]),
+        color: buttonUsed ? Colors.black : Colors.grey,
+        iconSize: 24,
+        onPressed: () {
+          setState(
+            () {
+              this.buttonTime = timeButton;
+              this.buttonPercent = percentButton;
+              textLabel = text;
+            },
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -66,35 +90,20 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
               fontSize: 12.0,
             ),
           ),
-          ButtonBar(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              IconButton(
-                  icon: FaIcon(FontAwesomeIcons.clock),
-                  color: buttonTime ? Colors.black : Colors.grey,
-                  iconSize: 24,
-                  onPressed: () {
-                    setState(() {
-                      buttonTime = true;
-                      buttonPercent = false;
-                      this.textLabel = "Zeit";
-                      this.time_percent = false;
-                    });
-                  }),
-              IconButton(
-                  icon: FaIcon(FontAwesomeIcons.percent),
-                  iconSize: 24,
-                  color: buttonPercent ? Colors.black : Colors.grey,
-                  onPressed: () {
-                    setState(() {
-                      buttonTime = false;
-                      buttonPercent = true;
-                      this.textLabel = "Prozent";
-                      this.time_percent = true;
-                    });
-                  }),
-            ],
-          ),
+          ButtonBar(mainAxisSize: MainAxisSize.min, children: <Widget>[
+            buildButton(
+                buttonUsed: buttonTime,
+                text: "Zeit",
+                timeButton: true,
+                percentButton: false,
+                icon: 'time'),
+            buildButton(
+                buttonUsed: buttonPercent,
+                text: "Prozent",
+                timeButton: false,
+                percentButton: true,
+                icon: 'percent')
+          ]),
           Container(
             child: PieChart(
               dataMap: getDataList(),
@@ -118,7 +127,7 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
               chartValuesOptions: ChartValuesOptions(
                 showChartValueBackground: true,
                 showChartValues: true,
-                showChartValuesInPercentage: this.time_percent,
+                showChartValuesInPercentage: this.buttonPercent,
                 showChartValuesOutside: true,
               ),
             ),

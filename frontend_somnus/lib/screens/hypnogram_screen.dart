@@ -41,6 +41,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
     final dataPoints = dataStatesData.items;
     setState(() {
       sleepData = dataPoints;
+      timePrinted = DateTime.now().toString();
     });
     super.initState();
   }

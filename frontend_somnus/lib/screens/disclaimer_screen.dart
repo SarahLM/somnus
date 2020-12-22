@@ -61,7 +61,7 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                   FlatButton(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18.0),
-                      side: BorderSide(color: Colors.blue),
+                      side: BorderSide(color: Theme.of(context).accentColor),
                     ),
                     onPressed: () {
                       Navigator.of(context).push(
@@ -72,9 +72,12 @@ class _DisclaimerScreenState extends State<DisclaimerScreen> {
                         ),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       'Verstanden',
-                      style: TextStyle(fontSize: 24, color: Colors.blue),
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Theme.of(context).accentColor,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),

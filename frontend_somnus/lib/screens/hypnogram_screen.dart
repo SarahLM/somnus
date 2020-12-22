@@ -10,7 +10,7 @@ import 'package:frontend_somnus/widgets/theme.dart';
 
 class HypnogramScreen extends StatefulWidget {
   final Color color;
-  final buttonTextStyle = TextStyle(color: Colors.purple);
+  // buttonTextStyle = TextStyle(color: Theme.of(context).accentColor);
 
   HypnogramScreen(this.color);
 
@@ -23,7 +23,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
   bool _pressedButton2 = false;
   bool _pressedButton3 = false;
   bool _pressedButton4 = false;
-  var title = '';
+  String title = '';
 
   List<DataPoint> sleepData;
   List<DataPoint> dataPoints;
@@ -33,11 +33,6 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
     final dataStatesData = Provider.of<DataStates>(context, listen: false);
     final dataPoints = dataStatesData.items;
     setState(() {
-      _pressedButton1 = true;
-      _pressedButton2 = false;
-      _pressedButton3 = false;
-      _pressedButton4 = false;
-      title = '';
       sleepData = dataPoints;
     });
     super.initState();
@@ -48,14 +43,14 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
       child: Text(
         title,
         style: TextStyle(
-          color: button ? Colors.white : Colors.purple,
+          color: button ? Colors.white : Theme.of(context).accentColor,
         ),
       ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18.0),
-        side: BorderSide(color: Colors.purple),
+        side: BorderSide(color: Theme.of(context).accentColor),
       ),
-      color: button ? Colors.purple : Colors.white,
+      color: button ? Theme.of(context).accentColor : Colors.white,
       onPressed: () {
         setState(() {
           button = true;
@@ -77,14 +72,18 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                 child: Text(
                   'Letzte Aufnahme',
                   style: TextStyle(
-                    color: _pressedButton1 ? Colors.white : Colors.purple,
+                    color: _pressedButton1
+                        ? Colors.white
+                        : Theme.of(context).accentColor,
                   ),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
-                  side: BorderSide(color: Colors.purple),
+                  side: BorderSide(color: Theme.of(context).accentColor),
                 ),
-                color: _pressedButton1 ? Colors.purple : Colors.white,
+                color: _pressedButton1
+                    ? Theme.of(context).accentColor
+                    : Colors.white,
                 onPressed: () {
                   final dataStatesData =
                       Provider.of<DataStates>(context, listen: false);
@@ -103,14 +102,18 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                 child: Text(
                   '24 Stunden',
                   style: TextStyle(
-                    color: _pressedButton2 ? Colors.white : Colors.purple,
+                    color: _pressedButton2
+                        ? Colors.white
+                        : Theme.of(context).accentColor,
                   ),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
-                  side: BorderSide(color: Colors.purple),
+                  side: BorderSide(color: Theme.of(context).accentColor),
                 ),
-                color: _pressedButton2 ? Colors.purple : Colors.white,
+                color: _pressedButton2
+                    ? Theme.of(context).accentColor
+                    : Colors.white,
                 onPressed: () {
                   final dataPoints =
                       Provider.of<DataStates>(context, listen: false)
@@ -131,14 +134,18 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                 child: Text(
                   '7 Tage',
                   style: TextStyle(
-                    color: _pressedButton3 ? Colors.white : Colors.purple,
+                    color: _pressedButton3
+                        ? Colors.white
+                        : Theme.of(context).accentColor,
                   ),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
-                  side: BorderSide(color: Colors.purple),
+                  side: BorderSide(color: Theme.of(context).accentColor),
                 ),
-                color: _pressedButton3 ? Colors.purple : Colors.white,
+                color: _pressedButton3
+                    ? Theme.of(context).accentColor
+                    : Colors.white,
                 onPressed: () {
                   final dataPoints =
                       Provider.of<DataStates>(context, listen: false)
@@ -162,14 +169,18 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     child: new Text(
                       "Custom",
                       style: TextStyle(
-                        color: _pressedButton4 ? Colors.white : Colors.purple,
+                        color: _pressedButton4
+                            ? Colors.white
+                            : Theme.of(context).accentColor,
                       ),
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18.0),
-                      side: BorderSide(color: Colors.purple),
+                      side: BorderSide(color: Theme.of(context).accentColor),
                     ),
-                    color: _pressedButton4 ? Colors.purple : Colors.white,
+                    color: _pressedButton4
+                        ? Theme.of(context).accentColor
+                        : Colors.white,
                     onPressed: () async {
                       setState(() {
                         _pressedButton4 = true;

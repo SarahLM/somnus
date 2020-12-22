@@ -210,12 +210,12 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton4 = false;
                     title = '';
                     sleepData = dataPoints;
-                    timePrinted = DateFormat('dd-MM-yyyy')
+                    timePrinted = DateFormat('dd.MM. yyyy')
                             .format(
                                 (DateTime.now()).add(new Duration(days: -7)))
                             .toString() +
                         ' bis ' +
-                        DateFormat('dd-MM-yyyy')
+                        DateFormat('dd.MM. yyyy')
                             .format(DateTime.now())
                             .toString();
                     print(sleepData);
@@ -268,7 +268,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                           title = DateFormat('dd.MM. yyyy')
                                   .format(picked[0])
                                   .toString() +
-                              ' - ' +
+                              ' bis ' +
                               DateFormat('dd.MM. yyyy')
                                   .format(picked[1])
                                   .toString();

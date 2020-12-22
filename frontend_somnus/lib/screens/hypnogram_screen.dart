@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
+import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +30,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
   bool _pressedButton3 = false;
   bool _pressedButton4 = false;
   String title = '';
+  String timePrinted;
 
   List<DataPoint> sleepData;
   List<DataPoint> dataPoints;
@@ -62,7 +64,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
               child: pw.Center(
                 child: pw.Column(
                   children: [
-                    pw.Text('Zeitraum: ' + title),
+                    pw.Text('Zeitraum: ' + timePrinted),
                     pw.Expanded(
                       child: pw.Image(image),
                     ),
@@ -133,6 +135,11 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton4 = false;
                     title = '';
                     sleepData = dataPoints;
+                    timePrinted = (DateTime.now())
+                            .add(new Duration(days: -2))
+                            .toString() +
+                        ' bis ' +
+                        DateTime.now().toString();
                   });
                 },
               ),
@@ -165,6 +172,11 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton4 = false;
                     title = '';
                     sleepData = dataPoints;
+                    timePrinted = (DateTime.now())
+                            .add(new Duration(days: -2))
+                            .toString() +
+                        ' bis ' +
+                        DateTime.now().toString();
                   });
                 },
               ),
@@ -197,6 +209,14 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton4 = false;
                     title = '';
                     sleepData = dataPoints;
+                    timePrinted = DateFormat('dd-MM-yyyy')
+                            .format(
+                                (DateTime.now()).add(new Duration(days: -7)))
+                            .toString() +
+                        ' bis ' +
+                        DateFormat('dd-MM-yyyy')
+                            .format(DateTime.now())
+                            .toString();
                     print(sleepData);
                   });
                 },
@@ -244,8 +264,15 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                             Provider.of<DataStates>(context, listen: false)
                                 .findByDate((picked[0]), (picked[1]));
                         setState(() {
-                          title = picked.toString();
+                          title = DateFormat('dd.MM. yyyy')
+                                  .format(picked[0])
+                                  .toString() +
+                              ' - ' +
+                              DateFormat('dd.MM. yyyy')
+                                  .format(picked[1])
+                                  .toString();
                           sleepData = dataPoints;
+                          timePrinted = title;
                         });
                       }
                     },

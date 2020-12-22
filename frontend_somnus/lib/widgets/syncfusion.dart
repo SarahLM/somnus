@@ -1,5 +1,3 @@
-//import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
@@ -11,12 +9,15 @@ import 'package:intl/intl.dart';
 class Sync extends StatelessWidget {
   final String title;
   final List<DataPoint> sleepData;
+  final Color colorAsleep = Color(0xFF0529B3);
+  final Color colorAwake = Color(0xFFFF9221);
+  final f = new DateFormat('dd.MM.yyyy hh:mm');
+
   Sync({
     this.title,
     this.sleepData,
   });
 
-  final f = new DateFormat('dd.MM.yyyy hh:mm');
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,7 +27,7 @@ class Sync extends StatelessWidget {
           children: [
             this.title != '' ? Text(this.title) : Text(''),
             Container(
-              height: 341,
+              height: 418,
               child: Card(
                 elevation: 8,
                 //Initialize chart
@@ -61,7 +62,7 @@ class Sync extends StatelessWidget {
                           interval: 1,
                           labelRotation: 90,
                           plotBands: <PlotBand>[
-                            /*   Plot band different height for sleep and awake */
+                            /*   Plot band: different height for sleep and awake */
 
                             PlotBand(
                               isVisible: true,
@@ -70,9 +71,10 @@ class Sync extends StatelessWidget {
                               associatedAxisStart: 0.5,
                               associatedAxisEnd: 0,
                               shouldRenderAboveSeries: false,
-                              color: const Color.fromRGBO(
-                                  0, 0, 139, 0.2), //Color of the sleep periods
-                              opacity: 0.6,
+                              color: colorAsleep,
+                              // const Color.fromRGBO(
+                              //     0, 0, 139, 0.2), //Color of the sleep periods
+                              opacity: 1.0,
                             ),
 
                             /* Plot band same height for sleep and awake */
@@ -102,8 +104,9 @@ class Sync extends StatelessWidget {
                           // Initialize line series
                           StepAreaSeries<DataPoint, DateTime>(
                               //animationDuration: 2000,
-                              color: const Color.fromRGBO(
-                                  252, 176, 28, 1), //Color of awake periods
+                              color: colorAwake,
+                              // const Color.fromRGBO(
+                              //     252, 176, 28, 1), //Color of awake periods
                               opacity: 1.0,
                               //emptyPointSettings: EmptyPointSettings(color: Colors.black),
                               dataSource: sleepData,
@@ -114,75 +117,83 @@ class Sync extends StatelessWidget {
                               // dataLabelSettings: DataLabelSettings(isVisible: true),
                               name: '24 Stunden')
                         ]),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Divider(
+                      color: Theme.of(context).accentColor,
+                      //height: 10,
+                      thickness: 2,
+                      indent: 20,
+                      endIndent: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.all(10),
+                              height: 30,
+                              width: 20,
+                              decoration: BoxDecoration(
+                                color: colorAsleep,
+                                //border: Border.all(color: Colors.blueAccent),
+                              ),
+                            ),
+                            Text('Schlaf'),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(right: 10, left: 10),
+                              height: 30,
+                              width: 20,
+                              decoration: BoxDecoration(
+                                color: colorAwake,
+                                //border: Border.all(color: Colors.blueAccent),
+                              ),
+                            ),
+                            Text('Wach')
+                          ],
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.all(10),
-                      height: 30,
-                      width: 20,
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(0, 0, 139, 0.6),
-                        //border: Border.all(color: Colors.blueAccent),
-                      ),
-                    ),
-                    Text('Schlaf'),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(right: 10, left: 10),
-                      height: 30,
-                      width: 20,
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(252, 176, 28, 0.7),
-                        //border: Border.all(color: Colors.blueAccent),
-                      ),
-                    ),
-                    Text('Wach')
-                  ],
-                ),
-              ],
-            ),
+
             SizedBox(
               height: 20,
             ),
-            Text(
-              'Aufgezeichnete Datenpunkte:  ',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12.0,
-              ),
-            ),
-            Text(sleepData.length.toString()),
-            SizedBox(
-              height: 20,
-            ),
-            Text(
-              'Gesamtschlafdauer:  ',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12.0,
-              ),
-            ),
-            Text((sleepData.where((dataPoint) => dataPoint.state == 0.0))
-                    .toList()
-                    .length
-                    .toString() +
-                ' Minuten'),
+            // Text(
+            //   'Aufgezeichnete Datenpunkte:  ',
+            //   textAlign: TextAlign.center,
+            //   style: TextStyle(
+            //     fontWeight: FontWeight.w600,
+            //     fontSize: 12.0,
+            //   ),
+            // ),
+            // Text(sleepData.length.toString()),
+            // SizedBox(
+            //   height: 20,
+            // ),
+            // Text(
+            //   'Gesamtschlafdauer:  ',
+            //   textAlign: TextAlign.center,
+            //   style: TextStyle(
+            //     fontWeight: FontWeight.w600,
+            //     fontSize: 12.0,
+            //   ),
+            // ),
+            // Text((sleepData.where((dataPoint) => dataPoint.state == 0.0))
+            //         .toList()
+            //         .length
+            //         .toString() +
+            //     ' Minuten'),
             // HypnogramPieChart(
             //   sleepData: this.sleepData,
             // ),
@@ -192,10 +203,3 @@ class Sync extends StatelessWidget {
     );
   }
 }
-
-// class DataPoint {
-//   DataPoint(this.date, this.state);
-//   final DateTime date;
-//   final double state;
-//   // final Color segmentColor;
-// }

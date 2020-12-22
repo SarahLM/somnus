@@ -45,7 +45,7 @@ class _TabsScreenState extends State<TabsScreen> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text(_pages[_selectedPageIndex]['title']),
-        backgroundColor: Colors.purple,
+        // backgroundColor: Colors.purple,
         automaticallyImplyLeading: false,
         actions: <Widget>[
           new IconButton(
@@ -58,10 +58,10 @@ class _TabsScreenState extends State<TabsScreen> {
       // endDrawer: MainDrawer(),
       body: _pages[_selectedPageIndex]['page'],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.purple,
+        backgroundColor: Theme.of(context).primaryColor,
         onTap: _selectPage,
         unselectedItemColor: Colors.white,
-        selectedItemColor: Colors.lightBlue,
+        selectedItemColor: Colors.yellow,
         currentIndex: _selectedPageIndex,
         items: [
           BottomNavigationBarItem(

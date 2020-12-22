@@ -23,14 +23,14 @@ class DatePickerTheme extends Theme {
       : super(
           child: child,
           data: new ThemeData(
-            primaryColor: Colors.deepPurple,
-            accentColor: Colors.purple,
+            primaryColor: Color(0xFF00008B),
+            accentColor: Color(0xFF570899),
             cardColor: Colors.purple,
             backgroundColor: Colors.purple,
             highlightColor: Colors.purple,
-            splashColor: Colors.purple,
+            splashColor: Color(0xFF570899),
             colorScheme: ColorScheme.light(
-              primary: Colors.purple, //FlatButton Text Color!
+              primary: Color(0xFF570899), //FlatButton Text Color!
             ),
           ),
         );

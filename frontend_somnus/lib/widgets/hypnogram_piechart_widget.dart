@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:pie_chart/pie_chart.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // ignore: must_be_immutable
 class HypnogramPieChart extends StatefulWidget {
@@ -17,10 +18,12 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
   String textLabel = "Zeit";
   // ignore: non_constant_identifier_names
   bool time_percent = false;
+  bool buttonTime = true;
+  bool buttonPercent = false;
 
   List<Color> colorList = [
-    Color.fromRGBO(0, 0, 139, 0.6),
-    Color.fromRGBO(252, 176, 28, 1.0),
+    Color(0xFF0529B3),
+    Color(0xFFFF9221),
   ];
 
   Map<String, double> getDataList() {
@@ -36,10 +39,16 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
     };
   }
 
+  String durationToString(int minutes) {
+    var d = Duration(minutes: minutes);
+    List<String> parts = d.toString().split(':');
+    return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 6,
+      elevation: 8,
       child: Column(
         children: [
           SizedBox(height: 20),
@@ -47,33 +56,39 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
             'Schlafdauer',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
+          Text(
+            'Gesamtlänge der Aufzeichnung:  ' +
+                durationToString(widget.sleepData.length) +
+                ' Stunden',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 12.0,
+            ),
+          ),
           ButtonBar(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              FlatButton(
-                  child: Text(
-                    'in Zeit',
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                    side: BorderSide(color: Colors.purple),
-                  ),
+              IconButton(
+                  icon: FaIcon(FontAwesomeIcons.clock),
+                  color: buttonTime ? Colors.black : Colors.grey,
+                  iconSize: 24,
                   onPressed: () {
                     setState(() {
+                      buttonTime = true;
+                      buttonPercent = false;
                       this.textLabel = "Zeit";
                       this.time_percent = false;
                     });
                   }),
-              FlatButton(
-                  child: Text(
-                    'in Prozent',
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                    side: BorderSide(color: Colors.purple),
-                  ),
+              IconButton(
+                  icon: FaIcon(FontAwesomeIcons.percent),
+                  iconSize: 24,
+                  color: buttonPercent ? Colors.black : Colors.grey,
                   onPressed: () {
                     setState(() {
+                      buttonTime = false;
+                      buttonPercent = true;
                       this.textLabel = "Prozent";
                       this.time_percent = true;
                     });
@@ -81,50 +96,33 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
             ],
           ),
           Container(
-              child: PieChart(
-            dataMap: getDataList(),
-            animationDuration: Duration(milliseconds: 3000),
-            chartLegendSpacing: 32,
-            chartRadius: MediaQuery.of(context).size.width / 3.2,
-            colorList: colorList,
-            initialAngleInDegree: 0,
-            chartType: ChartType.ring,
-            ringStrokeWidth: 32,
-            centerText: textLabel,
-            legendOptions: LegendOptions(
-              showLegendsInRow: true,
-              legendPosition: LegendPosition.bottom,
-              showLegends: true,
-              //legendShape: LegendShape.circle,
-              legendTextStyle: TextStyle(
-                fontWeight: FontWeight.bold,
+            child: PieChart(
+              dataMap: getDataList(),
+              animationDuration: Duration(milliseconds: 3000),
+              chartLegendSpacing: 32,
+              chartRadius: MediaQuery.of(context).size.width / 3.2,
+              colorList: colorList,
+              initialAngleInDegree: 0,
+              chartType: ChartType.ring,
+              ringStrokeWidth: 32,
+              centerText: textLabel,
+              legendOptions: LegendOptions(
+                showLegendsInRow: true,
+                legendPosition: LegendPosition.bottom,
+                showLegends: true,
+                //legendShape: LegendShape.circle,
+                legendTextStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              chartValuesOptions: ChartValuesOptions(
+                showChartValueBackground: true,
+                showChartValues: true,
+                showChartValuesInPercentage: this.time_percent,
+                showChartValuesOutside: true,
               ),
             ),
-            chartValuesOptions: ChartValuesOptions(
-              showChartValueBackground: true,
-              showChartValues: true,
-              showChartValuesInPercentage: this.time_percent,
-              showChartValuesOutside: true,
-            ),
-          )
-              //SfCircularChart(
-              //   series: <CircularSeries>[
-              //     // Renders doughnut chart
-              //     DoughnutSeries<DataPoint, DateTime>(
-
-              //         dataSource: sleepData,
-              //         //pointColorMapper: (DataPoint data, _) => data.color,
-              //         xValueMapper: (DataPoint data, _) => data.date,
-              //         yValueMapper: (DataPoint data, _) => data.state,
-              //         dataLabelSettings: DataLabelSettings(
-              //             // Renders the data label
-              //             isVisible: true),
-              //         // Mode of grouping
-              //         groupMode: CircularChartGroupMode.value,
-              //         groupTo: 2)
-              //   ],
-              // ),
-              ),
+          ),
         ],
       ),
     );

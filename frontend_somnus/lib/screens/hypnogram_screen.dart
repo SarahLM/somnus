@@ -58,9 +58,16 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
       doc.addPage(pw.Page(
           pageFormat: format,
           build: (pw.Context context) {
-            return pw.Center(
-              child: pw.Expanded(
-                child: pw.Image(image),
+            return pw.Container(
+              child: pw.Center(
+                child: pw.Column(
+                  children: [
+                    pw.Text('Zeitraum: ' + title),
+                    pw.Expanded(
+                      child: pw.Image(image),
+                    ),
+                  ],
+                ),
               ),
             );
           }));
@@ -285,10 +292,12 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.print),
-        onPressed: _printScreen,
-      ),
+      floatingActionButton: this.sleepData.length != 0
+          ? FloatingActionButton(
+              child: const Icon(Icons.print),
+              onPressed: _printScreen,
+            )
+          : Container(),
     );
   }
 }

@@ -1,12 +1,17 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 //import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
 import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:frontend_somnus/widgets/theme.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class HypnogramScreen extends StatefulWidget {
   final Color color;
@@ -36,6 +41,32 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
       sleepData = dataPoints;
     });
     super.initState();
+  }
+
+  final GlobalKey<State<StatefulWidget>> _printKey = GlobalKey();
+
+  Future<Uint8List> _printScreen() {
+    Printing.layoutPdf(onLayout: (PdfPageFormat format) async {
+      final doc = pw.Document();
+
+      final image = await wrapWidget(
+        doc.document,
+        key: _printKey,
+        pixelRatio: 2.0,
+      );
+
+      doc.addPage(pw.Page(
+          pageFormat: format,
+          build: (pw.Context context) {
+            return pw.Center(
+              child: pw.Expanded(
+                child: pw.Image(image),
+              ),
+            );
+          }));
+
+      return doc.save();
+    });
   }
 
   Widget buildFlatButton(String title, bool button) {
@@ -236,9 +267,12 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     padding: EdgeInsets.all(15),
                     child: Column(
                       children: [
-                        Sync(
-                          title: this.title,
-                          sleepData: this.sleepData,
+                        RepaintBoundary(
+                          key: _printKey,
+                          child: Sync(
+                            title: this.title,
+                            sleepData: this.sleepData,
+                          ),
                         ),
                         HypnogramPieChart(
                           sleepData: this.sleepData,
@@ -250,6 +284,10 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.print),
+        onPressed: _printScreen,
       ),
     );
   }

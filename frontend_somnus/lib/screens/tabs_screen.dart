@@ -22,10 +22,10 @@ class _TabsScreenState extends State<TabsScreen> {
       'page': HypnogramScreen(Colors.white),
       'title': 'Hypnogramm',
     },
-    /* {
+    {
       'page': AnalysisScreen(Colors.red),
       'title': 'Analyse',
-    }, */
+    },
     {
       'page': DbScreen(Colors.blue),
       'title': 'DbScreen',
@@ -55,9 +55,9 @@ class _TabsScreenState extends State<TabsScreen> {
         ],
       ),
       endDrawer: MainDrawer(),
-      // endDrawer: MainDrawer(),
       body: _pages[_selectedPageIndex]['page'],
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         backgroundColor: Theme.of(context).primaryColor,
         onTap: _selectPage,
         unselectedItemColor: Colors.white,
@@ -72,10 +72,10 @@ class _TabsScreenState extends State<TabsScreen> {
             icon: Icon(Icons.favorite),
             label: 'Hypnogramm',
           ),
-          /* BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(Icons.analytics),
             label: 'Analyse',
-          ), */
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.data_usage),
             label: 'Database',

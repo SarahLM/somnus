@@ -1,12 +1,18 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
+import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 //import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
 import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:frontend_somnus/widgets/theme.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class HypnogramScreen extends StatefulWidget {
   final Color color;
@@ -24,6 +30,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
   bool _pressedButton3 = false;
   bool _pressedButton4 = false;
   String title = '';
+  String timePrinted;
 
   List<DataPoint> sleepData;
   List<DataPoint> dataPoints;
@@ -34,8 +41,42 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
     final dataPoints = dataStatesData.items;
     setState(() {
       sleepData = dataPoints;
+      timePrinted = DateTime.now().toString();
     });
     super.initState();
+  }
+
+  final GlobalKey<State<StatefulWidget>> _printKey = GlobalKey();
+
+  Future<Uint8List> _printScreen() {
+    Printing.layoutPdf(onLayout: (PdfPageFormat format) async {
+      final doc = pw.Document();
+
+      final image = await wrapWidget(
+        doc.document,
+        key: _printKey,
+        pixelRatio: 2.0,
+      );
+
+      doc.addPage(pw.Page(
+          pageFormat: format,
+          build: (pw.Context context) {
+            return pw.Container(
+              child: pw.Center(
+                child: pw.Column(
+                  children: [
+                    pw.Text('Zeitraum: ' + timePrinted),
+                    pw.Expanded(
+                      child: pw.Image(image),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }));
+
+      return doc.save();
+    });
   }
 
   Widget buildFlatButton(String title, bool button) {
@@ -95,6 +136,11 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton4 = false;
                     title = '';
                     sleepData = dataPoints;
+                    timePrinted = (DateTime.now())
+                            .add(new Duration(days: -2))
+                            .toString() +
+                        ' bis ' +
+                        DateTime.now().toString();
                   });
                 },
               ),
@@ -127,6 +173,11 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton4 = false;
                     title = '';
                     sleepData = dataPoints;
+                    timePrinted = (DateTime.now())
+                            .add(new Duration(days: -2))
+                            .toString() +
+                        ' bis ' +
+                        DateTime.now().toString();
                   });
                 },
               ),
@@ -159,6 +210,14 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     _pressedButton4 = false;
                     title = '';
                     sleepData = dataPoints;
+                    timePrinted = DateFormat('dd.MM. yyyy')
+                            .format(
+                                (DateTime.now()).add(new Duration(days: -7)))
+                            .toString() +
+                        ' bis ' +
+                        DateFormat('dd.MM. yyyy')
+                            .format(DateTime.now())
+                            .toString();
                     print(sleepData);
                   });
                 },
@@ -206,8 +265,15 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                             Provider.of<DataStates>(context, listen: false)
                                 .findByDate((picked[0]), (picked[1]));
                         setState(() {
-                          title = picked.toString();
+                          title = DateFormat('dd.MM. yyyy')
+                                  .format(picked[0])
+                                  .toString() +
+                              ' bis ' +
+                              DateFormat('dd.MM. yyyy')
+                                  .format(picked[1])
+                                  .toString();
                           sleepData = dataPoints;
+                          timePrinted = title;
                         });
                       }
                     },
@@ -233,17 +299,20 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     title +
                     ' liegen keine Daten vor.')
                 : Container(
-                    padding: EdgeInsets.all(15),
-                    child: Column(
-                      children: [
-                        Sync(
-                          title: this.title,
-                          sleepData: this.sleepData,
-                        ),
-                        HypnogramPieChart(
-                          sleepData: this.sleepData,
-                        )
-                      ],
+                    padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                    child: RepaintBoundary(
+                      key: _printKey,
+                      child: Column(
+                        children: [
+                          Sync(
+                            title: this.title,
+                            sleepData: this.sleepData,
+                          ),
+                          HypnogramPieChart(
+                            sleepData: this.sleepData,
+                          ),
+                        ],
+                      ),
                     ),
                   )
             //LineAreaPage()
@@ -251,6 +320,12 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
           ],
         ),
       ),
+      floatingActionButton: this.sleepData.length != 0
+          ? FloatingActionButton(
+              child: const Icon(Icons.print),
+              onPressed: _printScreen,
+            )
+          : Container(),
     );
   }
 }

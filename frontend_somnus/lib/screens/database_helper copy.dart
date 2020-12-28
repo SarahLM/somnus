@@ -1,26 +1,18 @@
 import 'dart:io';
+
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "MyDatabasenew.db";
+  static final _databaseName = "MyDatabase.db";
   static final _databaseVersion = 1;
 
   static final table = 'my_table';
-  static final results = 'results_table';
 
   static final columnId = '_id';
   static final columnName = 'name';
   static final columnAge = 'age';
-  static final columnDate = 'date';
-  static final columnTime = 'time';
-  static final columnX = 'accx';
-  static final columnY = 'accy';
-  static final columnZ = 'accz';
-  static final columnLUX = 'lux';
-  static final columnT = 'acct';
-  static final columnSleepwake = 'sleepwake';
 
   // make this a singleton class
   DatabaseHelper._privateConstructor();
@@ -39,7 +31,6 @@ class DatabaseHelper {
   _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
-    print('db location : ' + path);
     return await openDatabase(path,
         version: _databaseVersion, onCreate: _onCreate);
   }
@@ -49,22 +40,10 @@ class DatabaseHelper {
     await db.execute('''
           CREATE TABLE $table (
             $columnId INTEGER PRIMARY KEY,
-            $columnDate TEXT NOT NULL,
-            $columnTime TEXT NOT NULL,
-            $columnX REAL NOT NULL,
-            $columnY REAL NOT NULL,
-            $columnZ REAL NOT NULL,
-            $columnLUX INTEGER NOT NULL,
-            $columnT REAL NOT NULL
+            $columnName TEXT NOT NULL,
+            $columnAge INTEGER NOT NULL
           )
           ''');
-    await db.execute('''
-       create table $results (
-        $columnId INTEGER PRIMARY KEY,
-        $columnDate TEXT NOT NULL,
-        $columnTime TEXT NOT NULL,
-        $columnSleepwake TEXT NOT NULL
-       )''');
   }
 
   // Helper methods
@@ -77,21 +56,11 @@ class DatabaseHelper {
     return await db.insert(table, row);
   }
 
-  Future<int> insertsleepwake(Map<String, dynamic> row) async {
-    Database db = await instance.database;
-    return await db.insert(results, row);
-  }
-
   // All of the rows are returned as a list of maps, where each map is
   // a key-value list of columns.
   Future<List<Map<String, dynamic>>> queryAllRows() async {
     Database db = await instance.database;
     return await db.query(table);
-  }
-
-  Future<List<Map<String, dynamic>>> queryAllRowsSleep() async {
-    Database db = await instance.database;
-    return await db.query(results);
   }
 
   // All of the methods (insert, query, update, delete) can also be done using
@@ -100,12 +69,6 @@ class DatabaseHelper {
     Database db = await instance.database;
     return Sqflite.firstIntValue(
         await db.rawQuery('SELECT COUNT(*) FROM $table'));
-  }
-
-  Future<int> queryRowCountResults() async {
-    Database db = await instance.database;
-    return Sqflite.firstIntValue(
-        await db.rawQuery('SELECT COUNT(*) FROM $results'));
   }
 
   // We are assuming here that the id column in the map is set. The other

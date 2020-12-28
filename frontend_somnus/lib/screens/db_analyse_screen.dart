@@ -43,11 +43,29 @@ class MyHomePage extends StatelessWidget {
             ),
             RaisedButton(
               child: Text(
+                'insertResults',
+                style: TextStyle(fontSize: 20),
+              ),
+              onPressed: () {
+                _insertresults();
+              },
+            ),
+            RaisedButton(
+              child: Text(
                 'query',
                 style: TextStyle(fontSize: 20),
               ),
               onPressed: () {
                 _query();
+              },
+            ),
+            RaisedButton(
+              child: Text(
+                'queryresults',
+                style: TextStyle(fontSize: 20),
+              ),
+              onPressed: () {
+                _queryresults();
               },
             ),
             RaisedButton(
@@ -79,10 +97,26 @@ class MyHomePage extends StatelessWidget {
   void _insert() async {
     // row to insert
     Map<String, dynamic> row = {
-      DatabaseHelper.columnName: 'Bob',
-      DatabaseHelper.columnAge: 23
+      DatabaseHelper.columnDate: '2019-03-21',
+      DatabaseHelper.columnTime: '14:58:00:500',
+      DatabaseHelper.columnX: 0.1577,
+      DatabaseHelper.columnY: -0.9023,
+      DatabaseHelper.columnZ: -0.4280,
+      DatabaseHelper.columnLUX: 0,
+      DatabaseHelper.columnT: 0
     };
     final id = await dbHelper.insert(row);
+    print('inserted row id: $id');
+  }
+
+  void _insertresults() async {
+    // row to insert
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnDate: '2019-03-21',
+      DatabaseHelper.columnTime: '14:58:00:500',
+      DatabaseHelper.columnSleepwake: '1'
+    };
+    final id = await dbHelper.insertsleepwake(row);
     print('inserted row id: $id');
   }
 
@@ -92,12 +126,23 @@ class MyHomePage extends StatelessWidget {
     allRows.forEach((row) => print(row));
   }
 
+  void _queryresults() async {
+    final allRows = await dbHelper.queryAllRowsSleep();
+    print('query all rows:');
+    allRows.forEach((row) => print(row));
+  }
+
   void _update() async {
     // row to update
     Map<String, dynamic> row = {
       DatabaseHelper.columnId: 1,
-      DatabaseHelper.columnName: 'Mary',
-      DatabaseHelper.columnAge: 32
+      DatabaseHelper.columnDate: '2019-03-21',
+      DatabaseHelper.columnTime: '14:58:00:500',
+      DatabaseHelper.columnX: 0.1577,
+      DatabaseHelper.columnY: -0.9023,
+      DatabaseHelper.columnZ: -0.4280,
+      DatabaseHelper.columnLUX: 0,
+      DatabaseHelper.columnT: 0
     };
     final rowsAffected = await dbHelper.update(row);
     print('updated $rowsAffected row(s)');

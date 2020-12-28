@@ -179,7 +179,7 @@ class _BleDevicesState extends State<BleDevices> {
       // start listening for accelerometer data
       accelerometerChar.monitor().listen((data) {
         _handleRawAccelerometerData(data);
-        print("elapsed seconds: ${s.elapsedMilliseconds/1000}");
+        //print("elapsed seconds: ${s.elapsedMilliseconds/1000}");
       });
 
       // send alive packages so accelerometer data is continiously sent
@@ -227,12 +227,36 @@ class _BleDevicesState extends State<BleDevices> {
             counter = (counter == 2) ? 0 : ++counter;
 
             accelData += (data[i+1] == 0) ? "+" : "-";
-            accelData += data[i].toString();
+            accelData += (data[i].toDouble() / 255.toDouble()).toString() + " ";
+
+            /*
+            if (counter == 0) {
+              accelData = "x: ";
+              accelData += (data[i+1] == 0) ? "+" : "-";
+
+              accelData += (data[i].toDouble() / 255.toDouble()).toString() + "\n";
+              print(accelData);
+            } else if (counter == 1) {
+              accelData = "y: ";
+              accelData += (data[i+1] == 0) ? "+" : "-";
+
+              accelData += (data[i].toDouble() / 255.toDouble()).toString() + "\n";
+              print(accelData);
+            } else if (counter == 2) {
+              accelData = "z: ";
+              accelData += (data[i+1] == 0) ? "+" : "-";
+
+              accelData += (data[i].toDouble() / 255.toDouble()).toString() + "\n";
+              print(accelData);
+            }
+
+            counter = (counter == 2) ? 0 : ++counter;*/
           }
         }
 
-        print("data packet nr. ${data[1]}");
+        //print("data packet nr. ${data[1]}");
         print(accelData);
+        print("${data[2]}, ${data[3]}, ${data[4]}, ${data[5]}, ${data[6]}, ${data[7]}");
       }
     }
   }

@@ -349,7 +349,8 @@ def clear_data():
             pass
 
 
-def run_sleep_detection():
+def run_sleep_detection(input_file):
+    src_name = input_file.split("/")[-1][0:-4]
     print('Sleep Detection gestartet')
     try:
         rmtree(sub_dst)  # removes old files from result directory.

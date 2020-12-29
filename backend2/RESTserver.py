@@ -25,3 +25,4 @@ def run_demo(testvariable):
 
 if __name__ == "__main__":
     app.run()
+    #app.run(host='192.168.178.94')

@@ -311,6 +311,7 @@ class _BleConnectState extends State<BleConnect> {
   Future<void> _authenticateMiBand() async {
     List<Characteristic> miBandSrvChars;
 
+    // TODO: check if service is available, if not: device is not MiBand, so tell the user to select another device
     // get main service of MiBand
     services.forEach((element) {
       if (element.uuid == uuidMiBandService1) {

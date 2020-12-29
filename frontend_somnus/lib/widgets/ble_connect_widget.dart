@@ -9,12 +9,12 @@ import 'package:pointycastle/api.dart';
 import 'package:pointycastle/block/aes_fast.dart';
 import 'package:pointycastle/block/modes/ecb.dart';
 
-class BleAccelerometer extends StatefulWidget {
+class BleConnect extends StatefulWidget {
   @override
-  _BleAccelerometerState createState() => _BleAccelerometerState();
+  _BleConnectState createState() => _BleConnectState();
 }
 
-class _BleAccelerometerState extends State<BleAccelerometer> {
+class _BleConnectState extends State<BleConnect> {
   Uint8List secretKey = Uint8List.fromList(
       [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 64, 65, 66, 67, 68, 69]);
   Uint8List setNotifTrueCmd = Uint8List.fromList([1, 0]);
@@ -45,14 +45,24 @@ class _BleAccelerometerState extends State<BleAccelerometer> {
   bool _authenticated = false;
   bool _highAlerted = false;
   bool _receivingRawSensorData = false;
+  bool _bleManagerScanning = false;
   int _rawDataPacketsCounter;
   Future _bleConnectFuture;
   Timer accelDataAliveTimer;
+  List<Peripheral> bleDevices = new List<Peripheral>();
 
   @override
   void initState() {
     super.initState();
-    _bleConnectFuture = _bleTest();
+    _localInitStateAsync();
+    //_bleConnectFuture = _bleTest();
+  }
+
+  void _localInitStateAsync () async {
+    // TODO: check permissions and if bluetooth is on
+    bleManager = BleManager();
+    await bleManager.createClient();
+    _scanForBleDevices();
   }
 
   @override
@@ -61,6 +71,13 @@ class _BleAccelerometerState extends State<BleAccelerometer> {
     var _alertHighBtnOnPressed;
     var _startRawDataOnPressed;
     var _stopRawDataOnPressed;
+    var _scanForBleDevicesOnPressed;
+
+    if (_bleManagerScanning) {
+      _scanForBleDevicesOnPressed = null;
+    } else {
+      _scanForBleDevicesOnPressed = _scanForBleDevices;
+    }
 
     if (_authenticated) {
       _alertMildBtnOnPressed = _alertMildMiBand;
@@ -79,7 +96,7 @@ class _BleAccelerometerState extends State<BleAccelerometer> {
         alignment: Alignment.topCenter,
         child: Column(
             children: <Widget>[
-              FutureBuilder<Widget>(
+              /*FutureBuilder<Widget>(
                   future: _bleConnectFuture,
                   builder: (context, snapshot) {
                     var msg = "Connecting to MiBand";
@@ -93,7 +110,7 @@ class _BleAccelerometerState extends State<BleAccelerometer> {
 
                     return Text(msg);
                   }
-              ),
+              ),*/
               RaisedButton(
                 onPressed: _alertMildBtnOnPressed,
                 child: Text("Alert MiBand (Mild)"),
@@ -109,6 +126,30 @@ class _BleAccelerometerState extends State<BleAccelerometer> {
               RaisedButton(
                 onPressed: _stopRawDataOnPressed,
                 child: Text("Stop Accelerometer Raw Data"),
+              ),
+              RaisedButton(
+                onPressed: _scanForBleDevicesOnPressed,
+                child: Text("Scan for BLE devices"),
+              ),
+              new Expanded(
+                child: ListView.builder(
+                  itemCount: bleDevices.length,
+                  itemBuilder: (context, index){
+                    return Card(
+                      child: ListTile(
+                        onTap: () async {
+                          peripheral = bleDevices[index];
+                          if (await _connectToBleDevice()) {
+                            print("connected to mi band");
+                            await _getAllServices();
+                            await _authenticateMiBand();
+                            await _printServicesAndChars();
+                          }},
+                        title: Text(bleDevices[index].name),
+                      ),
+                    );
+                  },
+                ),
               ),
             ]
         )
@@ -151,7 +192,7 @@ class _BleAccelerometerState extends State<BleAccelerometer> {
 
   Future<void> _startReceivingRawSensorData() async {
     List<Characteristic> miBandSrvChars;
-    
+
     // get main service of MiBand
     services.forEach((element) {
       if (element.uuid == uuidMiBandService0) {
@@ -366,6 +407,7 @@ class _BleAccelerometerState extends State<BleAccelerometer> {
     });
   }
 
+  // TODO: remove this function
   Future<bool> _connectToMiBand() async {
     bleManager = BleManager();
     await bleManager.createClient();
@@ -393,6 +435,73 @@ class _BleAccelerometerState extends State<BleAccelerometer> {
     }
 
     return false;
+  }
+
+  Future<void> _scanForBleDevices() async {
+    setState(() {
+      bleDevices = new List<Peripheral>();
+      _bleManagerScanning = true;
+    });
+    BluetoothState currentState = await bleManager.bluetoothState();
+
+    if (currentState == BluetoothState.POWERED_ON) {
+      Stopwatch s = new Stopwatch();
+      s.start();
+      await for (ScanResult scanResult in bleManager.startPeripheralScan()) {
+        if (scanResult.peripheral.name != null) {
+          if (!_deviceInList(bleDevices, scanResult.peripheral.identifier)) {
+            print("Peripheral { id: ${scanResult.peripheral.identifier}, name: ${scanResult.peripheral.name}, rssi: ${scanResult.peripheral.rssi}}");
+            setState(() {
+              bleDevices.add(scanResult.peripheral);
+            });
+          }
+        }
+
+        // after 10 seconds stop scan
+        if (s.elapsedMilliseconds >= 10000) {
+          bleManager.stopPeripheralScan();
+          print("Stopped BLE Scan");
+          setState(() {
+            _bleManagerScanning = false;
+          });
+        }
+
+        if (!_bleManagerScanning) {
+          return;
+        }
+      }
+    }
+  }
+
+  bool _deviceInList (List<Peripheral> devices, String id) {
+    bool devicePresent = false;
+
+    devices.forEach ((element) {
+      if (element.identifier == id) {
+        devicePresent = true;
+        return;
+      }
+    });
+
+    return devicePresent;
+  }
+
+  Future<bool> _connectToBleDevice () async {
+    if (_bleManagerScanning) {
+      bleManager.stopPeripheralScan();
+      setState(() {
+        _bleManagerScanning = false;
+      });
+    }
+
+    print("Connecting to peripheral { id: ${peripheral.identifier}, name: ${peripheral.name}");
+    peripheral.observeConnectionState(
+        emitCurrentValue: true, completeOnDisconnect: true)
+        .listen((connectionState) {
+          print("Peripheral ${peripheral.identifier} connection state is $connectionState");
+    });
+    await peripheral.connect();
+    return await peripheral.isConnected();
   }
 
   Future<bool> _checkPermissions() async {

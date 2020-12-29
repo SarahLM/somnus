@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/ble_widget.dart';
+import '../widgets/ble_connect_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
-          child: BleDevices(),
+          child: BleConnect(),
         ),
       ),
     );

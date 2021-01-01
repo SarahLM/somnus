@@ -145,6 +145,7 @@ class _BleConnectState extends State<BleConnect> {
                     return Card(
                       child: ListTile(
                         onTap: () async {
+                          // TODO: Add loading circle when connecting
                           _selectBleDevice(bleDevices[index]);
                           },
                         title: Text(bleDevices[index].name),

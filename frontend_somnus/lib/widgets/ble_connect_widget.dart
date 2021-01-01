@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointycastle/api.dart';
@@ -32,8 +33,8 @@ class _BleConnectState extends State<BleConnect> {
   String uuidCharAccelerometer = "00000002-0000-3512-2118-0009af100700";
 
   BleManager bleManager;
-  Peripheral peripheral;
-  List<Service> services;
+  Peripheral fitnessTracker;
+  List<Service> fitnessTrackerServices;
   Service miBandService0;
   Service miBandService1;
   Service immediateAlertService;
@@ -59,10 +60,15 @@ class _BleConnectState extends State<BleConnect> {
   }
 
   void _localInitStateAsync () async {
-    // TODO: check permissions and if bluetooth is on
-    bleManager = BleManager();
-    await bleManager.createClient();
-    _scanForBleDevices();
+    // TODO: if bluetooth is on
+    if (await _checkPermissions()) {
+      bleManager = BleManager();
+      await bleManager.createClient();
+      _scanForBleDevices();
+    } else {
+      print("Permissions not accepted. Closing app.");
+      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    }
   }
 
   @override
@@ -134,18 +140,15 @@ class _BleConnectState extends State<BleConnect> {
               new Expanded(
                 child: ListView.builder(
                   itemCount: bleDevices.length,
+                  padding: EdgeInsets.all(1),
                   itemBuilder: (context, index){
                     return Card(
                       child: ListTile(
                         onTap: () async {
-                          peripheral = bleDevices[index];
-                          if (await _connectToBleDevice()) {
-                            print("connected to mi band");
-                            await _getAllServices();
-                            await _authenticateMiBand();
-                            await _printServicesAndChars();
-                          }},
+                          _selectBleDevice(bleDevices[index]);
+                          },
                         title: Text(bleDevices[index].name),
+                        subtitle: Text("ID: " + bleDevices[index].identifier),
                       ),
                     );
                   },
@@ -156,28 +159,70 @@ class _BleConnectState extends State<BleConnect> {
     );
   }
 
-  Future<Widget> _bleTest() async {
-    if (await _checkPermissions()) {
-      if (await _connectToMiBand()) {
-        print("connected to mi band");
-        await _getAllServices();
+  Future<bool> _selectBleDevice(Peripheral selectedDevice) async {
+    fitnessTracker = selectedDevice;
+
+    if (await _connectToBleDevice()) {
+      print("Connected to BLE device.");
+      
+      if (await _bleDeviceIsMiBand()) {
         await _authenticateMiBand();
         await _printServicesAndChars();
+        return true;
+      } else {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Device not compatible"),
+                content: Text("The selected device is not compatible with this"
+                      "app. Choose another device or check the manual for "
+                      "compatible devices."),
+                actions: [new FlatButton(
+                  child: Text("Okay"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )],
+              );
+            },
+        );
+        fitnessTracker.disconnectOrCancelConnection();
+        print("Disconnected from BLE device.");
       }
     }
 
-    return Text("MiBand connected!");
+    return false;
+  }
+  
+  Future<bool> _bleDeviceIsMiBand() async {
+    bool service0Present = false;
+    bool service1Present = false;
+
+    await _getAllServices();
+
+    fitnessTrackerServices.forEach((element) {
+      if (element.uuid == uuidMiBandService0) {
+        service0Present = true;
+        miBandService0 = element;
+      } else if (element.uuid == uuidMiBandService1) {
+        service1Present = true;
+        miBandService1 = element;
+      }
+    });
+
+    return (service0Present && service1Present);
   }
 
   Future<void> _alertMildMiBand() async {
-    immediateAlertService = services.firstWhere((e) => e.uuid == uuidServiceImmediateAlert);
+    immediateAlertService = fitnessTrackerServices.firstWhere((e) => e.uuid == uuidServiceImmediateAlert);
     immediateAlertChar = (await immediateAlertService.characteristics())
         .firstWhere((e) => e.uuid == uuidCharImmediateAlert);
     immediateAlertChar.write(Uint8List.fromList([1]), false);
   }
 
   Future<void> _alertHighMiBand() async {
-    immediateAlertService = services.firstWhere((e) => e.uuid == uuidServiceImmediateAlert);
+    immediateAlertService = fitnessTrackerServices.firstWhere((e) => e.uuid == uuidServiceImmediateAlert);
     immediateAlertChar = (await immediateAlertService.characteristics())
         .firstWhere((e) => e.uuid == uuidCharImmediateAlert);
 
@@ -193,15 +238,8 @@ class _BleConnectState extends State<BleConnect> {
   Future<void> _startReceivingRawSensorData() async {
     List<Characteristic> miBandSrvChars;
 
-    // get main service of MiBand
-    services.forEach((element) {
-      if (element.uuid == uuidMiBandService0) {
-        miBandService0 = element;
-      }
-    });
-
     // get characteristic for sensors
-    miBandSrvChars = await peripheral.characteristics(miBandService0.uuid);
+    miBandSrvChars = await fitnessTracker.characteristics(miBandService0.uuid);
     miBandSrvChars.forEach((element) {
       if (element.uuid == uuidCharSensor) {
         sensorChar = element;
@@ -311,16 +349,8 @@ class _BleConnectState extends State<BleConnect> {
   Future<void> _authenticateMiBand() async {
     List<Characteristic> miBandSrvChars;
 
-    // TODO: check if service is available, if not: device is not MiBand, so tell the user to select another device
-    // get main service of MiBand
-    services.forEach((element) {
-      if (element.uuid == uuidMiBandService1) {
-        miBandService1 = element;
-      }
-    });
-
     // get authentication characteristic
-    miBandSrvChars = await peripheral.characteristics(miBandService1.uuid);
+    miBandSrvChars = await fitnessTracker.characteristics(miBandService1.uuid);
     miBandSrvChars.forEach((element) {
       if (element.uuid == uuidCharAuth) {
         authChar = element;
@@ -364,10 +394,10 @@ class _BleConnectState extends State<BleConnect> {
     String serviceWithChars;
     print("Printing all services");
 
-    for (Service service in services) {
+    for (Service service in fitnessTrackerServices) {
       serviceWithChars = "";
       serviceWithChars += "- ${service.uuid}\n";
-      chars = await peripheral.characteristics(service.uuid);
+      chars = await fitnessTracker.characteristics(service.uuid);
       chars.forEach((characteristic) {
         serviceWithChars += "--- ${characteristic.uuid}\n";
       });
@@ -401,41 +431,11 @@ class _BleConnectState extends State<BleConnect> {
   }
 
   Future<void> _getAllServices() async {
-    await peripheral.discoverAllServicesAndCharacteristics();
-    services = await peripheral.services(); //getting all services
-    services.forEach((element) {
+    await fitnessTracker.discoverAllServicesAndCharacteristics();
+    fitnessTrackerServices = await fitnessTracker.services(); //getting all services
+    fitnessTrackerServices.forEach((element) {
       print(element.uuid);
     });
-  }
-
-  // TODO: remove this function
-  Future<bool> _connectToMiBand() async {
-    bleManager = BleManager();
-    await bleManager.createClient();
-    BluetoothState currentState = await bleManager.bluetoothState();
-
-    if (currentState == BluetoothState.POWERED_ON) {
-      await for (ScanResult scanResult in bleManager.startPeripheralScan()) {
-        if (scanResult.peripheral.name == "MI Band 2") {
-          print(
-              "Scanned Peripheral ${scanResult.peripheral.name}, RSSI ${scanResult.rssi}");
-          peripheral = scanResult.peripheral;
-          bleManager.stopPeripheralScan();
-        }
-      }
-
-      peripheral
-          .observeConnectionState(
-          emitCurrentValue: true, completeOnDisconnect: true)
-          .listen((connectionState) {
-        print(
-            "Peripheral ${peripheral.identifier} connection state is $connectionState");
-      });
-      await peripheral.connect();
-      return await peripheral.isConnected();
-    }
-
-    return false;
   }
 
   Future<void> _scanForBleDevices() async {
@@ -444,6 +444,12 @@ class _BleConnectState extends State<BleConnect> {
       _bleManagerScanning = true;
     });
     BluetoothState currentState = await bleManager.bluetoothState();
+
+    if (fitnessTracker != null) {
+      if (await fitnessTracker.isConnected()) {
+        fitnessTracker.disconnectOrCancelConnection();
+      }
+    }
 
     if (currentState == BluetoothState.POWERED_ON) {
       Stopwatch s = new Stopwatch();
@@ -495,14 +501,20 @@ class _BleConnectState extends State<BleConnect> {
       });
     }
 
-    print("Connecting to peripheral { id: ${peripheral.identifier}, name: ${peripheral.name}");
-    peripheral.observeConnectionState(
+    print("Connecting to peripheral { id: ${fitnessTracker.identifier}, name: ${fitnessTracker.name}");
+    fitnessTracker.observeConnectionState(
         emitCurrentValue: true, completeOnDisconnect: true)
         .listen((connectionState) {
-          print("Peripheral ${peripheral.identifier} connection state is $connectionState");
+          print("Peripheral ${fitnessTracker.identifier} connection state is $connectionState.");
     });
-    await peripheral.connect();
-    return await peripheral.isConnected();
+
+    try {
+      await fitnessTracker.connect();
+    } catch (e) {
+      return false;
+    }
+
+    return await fitnessTracker.isConnected();
   }
 
   Future<bool> _checkPermissions() async {

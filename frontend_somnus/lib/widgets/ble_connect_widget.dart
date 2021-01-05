@@ -171,23 +171,9 @@ class _BleConnectState extends State<BleConnect> {
         await _printServicesAndChars();
         return true;
       } else {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text("Device not compatible"),
-                content: Text("The selected device is not compatible with this"
-                      "app. Choose another device or check the manual for "
-                      "compatible devices."),
-                actions: [new FlatButton(
-                  child: Text("Okay"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )],
-              );
-            },
-        );
+        _showDialog("Device not compatible", "The selected device is not "
+            "compatible with this app. Choose another device or check the "
+            "manual for compatible devices.");
         fitnessTracker.disconnectOrCancelConnection();
         print("Disconnected from BLE device.");
       }
@@ -213,6 +199,24 @@ class _BleConnectState extends State<BleConnect> {
     });
 
     return (service0Present && service1Present);
+  }
+
+  void _showDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [new FlatButton(
+            child: Text("Okay"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )],
+        );
+      },
+    );
   }
 
   Future<void> _alertMildMiBand() async {
@@ -370,23 +374,38 @@ class _BleConnectState extends State<BleConnect> {
   }
 
   Future<void> _handleAuthNotification(Uint8List data) async {
+    bool authenticationFailed = false;
+
     if (data[0] == 16 && data[1] == 1 && data[2] == 1) {
       await _requestRand();
     } else if (data[0] == 16 && data[1] == 1 && data[2] == 4) {
       print("Error - Key sending failed.");
+      authenticationFailed = true;
     } else if (data[0] == 16 && data[1] == 2 && data[2] == 1) {
       await _sendEncrRand(data.sublist(3));
     } else if (data[0] == 16 && data[1] == 2 && data[2] == 4) {
       print("Error - Request random number failed.");
+      authenticationFailed = true;
     } else if (data[0] == 16 && data[1] == 3 && data[2] == 1) {
       setState(() {
         _authenticated = true;
       });
       print("AUTHENTICATED!!!");
+      _showDialog("Connection success", "Your device is connected.");
     } else if (data[0] == 16 && data[1] == 3 && data[2] == 4) {
       print("Error - Encryption failed.");
+      authenticationFailed = true;
     } else {
       print("Error - Authentication failed for unknown reason.");
+      authenticationFailed = true;
+    }
+
+    if (authenticationFailed) {
+      _showDialog("Connection error", "The authentication process failed. " +
+          "Make sure the device is near and Bluetooth is enabled. Then try " +
+          "again.\n\nIf the error remains, make sure the device is compatible " +
+          "(For more information see the manual).");
+      fitnessTracker.disconnectOrCancelConnection();
     }
   }
 

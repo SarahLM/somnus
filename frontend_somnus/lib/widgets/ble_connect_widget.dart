@@ -59,6 +59,13 @@ class _BleConnectState extends State<BleConnect> {
     //_bleConnectFuture = _bleTest();
   }
 
+  @override
+  void setState(fn) {
+    if(mounted) {
+      super.setState(fn);
+    }
+  }
+
   void _localInitStateAsync () async {
     // TODO: if bluetooth is on
     if (await _checkPermissions()) {

@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/block/aes_fast.dart';
 import 'package:pointycastle/block/modes/ecb.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 class BleConnect extends StatefulWidget {
   @override
@@ -80,10 +81,6 @@ class _BleConnectState extends State<BleConnect> {
 
   @override
   Widget build(BuildContext context) {
-    var _alertMildBtnOnPressed;
-    var _alertHighBtnOnPressed;
-    var _startRawDataOnPressed;
-    var _stopRawDataOnPressed;
     var _scanForBleDevicesOnPressed;
 
     if (_bleManagerScanning) {
@@ -92,82 +89,43 @@ class _BleConnectState extends State<BleConnect> {
       _scanForBleDevicesOnPressed = _scanForBleDevices;
     }
 
-    if (_authenticated) {
-      _alertMildBtnOnPressed = _alertMildMiBand;
-      _alertHighBtnOnPressed = _alertHighMiBand;
-
-      if (_receivingRawSensorData) {
-        _startRawDataOnPressed = null;
-        _stopRawDataOnPressed = _stopReceivingRawSensorData;
-      } else {
-        _startRawDataOnPressed = _startReceivingRawSensorData;
-        _stopRawDataOnPressed = null;
-      }
-    }
-
-    return Container(
-        alignment: Alignment.topCenter,
-        child: Column(
-            children: <Widget>[
-              /*FutureBuilder<Widget>(
-                  future: _bleConnectFuture,
-                  builder: (context, snapshot) {
-                    var msg = "Connecting to MiBand";
-
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      msg = "MiBand connected!";
-                      if (_authenticated) {
-                        msg = "MiBand connected and authenticated!";
-                      }
-                    }
-
-                    return Text(msg);
-                  }
-              ),*/
-              RaisedButton(
-                onPressed: _alertMildBtnOnPressed,
-                child: Text("Alert MiBand (Mild)"),
-              ),
-              RaisedButton(
-                onPressed: _alertHighBtnOnPressed,
-                child: Text("Alert MiBand (High)"),
-              ),
-              RaisedButton(
-                onPressed: _startRawDataOnPressed,
-                child: Text("Get Accelerometer Raw Data"),
-              ),
-              RaisedButton(
-                onPressed: _stopRawDataOnPressed,
-                child: Text("Stop Accelerometer Raw Data"),
-              ),
-              RaisedButton(
-                onPressed: _scanForBleDevicesOnPressed,
-                child: Text("Scan for BLE devices"),
-              ),
-              new Expanded(
-                child: ListView.builder(
-                  itemCount: bleDevices.length,
-                  padding: EdgeInsets.all(1),
-                  itemBuilder: (context, index){
-                    return Card(
-                      child: ListTile(
-                        onTap: () async {
-                          // TODO: Add loading circle when connecting
-                          _selectBleDevice(bleDevices[index]);
-                          },
-                        title: Text(bleDevices[index].name),
-                        subtitle: Text("ID: " + bleDevices[index].identifier),
-                      ),
-                    );
-                  },
+    return MaterialApp(
+      title: "test",
+        home: LoaderOverlay(
+            useDefaultLoading: true,
+            child: Column(
+                children: <Widget>[
+                RaisedButton(
+                  onPressed: _scanForBleDevicesOnPressed,
+                  child: Text("Scan for BLE devices"),
                 ),
-              ),
-            ]
-        )
+                Container(
+                  child: new Expanded(
+                    child: ListView.builder(
+                      itemCount: bleDevices.length,
+                      padding: EdgeInsets.all(1),
+                      itemBuilder: (context, index){
+                        return Card(
+                          child: ListTile(
+                            onTap: () async {
+                              // TODO: Add loading circle when connecting
+                              _selectBleDevice(bleDevices[index], context);
+                              },
+                            title: Text(bleDevices[index].name),
+                            subtitle: Text("ID: " + bleDevices[index].identifier),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ]
+          )
+      )
     );
   }
 
-  Future<bool> _selectBleDevice(Peripheral selectedDevice) async {
+  Future<void> _selectBleDevice(Peripheral selectedDevice, BuildContext localContext) async {
     fitnessTracker = selectedDevice;
 
     if (await _connectToBleDevice()) {
@@ -175,18 +133,17 @@ class _BleConnectState extends State<BleConnect> {
       
       if (await _bleDeviceIsMiBand()) {
         await _authenticateMiBand();
-        await _printServicesAndChars();
-        return true;
       } else {
+        if (await fitnessTracker.isConnected()) {
+          fitnessTracker.disconnectOrCancelConnection();
+        }
+
         _showDialog("Device not compatible", "The selected device is not "
             "compatible with this app. Choose another device or check the "
             "manual for compatible devices.");
-        fitnessTracker.disconnectOrCancelConnection();
         print("Disconnected from BLE device.");
       }
     }
-
-    return false;
   }
   
   Future<bool> _bleDeviceIsMiBand() async {
@@ -399,6 +356,7 @@ class _BleConnectState extends State<BleConnect> {
       });
       print("AUTHENTICATED!!!");
       _showDialog("Connection success", "Your device is connected.");
+      await _printServicesAndChars();
     } else if (data[0] == 16 && data[1] == 3 && data[2] == 4) {
       print("Error - Encryption failed.");
       authenticationFailed = true;
@@ -408,11 +366,13 @@ class _BleConnectState extends State<BleConnect> {
     }
 
     if (authenticationFailed) {
+      if (await fitnessTracker.isConnected()) {
+        fitnessTracker.disconnectOrCancelConnection();
+      }
       _showDialog("Connection error", "The authentication process failed. " +
           "Make sure the device is near and Bluetooth is enabled. Then try " +
           "again.\n\nIf the error remains, make sure the device is compatible " +
           "(For more information see the manual).");
-      fitnessTracker.disconnectOrCancelConnection();
     }
   }
 
@@ -466,17 +426,17 @@ class _BleConnectState extends State<BleConnect> {
   }
 
   Future<void> _scanForBleDevices() async {
-    setState(() {
-      bleDevices = new List<Peripheral>();
-      _bleManagerScanning = true;
-    });
-    BluetoothState currentState = await bleManager.bluetoothState();
-
     if (fitnessTracker != null) {
       if (await fitnessTracker.isConnected()) {
         fitnessTracker.disconnectOrCancelConnection();
       }
     }
+
+    setState(() {
+      bleDevices = new List<Peripheral>();
+      _bleManagerScanning = true;
+    });
+    BluetoothState currentState = await bleManager.bluetoothState();
 
     if (currentState == BluetoothState.POWERED_ON) {
       Stopwatch s = new Stopwatch();

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend_somnus/screens/connect_device_screen.dart';
 import 'package:frontend_somnus/screens/disclaimer_screen.dart';
 import '../screens/tutorial_screen.dart';
 
@@ -58,6 +59,23 @@ class MainDrawer extends StatelessWidget {
             onTap: () {
               Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => TutorialPage()));
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.bluetooth_searching,
+              size: 26,
+            ),
+            title: Text(
+              'Connect Device',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onTap: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => ConnectDeviceScreen()));
             },
           ),
         ],

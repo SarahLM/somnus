@@ -75,7 +75,10 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                       child: pw.Row(
                         mainAxisAlignment: pw.MainAxisAlignment.center,
                         children: <pw.Widget>[
-                          pw.Text('Somnus', textScaleFactor: 2),
+                          pw.Text(
+                            'Somnus',
+                            textScaleFactor: 2,
+                          ),
                           pw.Container(
                             height: 100,
                             width: 100,

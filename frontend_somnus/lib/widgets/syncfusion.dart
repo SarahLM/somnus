@@ -59,7 +59,7 @@ class Sync extends StatelessWidget {
                           isVisible: true,
                           majorGridLines: MajorGridLines(width: 0),
                           dateFormat: f,
-                          interval: 1,
+                          interval: 10,
                           labelRotation: 90,
                           plotBands: <PlotBand>[
                             /*   Plot band: different height for sleep and awake */

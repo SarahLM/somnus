@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_somnus/screens/database_helper.dart';
+import 'package:frontend_somnus/screens/db_analyse_screen.dart';
 //import '../widgets/syncfusion.dart';
 import 'datapoint.dart';
 
 class DataStates with ChangeNotifier {
+  List<DataPoint> dataFromDB = [];
   List<DataPoint> _items = [
     // Bind data source
     DataPoint(
@@ -252,6 +255,9 @@ class DataStates with ChangeNotifier {
     ),
   ];
 
+  final db = DbScreen(Colors.blue);
+  final dbHelper = DatabaseHelper.instance;
+
   List<DataPoint> get items {
     return [..._items];
   }
@@ -270,5 +276,28 @@ class DataStates with ChangeNotifier {
         .where((dataPoint) => (dataPoint.date.isAfter(dateOne) &&
             dataPoint.date.isBefore(dateTwo)))
         .toList();
+  }
+
+  Future<List<DataPoint>> getResult() async {
+    dataFromDB = [];
+    final allRows = await dbHelper.queryRows('2021-01-17');
+    allRows.forEach((row) {
+      var parsedDate = DateTime.parse(row['date']);
+      print(row);
+      dataFromDB.add(
+        DataPoint(
+          DateTime(
+              parsedDate.year,
+              parsedDate.month,
+              parsedDate.day,
+              int.parse(row['time'].substring(0, 2)),
+              int.parse(row['time'].substring(3, 5))),
+          row['sleepwake'],
+        ),
+      );
+      print(row['time'].substring(0, 2));
+      print(row['time'].substring(3, 5));
+    });
+    return dataFromDB;
   }
 }

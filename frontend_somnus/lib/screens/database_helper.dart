@@ -39,7 +39,7 @@ class DatabaseHelper {
   _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
-    print('db location : ' + path);
+    //print('db location : ' + path);
     return await openDatabase(path,
         version: _databaseVersion, onCreate: _onCreate);
   }
@@ -63,7 +63,7 @@ class DatabaseHelper {
         $columnId INTEGER PRIMARY KEY,
         $columnDate TEXT NOT NULL,
         $columnTime TEXT NOT NULL,
-        $columnSleepwake TEXT NOT NULL
+        $columnSleepwake DOUBLE NOT NULL
        )''');
   }
 
@@ -121,5 +121,10 @@ class DatabaseHelper {
   Future<int> delete(int id) async {
     Database db = await instance.database;
     return await db.delete(table, where: '$columnId = ?', whereArgs: [id]);
+  }
+
+  Future<List<Map<String, dynamic>>> queryRows(name) async {
+    Database db = await instance.database;
+    return await db.query(results, where: "$columnDate LIKE '%$name%'");
   }
 }

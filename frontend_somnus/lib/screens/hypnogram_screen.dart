@@ -66,28 +66,27 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
           pageFormat: format,
           build: (pw.Context context) {
             return pw.Container(
+              padding: pw.EdgeInsets.all(8),
               child: pw.Center(
                 child: pw.Column(
                   children: [
-                    pw.Header(
-                      level: 0,
-                      title: 'Somnus',
-                      child: pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.center,
-                        children: <pw.Widget>[
-                          pw.Text(
-                            'Somnus',
-                            textScaleFactor: 2,
-                          ),
-                          pw.Container(
-                            height: 100,
-                            width: 100,
-                            child: pw.Image.provider(image1),
-                          )
-                        ],
-                      ),
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.end,
+                      children: <pw.Widget>[
+                        pw.Text('Somnus',
+                            textScaleFactor: 1.5,
+                            style: pw.TextStyle(
+                              fontStyle: pw.FontStyle.italic,
+                              fontWeight: pw.FontWeight.bold,
+                            )),
+                        pw.Container(
+                          height: 50,
+                          width: 50,
+                          child: pw.Image.provider(image1),
+                        )
+                      ],
                     ),
-                    pw.Text('Zeitraum: ' + timePrinted),
+                    // pw.Text('Zeitraum: ' + timePrinted),
                     pw.Expanded(
                       child: pw.Image(image),
                     ),

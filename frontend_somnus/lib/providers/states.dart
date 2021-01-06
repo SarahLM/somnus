@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/screens/database_helper.dart';
 import 'package:frontend_somnus/screens/db_analyse_screen.dart';
+import 'package:intl/intl.dart';
 //import '../widgets/syncfusion.dart';
 import 'datapoint.dart';
 
@@ -278,9 +279,39 @@ class DataStates with ChangeNotifier {
         .toList();
   }
 
-  Future<List<DataPoint>> getResult() async {
+  Future<List<DataPoint>> getDataForSingleDate(date) async {
+    final DateFormat serverFormater = DateFormat('yyyy-MM-dd');
+    print('Date in states: ' + serverFormater.format(date));
     dataFromDB = [];
-    final allRows = await dbHelper.queryRows('2021-01-10');
+    final allRows =
+        await dbHelper.queryResultsSingleDay(serverFormater.format(date));
+    allRows.forEach((row) {
+      var parsedDate = DateTime.parse(row['date']);
+      print(row);
+      dataFromDB.add(
+        DataPoint(
+          DateTime(
+              parsedDate.year,
+              parsedDate.month,
+              parsedDate.day,
+              int.parse(row['time'].substring(0, 2)),
+              int.parse(row['time'].substring(3, 5))),
+          row['sleepwake'],
+        ),
+      );
+      print(row['time'].substring(0, 2));
+      print(row['time'].substring(3, 5));
+    });
+    return dataFromDB;
+  }
+
+  Future<List<DataPoint>> getDataForDateRange(date1, date2) async {
+    final DateFormat serverFormater = DateFormat('yyyy-MM-dd');
+    print('Date in states: ' + serverFormater.format(date2));
+    print('Date in states: ' + serverFormater.format(date1));
+    dataFromDB = [];
+    final allRows = await dbHelper.queryResultsDayRange(
+        serverFormater.format(date2), serverFormater.format(date1));
     allRows.forEach((row) {
       var parsedDate = DateTime.parse(row['date']);
       print(row);

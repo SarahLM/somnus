@@ -153,10 +153,13 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
               color: _pressedButton1
                   ? Theme.of(context).accentColor
                   : Colors.white,
-              onPressed: () {
-                final dataStatesData =
-                    Provider.of<DataStates>(context, listen: false);
-                final dataPoints = dataStatesData.items;
+              onPressed: () async {
+                // final dataStatesData =
+                //Provider.of<DataStates>(context, listen: false);
+                //final dataPoints = dataStatesData.items;
+                final dataPoints =
+                    await Provider.of<DataStates>(context, listen: false)
+                        .getDataForSingleDate(DateTime.now());
                 setState(() {
                   _pressedButton1 = true;
                   _pressedButton2 = false;
@@ -192,9 +195,10 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                 //     Provider.of<DataStates>(context, listen: false).findByDate(
                 //         (new DateTime.now()).add(new Duration(days: -2)),
                 //         DateTime.now());
+                final DateTime date1 = DateTime.now();
                 dataPoints =
                     await Provider.of<DataStates>(context, listen: false)
-                        .getResult();
+                        .getDataForSingleDate(date1.add(new Duration(days: 4)));
                 setState(() {
                   _pressedButton2 = true;
                   _pressedButton1 = false;
@@ -226,11 +230,12 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
               color: _pressedButton3
                   ? Theme.of(context).accentColor
                   : Colors.white,
-              onPressed: () {
+              onPressed: () async {
                 final dataPoints =
-                    Provider.of<DataStates>(context, listen: false).findByDate(
-                        (new DateTime.now()).add(new Duration(days: -7)),
-                        DateTime.now());
+                    await Provider.of<DataStates>(context, listen: false)
+                        .getDataForDateRange(
+                            (new DateTime.now()).add(new Duration(days: 17)),
+                            DateTime.now());
                 setState(() {
                   _pressedButton3 = true;
                   _pressedButton1 = false;

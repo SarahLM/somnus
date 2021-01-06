@@ -326,31 +326,33 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
             //LineAreaPage(),
             //LineAreaPage(),
             ((this.sleepData.length == 0)
-                ? Container(
-                    height: MediaQuery.of(context).size.height / 2,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      //crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Icon(
-                            Icons.sentiment_dissatisfied,
-                            color: Colors.orange,
-                            size: 60.0,
+                ? Center(
+                    child: Container(
+                      height: MediaQuery.of(context).size.height / 2,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        //crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Icon(
+                              Icons.sentiment_dissatisfied,
+                              color: Colors.orange,
+                              size: 60.0,
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Center(
-                          child: Text(
-                            'Für den ausgewählten Zeitraum ' +
-                                title +
-                                ' liegen keine Daten vor.',
-                            textAlign: TextAlign.center,
+                          SizedBox(
+                            height: 10,
                           ),
-                        ),
-                      ],
+                          Center(
+                            child: Text(
+                              'Für den ausgewählten Zeitraum ' +
+                                  title +
+                                  ' liegen keine Daten vor.',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 : Container(

@@ -86,7 +86,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                         )
                       ],
                     ),
-                    // pw.Text('Zeitraum: ' + timePrinted),
+                    pw.Text('Zeitraum: ' + timePrinted),
                     pw.Expanded(
                       child: pw.Image(image),
                     ),
@@ -98,6 +98,12 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
 
       return doc.save();
     });
+  }
+
+  String durationToString(int minutes) {
+    var d = Duration(minutes: minutes);
+    List<String> parts = d.toString().split(':');
+    return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
   }
 
   Widget buildFlatButton(String title, bool button) {
@@ -352,9 +358,40 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                             title: this.title,
                             sleepData: this.sleepData,
                           ),
-                          HypnogramPieChart(
-                            sleepData: this.sleepData,
+                          // HypnogramPieChart(
+                          //   sleepData: this.sleepData,
+                          // ),
+                          SizedBox(height: 20),
+                          Text(
+                            'Schlafdauer',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
                           ),
+                          Text(
+                            'Gesamtlänge der Aufzeichnung:  ' +
+                                durationToString(sleepData.length) +
+                                ' Stunden',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12.0,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Text('Davon schlafend: ' +
+                              durationToString((sleepData.where(
+                                      (dataPoint) => dataPoint.state == 0.0))
+                                  .toList()
+                                  .length) +
+                              ' Stunden'),
+                          Text('Davon wach: ' +
+                              durationToString((sleepData.where(
+                                      (dataPoint) => dataPoint.state == 1.0))
+                                  .toList()
+                                  .length) +
+                              ' Stunden'),
                         ],
                       ),
                     ),

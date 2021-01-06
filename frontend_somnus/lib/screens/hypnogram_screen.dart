@@ -50,7 +50,9 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
 
   final GlobalKey<State<StatefulWidget>> _printKey = GlobalKey();
 
-  Future<Uint8List> _printScreen() {
+  Future<Uint8List> _printScreen() async {
+    const imageProvider = const AssetImage('assets/images/somnus_logo.png');
+    final image1 = await flutterImageProvider(imageProvider);
     Printing.layoutPdf(onLayout: (PdfPageFormat format) async {
       final doc = pw.Document();
 
@@ -67,6 +69,21 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
               child: pw.Center(
                 child: pw.Column(
                   children: [
+                    pw.Header(
+                      level: 0,
+                      title: 'Somnus',
+                      child: pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.center,
+                        children: <pw.Widget>[
+                          pw.Text('Somnus', textScaleFactor: 2),
+                          pw.Container(
+                            height: 100,
+                            width: 100,
+                            child: pw.Image.provider(image1),
+                          )
+                        ],
+                      ),
+                    ),
                     pw.Text('Zeitraum: ' + timePrinted),
                     pw.Expanded(
                       child: pw.Image(image),

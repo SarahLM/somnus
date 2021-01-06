@@ -280,7 +280,7 @@ class DataStates with ChangeNotifier {
 
   Future<List<DataPoint>> getResult() async {
     dataFromDB = [];
-    final allRows = await dbHelper.queryRows('2021-01-17');
+    final allRows = await dbHelper.queryRows('2021-01-10');
     allRows.forEach((row) {
       var parsedDate = DateTime.parse(row['date']);
       print(row);

@@ -45,7 +45,7 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
 
   Map<String, IconData> iconMapping = {
     'time': FontAwesomeIcons.clock,
-    'percent': FontAwesomeIcons.twitter,
+    'percent': FontAwesomeIcons.percent,
   };
 
   Widget buildButton(

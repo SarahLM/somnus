@@ -286,16 +286,16 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                       initialFirstDate: new DateTime.now(),
                       initialLastDate:
                           (new DateTime.now()).add(new Duration(days: 7)),
-                      firstDate: new DateTime(2020),
-                      lastDate: new DateTime(2022),
+                      firstDate: new DateTime(2021),
+                      lastDate: new DateTime(2023),
                     );
 
                     if (picked != null && picked.length == 2) {
                       print(picked);
                       print(picked.runtimeType);
                       dataPoints =
-                          Provider.of<DataStates>(context, listen: false)
-                              .findByDate((picked[0]), (picked[1]));
+                          await Provider.of<DataStates>(context, listen: false)
+                              .getDataForDateRange((picked[1]), (picked[0]));
                       setState(() {
                         title = DateFormat('dd.MM. yyyy')
                                 .format(picked[0])

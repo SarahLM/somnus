@@ -56,9 +56,14 @@ def upload_file():
             # data = '/fileUploads'
             # file.save(data)
             data = csv.reader(file, delimiter=',')
-            for row in data:
-                print(', '.join(row))
-            return run_data(data)
+
+            f = open('incoming.csv', 'w')
+            with f:
+
+                writer = csv.writer(f)
+                for row in data:
+                    writer.writerow(row)
+            return run_data('incoming.csv')
    # return run_data()
 # def csvuebergabe():
 #     print ('datei uebergeben')
@@ -85,8 +90,8 @@ def run_data(src):
         print("Error processing: {}\nError: {}".format(src, e))
     # stp = time.time()
     print("Test")
-    return 'endeneu'
-    # return send_file('result.csv')
+    #return 'endeneu'
+    return send_file('results/incoming/result_sleep_prediction.csv')
 
 
 def run_demo(testvariable):

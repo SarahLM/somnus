@@ -73,8 +73,7 @@ class Somnus:
         self,
         input_file,
         sampling_frequency,
-        #results_directory='results',
-        #sub_dst=(results_directory + "/" + self.src_name),
+        #sub_dst,
         results_directory='results',
         start_buffer="0s",
         stop_buffer="0s",
@@ -396,6 +395,8 @@ class Somnus:
                 mode="w",
             )
             df.to_csv(self.sub_dst + "/result_sleep_prediction.csv")
+        return df.to_csv("result.csv")
+
 
     def clear_data(self):
         """

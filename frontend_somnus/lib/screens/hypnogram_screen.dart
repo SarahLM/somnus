@@ -90,6 +90,29 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     pw.Expanded(
                       child: pw.Image(image),
                     ),
+                    pw.Text(
+                      'Schlafdauer',
+                    ),
+                    pw.Text(
+                      'Gesamtlänge der Aufzeichnung:  ' +
+                          durationToString(sleepData.length) +
+                          ' Stunden',
+                    ),
+                    pw.SizedBox(
+                      height: 4,
+                    ),
+                    pw.Text('Davon schlafend: ' +
+                        durationToString((sleepData
+                                .where((dataPoint) => dataPoint.state == 0.0))
+                            .toList()
+                            .length) +
+                        ' Stunden'),
+                    pw.Text('Davon wach: ' +
+                        durationToString((sleepData
+                                .where((dataPoint) => dataPoint.state == 1.0))
+                            .toList()
+                            .length) +
+                        ' Stunden'),
                   ],
                 ),
               ),
@@ -357,50 +380,52 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                   )
                 : Container(
                     padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
-                    child: RepaintBoundary(
-                      key: _printKey,
-                      child: Column(
-                        children: [
-                          Sync(
-                            title: this.title,
-                            sleepData: this.sleepData,
-                          ),
-                          // HypnogramPieChart(
-                          //   sleepData: this.sleepData,
-                          // ),
-                          SizedBox(height: 20),
-                          Text(
-                            'Schlafdauer',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            'Gesamtlänge der Aufzeichnung:  ' +
-                                durationToString(sleepData.length) +
-                                ' Stunden',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.0,
+                    child: Column(
+                      children: [
+                        Container(
+                          child: RepaintBoundary(
+                            key: _printKey,
+                            child: Sync(
+                              title: this.title,
+                              sleepData: this.sleepData,
                             ),
                           ),
-                          SizedBox(
-                            height: 4,
-                          ),
-                          Text('Davon schlafend: ' +
-                              durationToString((sleepData.where(
-                                      (dataPoint) => dataPoint.state == 0.0))
-                                  .toList()
-                                  .length) +
-                              ' Stunden'),
-                          Text('Davon wach: ' +
-                              durationToString((sleepData.where(
-                                      (dataPoint) => dataPoint.state == 1.0))
-                                  .toList()
-                                  .length) +
-                              ' Stunden'),
-                        ],
-                      ),
+                        ),
+                        HypnogramPieChart(
+                          sleepData: this.sleepData,
+                        ),
+                        SizedBox(height: 20),
+                        // Text(
+                        //   'Schlafdauer',
+                        //   style: TextStyle(
+                        //       fontSize: 20, fontWeight: FontWeight.bold),
+                        // ),
+                        // Text(
+                        //   'Gesamtlänge der Aufzeichnung:  ' +
+                        //       durationToString(sleepData.length) +
+                        //       ' Stunden',
+                        //   textAlign: TextAlign.center,
+                        //   style: TextStyle(
+                        //     fontWeight: FontWeight.w600,
+                        //     fontSize: 12.0,
+                        //   ),
+                        // ),
+                        // SizedBox(
+                        //   height: 4,
+                        // ),
+                        // Text('Davon schlafend: ' +
+                        //     durationToString((sleepData.where(
+                        //             (dataPoint) => dataPoint.state == 0.0))
+                        //         .toList()
+                        //         .length) +
+                        //     ' Stunden'),
+                        // Text('Davon wach: ' +
+                        //     durationToString((sleepData.where(
+                        //             (dataPoint) => dataPoint.state == 1.0))
+                        //         .toList()
+                        //         .length) +
+                        //     ' Stunden'),
+                      ],
                     ),
                   )
             //LineAreaPage()

@@ -59,7 +59,7 @@ class Sync extends StatelessWidget {
                           isVisible: true,
                           majorGridLines: MajorGridLines(width: 0),
                           dateFormat: f,
-                          interval: 1,
+                          interval: 10,
                           labelRotation: 90,
                           plotBands: <PlotBand>[
                             /*   Plot band: different height for sleep and awake */
@@ -117,12 +117,12 @@ class Sync extends StatelessWidget {
                               // dataLabelSettings: DataLabelSettings(isVisible: true),
                               name: '24 Stunden')
                         ]),
-                    SizedBox(
-                      height: 10,
-                    ),
+                    // SizedBox(
+                    //   height: 10,
+                    // ),
                     Divider(
                       color: Theme.of(context).accentColor,
-                      //height: 10,
+                      height: 0,
                       thickness: 2,
                       indent: 20,
                       endIndent: 20,

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 // change `flutter_database` to whatever your project name is
 import 'package:frontend_somnus/screens/database_helper.dart';
@@ -93,6 +95,7 @@ class MyHomePage extends StatelessWidget {
   }
 
   // Button onPressed methods
+  Random random = new Random();
 
   void _insert() async {
     // row to insert
@@ -112,9 +115,13 @@ class MyHomePage extends StatelessWidget {
   void _insertresults() async {
     // row to insert
     Map<String, dynamic> row = {
-      DatabaseHelper.columnDate: '2019-03-21',
-      DatabaseHelper.columnTime: '14:58:00:500',
-      DatabaseHelper.columnSleepwake: '1'
+      DatabaseHelper.columnDate:
+          '2021-01-' + (random.nextInt(1) + 10).toString(),
+      DatabaseHelper.columnTime: (random.nextInt(14) + 10).toString() +
+          ':' +
+          (random.nextInt(50) + 10).toString() +
+          ':00:500',
+      DatabaseHelper.columnSleepwake: random.nextInt(2)
     };
     final id = await dbHelper.insertsleepwake(row);
     print('inserted row id: $id');

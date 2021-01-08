@@ -73,7 +73,7 @@ class Somnus:
         self,
         input_file,
         sampling_frequency,
-        sub_dst,
+        #sub_dst,
         results_directory='results',
         start_buffer="0s",
         stop_buffer="0s",
@@ -109,9 +109,9 @@ class Somnus:
         :param verbose: boolean for printing status
         """
         self.src = input_file  # save input location
-        # self.extension = input_file.split(".")[-1]
+        self.extension = input_file.split(".")[-1]
         self.dst = results_directory  # save output location
-        # self.src_name = input_file.split("/")[-1][0:-4]  # save naming convention
+        self.src_name = input_file.split("/")[-1][0:-4]  # save naming convention
         self.sub_dst = (
             results_directory + "/" + self.src_name
         )  # create output directory

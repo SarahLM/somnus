@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
@@ -13,6 +15,7 @@ import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
 import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:frontend_somnus/widgets/theme.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:http/http.dart' as http;
 
 class HypnogramScreen extends StatefulWidget {
   final Color color;
@@ -129,6 +132,19 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
     return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
   }
 
+  Future<String> uploadFile(String filename, String url) async {
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    var multipartFile = http.MultipartFile.fromBytes(
+      'file',
+      (await rootBundle.load('assets/inputAccelero.csv')).buffer.asUint8List(),
+      filename: 'inputAccelero.csv', // use the real name if available, or omit
+    );
+
+    request.files.add(multipartFile);
+    var res = await request.send();
+    return res.reasonPhrase;
+  }
+
   Widget buildFlatButton(String title, bool button) {
     return FlatButton(
       child: Text(
@@ -190,10 +206,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                   _pressedButton4 = false;
                   title = '';
                   sleepData = dataPoints;
-                  timePrinted =
-                      (DateTime.now()).add(new Duration(days: -2)).toString() +
-                          ' bis ' +
-                          DateTime.now().toString();
+                  timePrinted = (DateTime.now().toString());
                 });
               },
             ),
@@ -219,9 +232,9 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                 //         (new DateTime.now()).add(new Duration(days: -2)),
                 //         DateTime.now());
                 final DateTime date1 = DateTime.now();
-                dataPoints =
-                    await Provider.of<DataStates>(context, listen: false)
-                        .getDataForSingleDate(date1.add(new Duration(days: 4)));
+                dataPoints = await Provider.of<DataStates>(context,
+                        listen: false)
+                    .getDataForSingleDate(date1.add(new Duration(days: -1)));
                 setState(() {
                   _pressedButton2 = true;
                   _pressedButton1 = false;
@@ -257,8 +270,9 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                 final dataPoints =
                     await Provider.of<DataStates>(context, listen: false)
                         .getDataForDateRange(
-                            (new DateTime.now()).add(new Duration(days: 17)),
-                            DateTime.now());
+                  DateTime.now(),
+                  (new DateTime.now()).add(new Duration(days: -7)),
+                );
                 setState(() {
                   _pressedButton3 = true;
                   _pressedButton1 = false;
@@ -434,9 +448,23 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
         ),
       ),
       floatingActionButton: this.sleepData.length != 0
-          ? FloatingActionButton(
-              child: const Icon(Icons.print),
-              onPressed: _printScreen,
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  child: const Icon(Icons.print),
+                  onPressed: _printScreen,
+                ),
+                FloatingActionButton(
+                  child: const Icon(Icons.upload_file),
+                  onPressed: () async {
+                    var file = 'inputAccelero.csv';
+                    var res =
+                        await uploadFile(file, 'http://10.0.2.2:5000/data');
+                    print(res);
+                  },
+                ),
+              ],
             )
           : Container(),
     );

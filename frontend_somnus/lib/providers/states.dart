@@ -281,7 +281,7 @@ class DataStates with ChangeNotifier {
 
   Future<List<DataPoint>> getDataForSingleDate(date) async {
     final DateFormat serverFormater = DateFormat('yyyy-MM-dd');
-    print('Date in states: ' + serverFormater.format(date));
+    print('Single Date in states: ' + serverFormater.format(date));
     dataFromDB = [];
     final allRows =
         await dbHelper.queryResultsSingleDay(serverFormater.format(date));

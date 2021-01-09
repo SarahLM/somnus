@@ -1,0 +1,6 @@
+*.pyc
+*.xml
+.DS_Store
+venv
+results/*
+/fileUploads/*

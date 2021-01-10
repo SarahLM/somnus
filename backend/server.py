@@ -68,7 +68,7 @@ def upload_file():
 # def csvuebergabe():
 #     print ('datei uebergeben')
 #     # print (request.get_data(file.name))
-#     # return send_file('result.csv')
+#     # return send_file('resultalt.csv')
 #     # data = request.get_data(file)
 #     # with open(request.files['File'], 'r') as data:
 #         # spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
@@ -107,5 +107,5 @@ def run_demo(testvariable):
     print("total run time: {} minutes".format((stp - st) / 60.0))
     print("Test" + testvariable)
     # return testvariable
-    return send_file('result.csv')
+    return send_file('resultalt.csv')
     # return 'neuerReturn'

@@ -395,7 +395,7 @@ class Somnus:
                 mode="w",
             )
             df.to_csv(self.sub_dst + "/result_sleep_prediction.csv")
-        return df.to_csv("result.csv")
+        return df.to_csv("resultalt.csv")
 
 
     def clear_data(self):

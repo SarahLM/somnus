@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -16,6 +17,7 @@ import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:frontend_somnus/widgets/theme.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:http/http.dart' as http;
+import 'package:csv/csv.dart';
 
 class HypnogramScreen extends StatefulWidget {
   final Color color;
@@ -143,6 +145,29 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
     request.files.add(multipartFile);
     var res = await request.send();
     return res.reasonPhrase;
+  }
+
+  loadAsset() async {
+    final myData = await rootBundle.loadString("assets/result.csv");
+    // print(myData);
+    // print(myData.runtimeType);
+    // List<dynamic> csvTable = CsvToListConverter().convert(myData);
+    // print(csvTable);
+    // print(csvTable.length);
+    String result = myData.replaceAll(RegExp(' '), ',');
+    // print(result);
+    result = result.substring(0, 5) +
+        "clock_time," +
+        result.substring(5, result.length);
+    print(result);
+    // List<dynamic> list = CsvToListConverter().convert(result);
+    // print(list);
+    // print(list.length);
+    // print(list.runtimeType);
+
+    List<String> test = result.split('\n');
+    print(test);
+    print(test.length);
   }
 
   Widget buildFlatButton(String title, bool button) {
@@ -462,6 +487,8 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     var res =
                         await uploadFile(file, 'http://10.0.2.2:5000/data');
                     print(res);
+
+                    loadAsset();
                   },
                 ),
               ],

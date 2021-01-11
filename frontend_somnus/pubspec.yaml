@@ -44,6 +44,7 @@ dependencies:
   sqflite: ^1.3.0
   path_provider: ^1.6.24
   http: ^0.12.2
+  csv: ^4.1.0
   
 
   # The following adds the Cupertino Icons font to your application.
@@ -83,6 +84,7 @@ flutter:
       - assets/images/tutorial_hypnogram.png
       - assets/images/tutorial_analysis.png
       - assets/inputAccelero.csv
+      - assets/result.csv
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

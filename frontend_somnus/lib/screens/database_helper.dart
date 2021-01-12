@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -134,5 +135,26 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.query(results,
         where: "$columnDate BETWEEN '$date1' AND '$date2'");
+  }
+
+  resultsToDb() async {
+    final myData = await rootBundle.loadString("assets/result.csv");
+    String result = myData.replaceAll(RegExp(' '), ',');
+    result = result.substring(0, 5) +
+        "clock_time," +
+        result.substring(5, result.length);
+    List<dynamic> test = result.split('\n');
+    print('Start');
+    for (int i = 1; i < test.length - 1; i++) {
+      var insertArray = test[i].split(',');
+      Map<String, dynamic> row = {
+        DatabaseHelper.columnDate: insertArray[0],
+        DatabaseHelper.columnTime: insertArray[1],
+        DatabaseHelper.columnSleepwake: insertArray[2],
+      };
+
+      await insertsleepwake(row);
+    }
+    print('Done');
   }
 }

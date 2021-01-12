@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
-import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
-//import 'package:frontend_somnus/providers/states.dart';
-//import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 

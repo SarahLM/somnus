@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend_somnus/screens/database_helper.dart';
 import 'package:frontend_somnus/screens/db_analyse_screen.dart';
 import 'package:intl/intl.dart';
@@ -330,5 +331,26 @@ class DataStates with ChangeNotifier {
       print(row['time'].substring(3, 5));
     });
     return dataFromDB;
+  }
+
+  resultsToDb() async {
+    final myData = await rootBundle.loadString("assets/result.csv");
+    String result = myData.replaceAll(RegExp(' '), ',');
+    result = result.substring(0, 5) +
+        "clock_time," +
+        result.substring(5, result.length);
+    List<dynamic> test = result.split('\n');
+    print('Start');
+    for (int i = 1; i < test.length - 1; i++) {
+      var insertArray = test[i].split(',');
+      Map<String, dynamic> row = {
+        DatabaseHelper.columnDate: insertArray[0],
+        DatabaseHelper.columnTime: insertArray[1],
+        DatabaseHelper.columnSleepwake: insertArray[2],
+      };
+
+      await dbHelper.insertsleepwake(row);
+    }
+    print('Done');
   }
 }

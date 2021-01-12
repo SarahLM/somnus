@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -11,14 +9,11 @@ import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
-//import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
 import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:frontend_somnus/widgets/theme.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:http/http.dart' as http;
-import 'package:csv/csv.dart';
-
 import 'database_helper.dart';
 
 class HypnogramScreen extends StatefulWidget {
@@ -148,49 +143,6 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
     request.files.add(multipartFile);
     var res = await request.send();
     return res.reasonPhrase;
-  }
-
-  loadAsset() async {
-    final myData = await rootBundle.loadString("assets/result.csv");
-    // print(myData);
-    // print(myData.runtimeType);
-    // List<dynamic> csvTable = CsvToListConverter().convert(myData);
-    // print(csvTable);
-    // print(csvTable.length);
-    String result = myData.replaceAll(RegExp(' '), ',');
-    // print(result);
-    result = result.substring(0, 5) +
-        "clock_time," +
-        result.substring(5, result.length);
-    //print(result);
-    // List<dynamic> list = CsvToListConverter().convert(result);
-    // print(list);
-    // print(list.length);
-    // print(list.runtimeType);
-
-    List<dynamic> test = result.split('\n');
-    for (int i = 1; i < test.length - 1; i++) {
-      var insertArray = test[i].split(',');
-      Map<String, dynamic> row = {
-        DatabaseHelper.columnDate: insertArray[0],
-        DatabaseHelper.columnTime: insertArray[1],
-        DatabaseHelper.columnSleepwake: insertArray[2],
-      };
-      print(row);
-      final id = await dbHelper.insertsleepwake(row);
-      print('inserted row id: $id');
-
-      //final id = await dbHelper.insertsleepwake(row);
-      //print('inserted row id: $id');
-    }
-
-    //   test.forEach((element) async { Map<String, dynamic> row = {
-    //     DatabaseHelper.columnDate: element.first,
-    //     DatabaseHelper.columnTime: ,
-    //     DatabaseHelper.columnSleepwake: element.last,
-    //   };
-    //   final id = await dbHelper.insertsleepwake(row);
-    //   print('inserted row id: $id');});
   }
 
   Widget buildFlatButton(String title, bool button) {
@@ -510,8 +462,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     var res =
                         await uploadFile(file, 'http://10.0.2.2:5000/data');
                     print(res);
-
-                    loadAsset();
+                    dbHelper.resultsToDb();
                   },
                 ),
               ],

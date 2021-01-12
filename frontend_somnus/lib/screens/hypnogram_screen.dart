@@ -19,6 +19,8 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:http/http.dart' as http;
 import 'package:csv/csv.dart';
 
+import 'database_helper.dart';
+
 class HypnogramScreen extends StatefulWidget {
   final Color color;
   // buttonTextStyle = TextStyle(color: Theme.of(context).accentColor);
@@ -159,15 +161,36 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
     result = result.substring(0, 5) +
         "clock_time," +
         result.substring(5, result.length);
-    print(result);
+    //print(result);
     // List<dynamic> list = CsvToListConverter().convert(result);
     // print(list);
     // print(list.length);
     // print(list.runtimeType);
 
-    List<String> test = result.split('\n');
-    print(test);
-    print(test.length);
+    List<dynamic> test = result.split('\n');
+    //print(test[0]);
+
+    test.forEach((element) async {
+      if (test.isNotEmpty) {
+        var insertArray = element.split(',');
+        Map<String, dynamic> row = {
+          DatabaseHelper.columnDate: insertArray[0],
+          DatabaseHelper.columnTime: insertArray[1],
+          DatabaseHelper.columnSleepwake: insertArray[2],
+        };
+        print(row);
+      }
+      //final id = await dbHelper.insertsleepwake(row);
+      //print('inserted row id: $id');
+    });
+
+    //   test.forEach((element) async { Map<String, dynamic> row = {
+    //     DatabaseHelper.columnDate: element.first,
+    //     DatabaseHelper.columnTime: ,
+    //     DatabaseHelper.columnSleepwake: element.last,
+    //   };
+    //   final id = await dbHelper.insertsleepwake(row);
+    //   print('inserted row id: $id');});
   }
 
   Widget buildFlatButton(String title, bool button) {

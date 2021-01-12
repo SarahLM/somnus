@@ -43,6 +43,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
 
   List<DataPoint> sleepData;
   List<DataPoint> dataPoints;
+  final dbHelper = DatabaseHelper.instance;
 
   @override
   initState() {
@@ -168,21 +169,20 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
     // print(list.runtimeType);
 
     List<dynamic> test = result.split('\n');
-    //print(test[0]);
+    for (int i = 1; i < test.length - 1; i++) {
+      var insertArray = test[i].split(',');
+      Map<String, dynamic> row = {
+        DatabaseHelper.columnDate: insertArray[0],
+        DatabaseHelper.columnTime: insertArray[1],
+        DatabaseHelper.columnSleepwake: insertArray[2],
+      };
+      print(row);
+      final id = await dbHelper.insertsleepwake(row);
+      print('inserted row id: $id');
 
-    test.forEach((element) async {
-      if (test.isNotEmpty) {
-        var insertArray = element.split(',');
-        Map<String, dynamic> row = {
-          DatabaseHelper.columnDate: insertArray[0],
-          DatabaseHelper.columnTime: insertArray[1],
-          DatabaseHelper.columnSleepwake: insertArray[2],
-        };
-        print(row);
-      }
       //final id = await dbHelper.insertsleepwake(row);
       //print('inserted row id: $id');
-    });
+    }
 
     //   test.forEach((element) async { Map<String, dynamic> row = {
     //     DatabaseHelper.columnDate: element.first,

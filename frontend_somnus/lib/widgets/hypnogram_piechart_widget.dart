@@ -15,7 +15,7 @@ class HypnogramPieChart extends StatefulWidget {
 class _HypnogramPieChartState extends State<HypnogramPieChart> {
   Map<String, double> dataMap;
 
-  String textLabel = "Zeit";
+  String textLabel = "Zeit in Minuten";
   bool buttonTime = true;
   bool buttonPercent = false;
 

@@ -297,7 +297,7 @@ class DataStates with ChangeNotifier {
             parsedDate.day,
             int.parse(row['time'].substring(0, 2)),
             int.parse(row['time'].substring(3, 5)),
-            //int.parse(row['time'].substring(6, 8)),
+            int.parse(row['time'].substring(6, 8)),
           ),
           row['sleepwake'],
         ),

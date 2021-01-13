@@ -8,7 +8,7 @@ class Sync extends StatelessWidget {
   final List<DataPoint> sleepData;
   final Color colorAsleep = Color(0xFF0529B3);
   final Color colorAwake = Color(0xFFFF9221);
-  final f = new DateFormat('dd.MM.yyyy k:mm ');
+  final f = new DateFormat('dd.MM.yyyy kk:mm ');
 
   Sync({
     this.title,

@@ -39,7 +39,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
 
   final dataStates = DataStates();
 
-  List<DataPoint> sleepData;
+  List<DataPoint> sleepData = [];
   List<DataPoint> dataPoints;
   final dbHelper = DatabaseHelper.instance;
 
@@ -55,6 +55,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
     setState(() {
       sleepData = dataPoints;
       timePrinted = DateTime.now().toString();
+      title = '';
     });
   }
 
@@ -394,11 +395,26 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                             height: 10,
                           ),
                           Center(
-                            child: Text(
-                              'Für den ausgewählten Zeitraum ' +
-                                  title +
-                                  ' liegen keine Daten vor.',
-                              textAlign: TextAlign.center,
+                            child: Column(
+                              children: [
+                                Text(
+                                  'Für den ausgewählten Zeitraum ' +
+                                      title +
+                                      ' liegen keine Daten vor.',
+                                  textAlign: TextAlign.center,
+                                ),
+                                // FlatButton(
+                                //     onPressed: () async {
+                                //       var file = 'inputAccelero.csv';
+
+                                //       var res = await uploadFile(
+                                //           file, 'http://10.0.2.2:5000/data');
+
+                                //       print(res);
+                                //       dbHelper.resultsToDb();
+                                //     },
+                                //     child: Text('Daten hochladen'))
+                              ],
                             ),
                           ),
                         ],

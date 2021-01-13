@@ -139,8 +139,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
     return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
   }
 
-  Future<StreamSubscription<String>> uploadFile(
-      String filename, String url) async {
+  Future<String> uploadFile(String filename, String url) async {
     var request = http.MultipartRequest('POST', Uri.parse(url));
     var multipartFile = http.MultipartFile.fromBytes(
       'file',
@@ -148,15 +147,15 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
       filename: 'inputAccelero.csv', // use the real name if available, or omit
     );
 
-    await new File('assets/out.csv').create(recursive: false);
+    //await new File('assets/out.csv').create(recursive: false);
     //var myFile = File('assets/out.csv');
     // var out = myFile.openWrite();
     request.files.add(multipartFile);
     var res = await request.send();
     var string = res.stream.transform(new Utf8Decoder()).listen(null);
     // out.write(string);
-    // return res.reasonPhrase;
-    return string;
+    return res.reasonPhrase;
+    //return string;
   }
 
   Widget buildFlatButton(String title, bool button) {
@@ -477,7 +476,8 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     var res =
                         await uploadFile(file, 'http://10.0.2.2:5000/data');
 
-                    // print(res);
+                    print(res);
+                    dbHelper.resultsToDb();
                   },
                 ),
               ],

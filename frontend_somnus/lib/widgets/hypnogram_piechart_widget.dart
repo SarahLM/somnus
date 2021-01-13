@@ -49,6 +49,31 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
     // return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
   }
 
+  String durationToStringAlternative(int min) {
+    Duration d = new Duration(minutes: min);
+    var seconds = d.inSeconds;
+    final days = seconds ~/ Duration.secondsPerDay;
+    seconds -= days * Duration.secondsPerDay;
+    final hours = seconds ~/ Duration.secondsPerHour;
+    seconds -= hours * Duration.secondsPerHour;
+    final minutes = seconds ~/ Duration.secondsPerMinute;
+    seconds -= minutes * Duration.secondsPerMinute;
+
+    final List<String> tokens = [];
+    if (days != 0) {
+      tokens.add('${days}d');
+    }
+    if (tokens.isNotEmpty || hours != 0) {
+      tokens.add('$hours h');
+    }
+    if (tokens.isNotEmpty || minutes != 0) {
+      tokens.add('$minutes min');
+    }
+    //tokens.add('${seconds}s');
+
+    return tokens.join(':');
+  }
+
   Map<String, IconData> iconMapping = {
     'time': FontAwesomeIcons.clock,
     'percent': FontAwesomeIcons.percent,
@@ -88,8 +113,8 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
           ),
           Text(
             'Gesamtlänge der Aufzeichnung:  ' +
-                durationToString(widget.sleepData.length ~/ 2).toString() +
-                ' Stunden',
+                durationToStringAlternative(widget.sleepData.length ~/ 2)
+                    .toString(),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight: FontWeight.w600,

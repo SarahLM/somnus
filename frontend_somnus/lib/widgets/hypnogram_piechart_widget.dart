@@ -27,20 +27,26 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
   Map<String, double> getDataList() {
     return dataMap = {
       "Schlaf": (widget.sleepData.where((dataPoint) => dataPoint.state == 0.0))
-          .toList()
-          .length
-          .toDouble(),
+              .toList()
+              .length
+              .toDouble() /
+          2,
       "Wach": (widget.sleepData.where((dataPoint) => dataPoint.state == 1.0))
-          .toList()
-          .length
-          .toDouble(),
+              .toList()
+              .length
+              .toDouble() /
+          2,
     };
   }
 
   String durationToString(int minutes) {
     var d = Duration(minutes: minutes);
-    List<String> parts = d.toString().split(':');
-    return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(d.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(d.inSeconds.remainder(60));
+    return "${twoDigits(d.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+    // List<String> parts = d.toString().split(':');
+    // return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
   }
 
   Map<String, IconData> iconMapping = {
@@ -82,7 +88,7 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
           ),
           Text(
             'Gesamtlänge der Aufzeichnung:  ' +
-                durationToString(widget.sleepData.length) +
+                durationToString(widget.sleepData.length ~/ 2).toString() +
                 ' Stunden',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -93,7 +99,7 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
           ButtonBar(mainAxisSize: MainAxisSize.min, children: <Widget>[
             buildButton(
                 buttonUsed: buttonTime,
-                text: "Zeit",
+                text: "Zeit in Minuten",
                 timeButton: true,
                 percentButton: false,
                 icon: 'time'),

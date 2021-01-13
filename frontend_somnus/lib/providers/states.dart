@@ -292,12 +292,13 @@ class DataStates with ChangeNotifier {
       dataFromDB.add(
         DataPoint(
           DateTime(
-              parsedDate.year,
-              parsedDate.month,
-              parsedDate.day,
-              int.parse(row['time'].substring(0, 2)),
-              int.parse(row['time'].substring(3, 5)),
-              int.parse(row['time'].substring(6, 8))),
+            parsedDate.year,
+            parsedDate.month,
+            parsedDate.day,
+            int.parse(row['time'].substring(0, 2)),
+            int.parse(row['time'].substring(3, 5)),
+            //int.parse(row['time'].substring(6, 8)),
+          ),
           row['sleepwake'],
         ),
       );

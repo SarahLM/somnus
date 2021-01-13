@@ -296,12 +296,14 @@ class DataStates with ChangeNotifier {
               parsedDate.month,
               parsedDate.day,
               int.parse(row['time'].substring(0, 2)),
-              int.parse(row['time'].substring(3, 5))),
+              int.parse(row['time'].substring(3, 5)),
+              int.parse(row['time'].substring(6, 8))),
           row['sleepwake'],
         ),
       );
       print(row['time'].substring(0, 2));
       print(row['time'].substring(3, 5));
+      print(row['time'].substring(6, 8));
     });
     return dataFromDB;
   }

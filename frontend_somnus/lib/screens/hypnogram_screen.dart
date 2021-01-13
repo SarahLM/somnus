@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -62,8 +61,8 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
   final GlobalKey<State<StatefulWidget>> _printKey = GlobalKey();
 
   Future<Uint8List> _printScreen() async {
-    const imageProvider = const AssetImage('assets/images/somnus_logo.png');
-    final image1 = await flutterImageProvider(imageProvider);
+    //const imageProvider = const AssetImage('assets/images/somnus_logo.png');
+    // final image1 = await flutterImageProvider(imageProvider);
     Printing.layoutPdf(onLayout: (PdfPageFormat format) async {
       final doc = pw.Document();
 
@@ -93,12 +92,13 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                         pw.Container(
                           height: 50,
                           width: 50,
-                          child: pw.Image.provider(image1),
+                          // child: pw.Image.provider(image1),
                         )
                       ],
                     ),
                     pw.Text('Zeitraum: ' + timePrinted),
                     pw.Expanded(
+                      // ignore: deprecated_member_use
                       child: pw.Image(image),
                     ),
                     pw.Text(
@@ -337,7 +337,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                       initialFirstDate: new DateTime.now(),
                       initialLastDate:
                           (new DateTime.now()).add(new Duration(days: 7)),
-                      firstDate: new DateTime(2021),
+                      firstDate: new DateTime(2019),
                       lastDate: new DateTime(2023),
                     );
 
@@ -376,7 +376,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
             // ),
             //LineAreaPage(),
             //LineAreaPage(),
-            ((this.sleepData.length == 0)
+            ((this.sleepData == null || this.sleepData.length == 0)
                 ? Center(
                     child: Container(
                       height: MediaQuery.of(context).size.height / 2,

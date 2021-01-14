@@ -103,6 +103,12 @@ class DatabaseHelper {
         await db.rawQuery('SELECT COUNT(*) FROM $table'));
   }
 
+  Future<int> doubleValues(date, time) async {
+    Database db = await instance.database;
+    return Sqflite.firstIntValue(await db.rawQuery(
+        "SELECT COUNT(*) FROM $results WHERE $columnDate='$date' AND $columnTime='$time'"));
+  }
+
   Future<int> queryRowCountResults() async {
     Database db = await instance.database;
     return Sqflite.firstIntValue(
@@ -137,6 +143,13 @@ class DatabaseHelper {
         where: "$columnDate BETWEEN '$date1' AND '$date2'");
   }
 
+  checkValue(date, time) async {
+    final val = await doubleValues(date, time);
+    //print('count');
+    //print(val);
+    return val;
+  }
+
   resultsToDb() async {
     final myData = await rootBundle.loadString("assets/result.csv");
     String result = myData.replaceAll(RegExp(' '), ',');
@@ -152,9 +165,27 @@ class DatabaseHelper {
         DatabaseHelper.columnTime: insertArray[1],
         DatabaseHelper.columnSleepwake: insertArray[2],
       };
-
-      await insertsleepwake(row);
+      int count = await checkValue(insertArray[0], insertArray[1]);
+      if (count == 0) {
+        //  print('Insert');
+        await insertsleepwake(row);
+      } else {
+        // print('No insert');
+      }
     }
     print('Done');
+  }
+
+  Future<void> cleanDatabase() async {
+    try {
+      Database db = await instance.database;
+      await db.transaction((txn) async {
+        var batch = txn.batch();
+        batch.delete(results);
+        await batch.commit();
+      });
+    } catch (error) {
+      throw Exception('DbBase.cleanDatabase: ' + error.toString());
+    }
   }
 }

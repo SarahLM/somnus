@@ -183,322 +183,322 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        title: ButtonBar(
-          alignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            FlatButton(
-              child: Text(
-                'Heute',
-                style: TextStyle(
-                  color: _pressedButton1
-                      ? Colors.white
-                      : Theme.of(context).accentColor,
-                ),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
-                side: BorderSide(color: Theme.of(context).accentColor),
-              ),
-              color: _pressedButton1
-                  ? Theme.of(context).accentColor
-                  : Colors.white,
-              onPressed: () async {
-                // final dataStatesData =
-                //Provider.of<DataStates>(context, listen: false);
-                //final dataPoints = dataStatesData.items;
-                final dataPoints =
-                    await Provider.of<DataStates>(context, listen: false)
-                        .getDataForSingleDate(DateTime.now());
-                setState(() {
-                  _pressedButton1 = true;
-                  _pressedButton2 = false;
-                  _pressedButton3 = false;
-                  _pressedButton4 = false;
-                  title = '';
-                  sleepData = dataPoints;
-                  timePrinted = (DateTime.now().toString());
-                });
-              },
-            ),
-            FlatButton(
-              child: Text(
-                'Gestern',
-                style: TextStyle(
-                  color: _pressedButton2
-                      ? Colors.white
-                      : Theme.of(context).accentColor,
-                ),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
-                side: BorderSide(color: Theme.of(context).accentColor),
-              ),
-              color: _pressedButton2
-                  ? Theme.of(context).accentColor
-                  : Colors.white,
-              onPressed: () async {
-                // final dataPoints =
-                //     Provider.of<DataStates>(context, listen: false).findByDate(
-                //         (new DateTime.now()).add(new Duration(days: -2)),
-                //         DateTime.now());
-                final DateTime date1 = DateTime.now();
-                dataPoints = await Provider.of<DataStates>(context,
-                        listen: false)
-                    .getDataForSingleDate(date1.add(new Duration(days: -1)));
-                setState(() {
-                  _pressedButton2 = true;
-                  _pressedButton1 = false;
-                  _pressedButton3 = false;
-                  _pressedButton4 = false;
-                  title = '';
-                  sleepData = dataPoints;
-                  timePrinted =
-                      (DateTime.now()).add(new Duration(days: -2)).toString() +
-                          ' bis ' +
-                          DateTime.now().toString();
-                });
-                //dataStates.getResult();
-              },
-            ),
-            FlatButton(
-              child: Text(
-                '7 Tage',
-                style: TextStyle(
-                  color: _pressedButton3
-                      ? Colors.white
-                      : Theme.of(context).accentColor,
-                ),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
-                side: BorderSide(color: Theme.of(context).accentColor),
-              ),
-              color: _pressedButton3
-                  ? Theme.of(context).accentColor
-                  : Colors.white,
-              onPressed: () async {
-                final dataPoints =
-                    await Provider.of<DataStates>(context, listen: false)
-                        .getDataForDateRange(
-                  DateTime.now(),
-                  (new DateTime.now()).add(new Duration(days: -7)),
-                );
-                setState(() {
-                  _pressedButton3 = true;
-                  _pressedButton1 = false;
-                  _pressedButton2 = false;
-                  _pressedButton4 = false;
-                  title = '';
-                  sleepData = dataPoints;
-                  timePrinted = DateFormat('dd.MM. yyyy')
-                          .format((DateTime.now()).add(new Duration(days: -7)))
-                          .toString() +
-                      ' bis ' +
-                      DateFormat('dd.MM. yyyy')
-                          .format(DateTime.now())
-                          .toString();
-                  print(sleepData);
-                });
-              },
-            ),
-            DatePickerTheme(
-              Builder(
-                builder: (context) => FlatButton(
-                  child: new Text(
-                    "Custom",
-                    style: TextStyle(
-                      color: _pressedButton4
-                          ? Colors.white
-                          : Theme.of(context).accentColor,
-                    ),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.white,
+          title: ButtonBar(
+            alignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              FlatButton(
+                child: Text(
+                  'Heute',
+                  style: TextStyle(
+                    color: _pressedButton1
+                        ? Colors.white
+                        : Theme.of(context).accentColor,
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                    side: BorderSide(color: Theme.of(context).accentColor),
-                  ),
-                  color: _pressedButton4
-                      ? Theme.of(context).accentColor
-                      : Colors.white,
-                  onPressed: () async {
-                    setState(() {
-                      _pressedButton4 = true;
-                      _pressedButton1 = false;
-                      _pressedButton2 = false;
-                      _pressedButton3 = false;
-                    });
-                    final List<DateTime> picked =
-                        await DateRagePicker.showDatePicker(
-                      locale: const Locale("de", "DE"),
-                      context: context,
-                      initialFirstDate: new DateTime.now(),
-                      initialLastDate:
-                          (new DateTime.now()).add(new Duration(days: 7)),
-                      firstDate: new DateTime(2019),
-                      lastDate: new DateTime(2023),
-                    );
-
-                    if (picked != null && picked.length == 2) {
-                      print(picked);
-                      print(picked.runtimeType);
-                      dataPoints =
-                          await Provider.of<DataStates>(context, listen: false)
-                              .getDataForDateRange((picked[1]), (picked[0]));
-                      setState(() {
-                        title = DateFormat('dd.MM. yyyy')
-                                .format(picked[0])
-                                .toString() +
-                            ' bis ' +
-                            DateFormat('dd.MM. yyyy')
-                                .format(picked[1])
-                                .toString();
-                        sleepData = dataPoints;
-                        timePrinted = title;
-                      });
-                    }
-                  },
                 ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Theme.of(context).accentColor),
+                ),
+                color: _pressedButton1
+                    ? Theme.of(context).accentColor
+                    : Colors.white,
+                onPressed: () async {
+                  // final dataStatesData =
+                  //Provider.of<DataStates>(context, listen: false);
+                  //final dataPoints = dataStatesData.items;
+                  final dataPoints =
+                      await Provider.of<DataStates>(context, listen: false)
+                          .getDataForSingleDate(DateTime.now());
+                  setState(() {
+                    _pressedButton1 = true;
+                    _pressedButton2 = false;
+                    _pressedButton3 = false;
+                    _pressedButton4 = false;
+                    title = '';
+                    sleepData = dataPoints;
+                    timePrinted = (DateTime.now().toString());
+                  });
+                },
               ),
-            ),
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Container(
-            //   alignment: Alignment.center,
-            //   color: widget.color,
-            //   child: Container(),
-            // ),
-            //LineAreaPage(),
-            //LineAreaPage(),
-            ((this.sleepData == null || this.sleepData.length == 0)
-                ? Center(
-                    child: Container(
-                      height: MediaQuery.of(context).size.height / 2,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        //crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Icon(
-                              Icons.sentiment_dissatisfied,
-                              color: Colors.orange,
-                              size: 60.0,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Center(
-                            child: Column(
-                              children: [
-                                Text(
-                                  'Für den ausgewählten Zeitraum ' +
-                                      title +
-                                      ' liegen keine Daten vor.',
-                                  textAlign: TextAlign.center,
-                                ),
-                                // FlatButton(
-                                //     onPressed: () async {
-                                //       var file = 'inputAccelero.csv';
-
-                                //       var res = await uploadFile(
-                                //           file, 'http://10.0.2.2:5000/data');
-
-                                //       print(res);
-                                //       dbHelper.resultsToDb();
-                                //     },
-                                //     child: Text('Daten hochladen'))
-                              ],
-                            ),
-                          ),
-                        ],
+              FlatButton(
+                child: Text(
+                  'Gestern',
+                  style: TextStyle(
+                    color: _pressedButton2
+                        ? Colors.white
+                        : Theme.of(context).accentColor,
+                  ),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Theme.of(context).accentColor),
+                ),
+                color: _pressedButton2
+                    ? Theme.of(context).accentColor
+                    : Colors.white,
+                onPressed: () async {
+                  // final dataPoints =
+                  //     Provider.of<DataStates>(context, listen: false).findByDate(
+                  //         (new DateTime.now()).add(new Duration(days: -2)),
+                  //         DateTime.now());
+                  final DateTime date1 = DateTime.now();
+                  dataPoints = await Provider.of<DataStates>(context,
+                          listen: false)
+                      .getDataForSingleDate(date1.add(new Duration(days: -1)));
+                  setState(() {
+                    _pressedButton2 = true;
+                    _pressedButton1 = false;
+                    _pressedButton3 = false;
+                    _pressedButton4 = false;
+                    title = '';
+                    sleepData = dataPoints;
+                    timePrinted = (DateTime.now())
+                            .add(new Duration(days: -2))
+                            .toString() +
+                        ' bis ' +
+                        DateTime.now().toString();
+                  });
+                  //dataStates.getResult();
+                },
+              ),
+              FlatButton(
+                child: Text(
+                  '7 Tage',
+                  style: TextStyle(
+                    color: _pressedButton3
+                        ? Colors.white
+                        : Theme.of(context).accentColor,
+                  ),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                  side: BorderSide(color: Theme.of(context).accentColor),
+                ),
+                color: _pressedButton3
+                    ? Theme.of(context).accentColor
+                    : Colors.white,
+                onPressed: () async {
+                  final dataPoints =
+                      await Provider.of<DataStates>(context, listen: false)
+                          .getDataForDateRange(
+                    DateTime.now(),
+                    (new DateTime.now()).add(new Duration(days: -7)),
+                  );
+                  setState(() {
+                    _pressedButton3 = true;
+                    _pressedButton1 = false;
+                    _pressedButton2 = false;
+                    _pressedButton4 = false;
+                    title = '';
+                    sleepData = dataPoints;
+                    timePrinted = DateFormat('dd.MM. yyyy')
+                            .format(
+                                (DateTime.now()).add(new Duration(days: -7)))
+                            .toString() +
+                        ' bis ' +
+                        DateFormat('dd.MM. yyyy')
+                            .format(DateTime.now())
+                            .toString();
+                    print(sleepData);
+                  });
+                },
+              ),
+              DatePickerTheme(
+                Builder(
+                  builder: (context) => FlatButton(
+                    child: new Text(
+                      "Custom",
+                      style: TextStyle(
+                        color: _pressedButton4
+                            ? Colors.white
+                            : Theme.of(context).accentColor,
                       ),
                     ),
-                  )
-                : Container(
-                    padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
-                    child: Column(
-                      children: [
-                        Container(
-                          child: RepaintBoundary(
-                            key: _printKey,
-                            child: Sync(
-                              title: this.title,
-                              sleepData: this.sleepData,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                      side: BorderSide(color: Theme.of(context).accentColor),
+                    ),
+                    color: _pressedButton4
+                        ? Theme.of(context).accentColor
+                        : Colors.white,
+                    onPressed: () async {
+                      setState(() {
+                        _pressedButton4 = true;
+                        _pressedButton1 = false;
+                        _pressedButton2 = false;
+                        _pressedButton3 = false;
+                      });
+                      final List<DateTime> picked =
+                          await DateRagePicker.showDatePicker(
+                        locale: const Locale("de", "DE"),
+                        context: context,
+                        initialFirstDate: new DateTime.now(),
+                        initialLastDate:
+                            (new DateTime.now()).add(new Duration(days: 7)),
+                        firstDate: new DateTime(2019),
+                        lastDate: new DateTime(2023),
+                      );
+
+                      if (picked != null && picked.length == 2) {
+                        print(picked);
+                        print(picked.runtimeType);
+                        dataPoints = await Provider.of<DataStates>(context,
+                                listen: false)
+                            .getDataForDateRange((picked[1]), (picked[0]));
+                        setState(() {
+                          title = DateFormat('dd.MM. yyyy')
+                                  .format(picked[0])
+                                  .toString() +
+                              ' bis ' +
+                              DateFormat('dd.MM. yyyy')
+                                  .format(picked[1])
+                                  .toString();
+                          sleepData = dataPoints;
+                          timePrinted = title;
+                        });
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Container(
+              //   alignment: Alignment.center,
+              //   color: widget.color,
+              //   child: Container(),
+              // ),
+              //LineAreaPage(),
+              //LineAreaPage(),
+              ((this.sleepData == null || this.sleepData.length == 0)
+                  ? Center(
+                      child: Container(
+                        height: MediaQuery.of(context).size.height / 2,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          //crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: Icon(
+                                Icons.sentiment_dissatisfied,
+                                color: Colors.orange,
+                                size: 60.0,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Center(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Für den ausgewählten Zeitraum ' +
+                                        title +
+                                        ' liegen keine Daten vor.',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  // FlatButton(
+                                  //     onPressed: () async {
+                                  //       var file = 'inputAccelero.csv';
+
+                                  //       var res = await uploadFile(
+                                  //           file, 'http://10.0.2.2:5000/data');
+
+                                  //       print(res);
+                                  //       dbHelper.resultsToDb();
+                                  //     },
+                                  //     child: Text('Daten hochladen'))
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : Container(
+                      padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                      child: Column(
+                        children: [
+                          Container(
+                            child: RepaintBoundary(
+                              key: _printKey,
+                              child: Sync(
+                                title: this.title,
+                                sleepData: this.sleepData,
+                              ),
                             ),
                           ),
-                        ),
-                        HypnogramPieChart(
-                          sleepData: this.sleepData,
-                        ),
-                        SizedBox(height: 20),
-                        // Text(
-                        //   'Schlafdauer',
-                        //   style: TextStyle(
-                        //       fontSize: 20, fontWeight: FontWeight.bold),
-                        // ),
-                        // Text(
-                        //   'Gesamtlänge der Aufzeichnung:  ' +
-                        //       durationToString(sleepData.length) +
-                        //       ' Stunden',
-                        //   textAlign: TextAlign.center,
-                        //   style: TextStyle(
-                        //     fontWeight: FontWeight.w600,
-                        //     fontSize: 12.0,
-                        //   ),
-                        // ),
-                        // SizedBox(
-                        //   height: 4,
-                        // ),
-                        // Text('Davon schlafend: ' +
-                        //     durationToString((sleepData.where(
-                        //             (dataPoint) => dataPoint.state == 0.0))
-                        //         .toList()
-                        //         .length) +
-                        //     ' Stunden'),
-                        // Text('Davon wach: ' +
-                        //     durationToString((sleepData.where(
-                        //             (dataPoint) => dataPoint.state == 1.0))
-                        //         .toList()
-                        //         .length) +
-                        //     ' Stunden'),
-                      ],
-                    ),
+                          HypnogramPieChart(
+                            sleepData: this.sleepData,
+                          ),
+                          SizedBox(height: 20),
+                          // Text(
+                          //   'Schlafdauer',
+                          //   style: TextStyle(
+                          //       fontSize: 20, fontWeight: FontWeight.bold),
+                          // ),
+                          // Text(
+                          //   'Gesamtlänge der Aufzeichnung:  ' +
+                          //       durationToString(sleepData.length) +
+                          //       ' Stunden',
+                          //   textAlign: TextAlign.center,
+                          //   style: TextStyle(
+                          //     fontWeight: FontWeight.w600,
+                          //     fontSize: 12.0,
+                          //   ),
+                          // ),
+                          // SizedBox(
+                          //   height: 4,
+                          // ),
+                          // Text('Davon schlafend: ' +
+                          //     durationToString((sleepData.where(
+                          //             (dataPoint) => dataPoint.state == 0.0))
+                          //         .toList()
+                          //         .length) +
+                          //     ' Stunden'),
+                          // Text('Davon wach: ' +
+                          //     durationToString((sleepData.where(
+                          //             (dataPoint) => dataPoint.state == 1.0))
+                          //         .toList()
+                          //         .length) +
+                          //     ' Stunden'),
+                        ],
+                      ),
+                    )
+              //LineAreaPage()
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            this.sleepData.length != 0
+                ? FloatingActionButton(
+                    child: const Icon(Icons.print),
+                    onPressed: _printScreen,
                   )
-            //LineAreaPage()
+                : Container(),
+            FloatingActionButton(
+              child: const Icon(Icons.upload_file),
+              onPressed: () async {
+                var file = 'inputAccelero.csv';
+
+                var res = await uploadFile(file, 'http://10.0.2.2:5000/data');
+
+                print(res);
+                dbHelper.resultsToDb();
+              },
             ),
           ],
-        ),
-      ),
-      floatingActionButton: this.sleepData.length != 0
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FloatingActionButton(
-                  child: const Icon(Icons.print),
-                  onPressed: _printScreen,
-                ),
-                FloatingActionButton(
-                  child: const Icon(Icons.upload_file),
-                  onPressed: () async {
-                    var file = 'inputAccelero.csv';
-
-                    var res =
-                        await uploadFile(file, 'http://10.0.2.2:5000/data');
-
-                    print(res);
-                    dbHelper.resultsToDb();
-                  },
-                ),
-              ],
-            )
-          : Container(),
-    );
+        ));
   }
 }

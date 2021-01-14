@@ -85,7 +85,7 @@ class MyHomePage extends StatelessWidget {
                 style: TextStyle(fontSize: 20),
               ),
               onPressed: () {
-                _delete();
+                _deleteAll();
               },
             ),
           ],
@@ -160,5 +160,12 @@ class MyHomePage extends StatelessWidget {
     final id = await dbHelper.queryRowCount();
     final rowsDeleted = await dbHelper.delete(id);
     print('deleted $rowsDeleted row(s): row $id');
+  }
+
+  void _deleteAll() async {
+    // Assuming that the number of rows is the id for the last row.
+    await dbHelper.cleanDatabase();
+
+    print('all results deleted');
   }
 }

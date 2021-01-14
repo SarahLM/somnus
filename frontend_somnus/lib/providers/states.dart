@@ -284,26 +284,25 @@ class DataStates with ChangeNotifier {
     final DateFormat serverFormater = DateFormat('yyyy-MM-dd');
     print('Single Date in states: ' + serverFormater.format(date));
     dataToDB = [];
-    final allRowsFromDb = await dbHelper.queryAllRowsSleep();
     final allRows =
         await dbHelper.queryResultsSingleDay(serverFormater.format(date));
     allRows.forEach((row) async {
       var parsedDate = DateTime.parse(row['date']);
       print(row);
-      !allRowsFromDb.contains(row) ??
-          dataToDB.add(
-            DataPoint(
-              DateTime(
-                parsedDate.year,
-                parsedDate.month,
-                parsedDate.day,
-                int.parse(row['time'].substring(0, 2)),
-                int.parse(row['time'].substring(3, 5)),
-                int.parse(row['time'].substring(6, 8)),
-              ),
-              row['sleepwake'],
-            ),
-          );
+
+      dataToDB.add(
+        DataPoint(
+          DateTime(
+            parsedDate.year,
+            parsedDate.month,
+            parsedDate.day,
+            int.parse(row['time'].substring(0, 2)),
+            int.parse(row['time'].substring(3, 5)),
+            int.parse(row['time'].substring(6, 8)),
+          ),
+          row['sleepwake'],
+        ),
+      );
       print(row['time'].substring(0, 2));
       print(row['time'].substring(3, 5));
       print(row['time'].substring(6, 8));
@@ -328,7 +327,8 @@ class DataStates with ChangeNotifier {
               parsedDate.month,
               parsedDate.day,
               int.parse(row['time'].substring(0, 2)),
-              int.parse(row['time'].substring(3, 5))),
+              int.parse(row['time'].substring(3, 5)),
+              int.parse(row['time'].substring(6, 8))),
           row['sleepwake'],
         ),
       );
@@ -336,26 +336,5 @@ class DataStates with ChangeNotifier {
       print(row['time'].substring(3, 5));
     });
     return dataToDB;
-  }
-
-  resultsToDb() async {
-    final myData = await rootBundle.loadString("assets/result.csv");
-    String result = myData.replaceAll(RegExp(' '), ',');
-    result = result.substring(0, 5) +
-        "clock_time," +
-        result.substring(5, result.length);
-    List<dynamic> test = result.split('\n');
-    print('Start');
-    for (int i = 1; i < test.length - 1; i++) {
-      var insertArray = test[i].split(',');
-      Map<String, dynamic> row = {
-        DatabaseHelper.columnDate: insertArray[0],
-        DatabaseHelper.columnTime: insertArray[1],
-        DatabaseHelper.columnSleepwake: insertArray[2],
-      };
-
-      await dbHelper.insertsleepwake(row);
-    }
-    print('Done');
   }
 }

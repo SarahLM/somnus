@@ -8,7 +8,14 @@
             "name": "frontend_somnus",
             "cwd": "frontend_somnus",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+        },
+        {
+            "name": "frontend_somnus_java",
+            "cwd": "frontend_somnus_java",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
         }
     ]
 }

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:frontend_somnus/screens/database_helper.dart';
 import 'package:frontend_somnus/screens/db_analyse_screen.dart';
 import 'package:intl/intl.dart';
-//import '../widgets/syncfusion.dart';
 import 'datapoint.dart';
 
 class DataStates with ChangeNotifier {

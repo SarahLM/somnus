@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/screens/hypnogram_screen.dart';
+import 'package:frontend_somnus/widgets/list_widget.dart';
 import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:frontend_somnus/widgets/theme.dart';
 import 'package:intl/intl.dart';
@@ -126,23 +127,26 @@ class _EditScreenState extends State<EditScreen>
                   : Colors.white,
               onPressed: () async {
                 buildWidgetList(
-                  Text('7 Tage'),
+                  ListWidget(),
                 );
                 // final dataPoints =
                 //     Provider.of<DataStates>(context, listen: false).findByDate(
                 //         (new DateTime.now()).add(new Duration(days: -2)),
                 //         DateTime.now());
-                final DateTime date1 = DateTime.now();
-                dataPoints = await Provider.of<DataStates>(context,
-                        listen: false)
-                    .getDataForSingleDate(date1.add(new Duration(days: -1)));
+
+                final dataPoints =
+                    await Provider.of<DataStates>(context, listen: false)
+                        .getEditDataForDateRange(
+                  DateTime.now(),
+                  (new DateTime.now()).add(new Duration(days: -7)),
+                );
                 setState(() {
                   _pressedButton2 = true;
                   _pressedButton1 = false;
                   _pressedButton3 = false;
                   _pressedButton4 = false;
                   title = '';
-                  sleepData = dataPoints;
+                  // sleepData = dataPoints;
                   // timePrinted =
                   //     (DateTime.now()).add(new Duration(days: -2)).toString() +
                   //         ' bis ' +

@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
+import 'package:frontend_somnus/widgets/no_data_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
@@ -28,7 +29,8 @@ class HypnogramScreen extends StatefulWidget {
   _HypnogramScreenState createState() => _HypnogramScreenState();
 }
 
-class _HypnogramScreenState extends State<HypnogramScreen> {
+class _HypnogramScreenState extends State<HypnogramScreen>
+    with AutomaticKeepAliveClientMixin<HypnogramScreen> {
   bool _pressedButton1 = true;
   bool _pressedButton2 = false;
   bool _pressedButton3 = false;
@@ -41,6 +43,14 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
   List<DataPoint> sleepData = [];
   List<DataPoint> dataPoints;
   final dbHelper = DatabaseHelper.instance;
+
+  bool _canShowButton = true;
+
+  void hideWidget() {
+    setState(() {
+      _canShowButton = !_canShowButton;
+    });
+  }
 
   @override
   initState() {
@@ -182,6 +192,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -371,58 +382,8 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              // Container(
-              //   alignment: Alignment.center,
-              //   color: widget.color,
-              //   child: Container(),
-              // ),
-              //LineAreaPage(),
-              //LineAreaPage(),
               ((this.sleepData == null || this.sleepData.length == 0)
-                  ? Center(
-                      child: Container(
-                        height: MediaQuery.of(context).size.height / 2,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          //crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Center(
-                              child: Icon(
-                                Icons.sentiment_dissatisfied,
-                                color: Colors.orange,
-                                size: 60.0,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Center(
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'Für den ausgewählten Zeitraum ' +
-                                        title +
-                                        ' liegen keine Daten vor.',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  // FlatButton(
-                                  //     onPressed: () async {
-                                  //       var file = 'inputAccelero.csv';
-
-                                  //       var res = await uploadFile(
-                                  //           file, 'http://10.0.2.2:5000/data');
-
-                                  //       print(res);
-                                  //       dbHelper.resultsToDb();
-                                  //     },
-                                  //     child: Text('Daten hochladen'))
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
+                  ? NoDataWidget(title: this.title)
                   : Container(
                       padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
                       child: Column(
@@ -472,9 +433,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                           //     ' Stunden'),
                         ],
                       ),
-                    )
-              //LineAreaPage()
-              ),
+                    )),
             ],
           ),
         ),
@@ -486,19 +445,42 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     child: const Icon(Icons.print),
                     onPressed: _printScreen,
                   )
-                : Container(),
-            FloatingActionButton(
-              child: const Icon(Icons.upload_file),
-              onPressed: () async {
-                var file = 'inputAccelero.csv';
+                : const SizedBox.shrink(),
+            !_canShowButton
+                ? //const SizedBox.shrink()
+                FloatingActionButton(
+                    backgroundColor: Colors.grey,
+                    onPressed: null,
+                    child: const Icon(
+                      Icons.upload_file,
+                    ),
+                  )
+                : FloatingActionButton(
+                    child: const Icon(Icons.upload_file),
+                    onPressed: () async {
+                      final snackBar = SnackBar(
+                        content: Text('Daten werden verarbeitet'),
+                      );
 
-                var res = await uploadFile(file, 'http://10.0.2.2:5000/data');
+                      // Find the Scaffold in the widget tree and use
+                      // it to show a SnackBar.
+                      Scaffold.of(context).showSnackBar(snackBar);
 
-                print(res);
-                dbHelper.resultsToDb();
-              },
-            ),
+                      hideWidget();
+                      var file = 'inputAccelero.csv';
+
+                      var res =
+                          await uploadFile(file, 'http://10.0.2.2:5000/data');
+
+                      print(res);
+                      await dbHelper.resultsToDb();
+                      hideWidget();
+                    },
+                  ),
           ],
         ));
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

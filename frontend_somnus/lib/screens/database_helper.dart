@@ -143,6 +143,17 @@ class DatabaseHelper {
         where: "$columnDate BETWEEN '$date1' AND '$date2'");
   }
 
+  Future<List<Map<String, dynamic>>> queryDatesDayRange(date1, date2) async {
+    print('Date in helper ' + date1);
+    print('Date in helper ' + date2);
+    Database db = await instance.database;
+    return await db.query(results,
+        where: "$columnDate BETWEEN '$date1' AND '$date2'",
+        distinct: true,
+        columns: ['$columnDate'],
+        groupBy: '$columnDate');
+  }
+
   checkValue(date, time) async {
     final val = await doubleValues(date, time);
     //print('count');

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:frontend_somnus/screens/database_helper.dart';
 import 'package:frontend_somnus/screens/db_analyse_screen.dart';
 import 'package:intl/intl.dart';
-//import '../widgets/syncfusion.dart';
 import 'datapoint.dart';
+import 'dates.dart';
 
 class DataStates with ChangeNotifier {
-  List<DataPoint> dataToDB = [];
+  List<DataPoint> dataFromDB = [];
+  List<DateEntry> dataDatesFromDB = [];
   // List<DataPoint> _items = [
   //   // Bind data source
   //   DataPoint(
@@ -283,14 +283,14 @@ class DataStates with ChangeNotifier {
   Future<List<DataPoint>> getDataForSingleDate(date) async {
     final DateFormat serverFormater = DateFormat('yyyy-MM-dd');
     print('Single Date in states: ' + serverFormater.format(date));
-    dataToDB = [];
+    dataFromDB = [];
     final allRows =
         await dbHelper.queryResultsSingleDay(serverFormater.format(date));
     allRows.forEach((row) async {
       var parsedDate = DateTime.parse(row['date']);
       print(row);
 
-      dataToDB.add(
+      dataFromDB.add(
         DataPoint(
           DateTime(
             parsedDate.year,
@@ -307,20 +307,20 @@ class DataStates with ChangeNotifier {
       print(row['time'].substring(3, 5));
       print(row['time'].substring(6, 8));
     });
-    return dataToDB;
+    return dataFromDB;
   }
 
   Future<List<DataPoint>> getDataForDateRange(date1, date2) async {
     final DateFormat serverFormater = DateFormat('yyyy-MM-dd');
     print('Date in states: ' + serverFormater.format(date2));
     print('Date in states: ' + serverFormater.format(date1));
-    dataToDB = [];
+    dataFromDB = [];
     final allRows = await dbHelper.queryResultsDayRange(
         serverFormater.format(date2), serverFormater.format(date1));
     allRows.forEach((row) {
       var parsedDate = DateTime.parse(row['date']);
       print(row);
-      dataToDB.add(
+      dataFromDB.add(
         DataPoint(
           DateTime(
               parsedDate.year,
@@ -335,6 +335,27 @@ class DataStates with ChangeNotifier {
       print(row['time'].substring(0, 2));
       print(row['time'].substring(3, 5));
     });
-    return dataToDB;
+    return dataFromDB;
+  }
+
+  Future<List<DateEntry>> getEditDataForDateRange(date1, date2) async {
+    final DateFormat serverFormater = DateFormat('yyyy-MM-dd');
+    print('Date in states: ' + serverFormater.format(date2));
+    print('Date in states: ' + serverFormater.format(date1));
+    dataDatesFromDB = [];
+    final allRows = await dbHelper.queryDatesDayRange(
+        serverFormater.format(date2), serverFormater.format(date1));
+    allRows.forEach((row) {
+      print(row);
+      var parsedDate = DateTime.parse(row['date']);
+      dataDatesFromDB.add(DateEntry(
+          date: DateTime(
+        parsedDate.year,
+        parsedDate.month,
+        parsedDate.day,
+      )));
+    });
+    print(dataDatesFromDB);
+    return dataDatesFromDB;
   }
 }

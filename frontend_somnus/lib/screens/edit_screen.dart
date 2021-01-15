@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
+import 'package:frontend_somnus/providers/dates.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/screens/hypnogram_screen.dart';
 import 'package:frontend_somnus/widgets/list_widget.dart';
@@ -29,6 +30,9 @@ class _EditScreenState extends State<EditScreen>
 
   List<DataPoint> sleepData = [];
   List<DataPoint> dataPoints;
+
+  List<DateEntry> dateEntries = [];
+  List<DateEntry> dates;
 
   List<Widget> widgetToShow = [];
   @override
@@ -126,17 +130,8 @@ class _EditScreenState extends State<EditScreen>
                   ? Theme.of(context).accentColor
                   : Colors.white,
               onPressed: () async {
-                buildWidgetList(
-                  ListWidget(),
-                );
-                // final dataPoints =
-                //     Provider.of<DataStates>(context, listen: false).findByDate(
-                //         (new DateTime.now()).add(new Duration(days: -2)),
-                //         DateTime.now());
-
-                final dataPoints =
-                    await Provider.of<DataStates>(context, listen: false)
-                        .getEditDataForDateRange(
+                dates = await Provider.of<DataStates>(context, listen: false)
+                    .getEditDataForDateRange(
                   DateTime.now(),
                   (new DateTime.now()).add(new Duration(days: -7)),
                 );
@@ -146,12 +141,17 @@ class _EditScreenState extends State<EditScreen>
                   _pressedButton3 = false;
                   _pressedButton4 = false;
                   title = '';
+                  this.dateEntries = dates;
+
                   // sleepData = dataPoints;
                   // timePrinted =
                   //     (DateTime.now()).add(new Duration(days: -2)).toString() +
                   //         ' bis ' +
                   //         DateTime.now().toString();
                 });
+                buildWidgetList(
+                  ListWidget(data1: this.dateEntries),
+                );
 
                 //dataStates.getResult();
               },
@@ -261,9 +261,25 @@ class _EditScreenState extends State<EditScreen>
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          children: widgetToShow,
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                'Im ausgewählten Zeitraum liegen Daten für die folgenden Tage vor:',
+                textAlign: TextAlign.center,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: widgetToShow,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

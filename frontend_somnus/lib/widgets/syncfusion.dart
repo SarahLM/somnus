@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
-import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
-//import 'package:frontend_somnus/providers/states.dart';
-//import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 
@@ -11,7 +8,7 @@ class Sync extends StatelessWidget {
   final List<DataPoint> sleepData;
   final Color colorAsleep = Color(0xFF0529B3);
   final Color colorAwake = Color(0xFFFF9221);
-  final f = new DateFormat('dd.MM.yyyy hh:mm');
+  final f = new DateFormat('dd.MM.yyyy kk:mm ');
 
   Sync({
     this.title,
@@ -59,7 +56,7 @@ class Sync extends StatelessWidget {
                           isVisible: true,
                           majorGridLines: MajorGridLines(width: 0),
                           dateFormat: f,
-                          interval: 10,
+                          interval: 1,
                           labelRotation: 90,
                           plotBands: <PlotBand>[
                             /*   Plot band: different height for sleep and awake */

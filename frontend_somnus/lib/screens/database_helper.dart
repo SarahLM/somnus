@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -102,6 +103,12 @@ class DatabaseHelper {
         await db.rawQuery('SELECT COUNT(*) FROM $table'));
   }
 
+  Future<int> doubleValues(date, time) async {
+    Database db = await instance.database;
+    return Sqflite.firstIntValue(await db.rawQuery(
+        "SELECT COUNT(*) FROM $results WHERE $columnDate='$date' AND $columnTime='$time'"));
+  }
+
   Future<int> queryRowCountResults() async {
     Database db = await instance.database;
     return Sqflite.firstIntValue(
@@ -134,5 +141,51 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.query(results,
         where: "$columnDate BETWEEN '$date1' AND '$date2'");
+  }
+
+  checkValue(date, time) async {
+    final val = await doubleValues(date, time);
+    //print('count');
+    //print(val);
+    return val;
+  }
+
+  resultsToDb() async {
+    final myData = await rootBundle.loadString("assets/result.csv");
+    String result = myData.replaceAll(RegExp(' '), ',');
+    result = result.substring(0, 5) +
+        "clock_time," +
+        result.substring(5, result.length);
+    List<dynamic> test = result.split('\n');
+    print('Start');
+    for (int i = 1; i < test.length - 1; i++) {
+      var insertArray = test[i].split(',');
+      Map<String, dynamic> row = {
+        DatabaseHelper.columnDate: insertArray[0],
+        DatabaseHelper.columnTime: insertArray[1],
+        DatabaseHelper.columnSleepwake: insertArray[2],
+      };
+      int count = await checkValue(insertArray[0], insertArray[1]);
+      if (count == 0) {
+        //  print('Insert');
+        await insertsleepwake(row);
+      } else {
+        // print('No insert');
+      }
+    }
+    print('Done');
+  }
+
+  Future<void> cleanDatabase() async {
+    try {
+      Database db = await instance.database;
+      await db.transaction((txn) async {
+        var batch = txn.batch();
+        batch.delete(results);
+        await batch.commit();
+      });
+    } catch (error) {
+      throw Exception('DbBase.cleanDatabase: ' + error.toString());
+    }
   }
 }

@@ -28,7 +28,8 @@ class HypnogramScreen extends StatefulWidget {
   _HypnogramScreenState createState() => _HypnogramScreenState();
 }
 
-class _HypnogramScreenState extends State<HypnogramScreen> {
+class _HypnogramScreenState extends State<HypnogramScreen>
+    with AutomaticKeepAliveClientMixin<HypnogramScreen> {
   bool _pressedButton1 = true;
   bool _pressedButton2 = false;
   bool _pressedButton3 = false;
@@ -190,6 +191,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -520,4 +522,7 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
           ],
         ));
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

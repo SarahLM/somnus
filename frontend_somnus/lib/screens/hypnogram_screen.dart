@@ -42,6 +42,14 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
   List<DataPoint> dataPoints;
   final dbHelper = DatabaseHelper.instance;
 
+  bool _canShowButton = true;
+
+  void hideWidget() {
+    setState(() {
+      _canShowButton = !_canShowButton;
+    });
+  }
+
   @override
   initState() {
     getInitialData();
@@ -486,18 +494,29 @@ class _HypnogramScreenState extends State<HypnogramScreen> {
                     child: const Icon(Icons.print),
                     onPressed: _printScreen,
                   )
-                : Container(),
-            FloatingActionButton(
-              child: const Icon(Icons.upload_file),
-              onPressed: () async {
-                var file = 'inputAccelero.csv';
+                : const SizedBox.shrink(),
+            !_canShowButton
+                ? //const SizedBox.shrink()
+                FloatingActionButton(
+                    backgroundColor: Colors.grey,
+                    onPressed: null,
+                    child: const Icon(
+                      Icons.upload_file,
+                    ))
+                : FloatingActionButton(
+                    child: const Icon(Icons.upload_file),
+                    onPressed: () async {
+                      hideWidget();
+                      var file = 'inputAccelero.csv';
 
-                var res = await uploadFile(file, 'http://10.0.2.2:5000/data');
+                      var res =
+                          await uploadFile(file, 'http://10.0.2.2:5000/data');
 
-                print(res);
-                dbHelper.resultsToDb();
-              },
-            ),
+                      print(res);
+                      await dbHelper.resultsToDb();
+                      hideWidget();
+                    },
+                  ),
           ],
         ));
   }

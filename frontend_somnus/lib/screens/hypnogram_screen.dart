@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
+import 'package:frontend_somnus/widgets/no_data_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
@@ -381,58 +382,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
         body: SingleChildScrollView(
           child: Column(
             children: [
-              // Container(
-              //   alignment: Alignment.center,
-              //   color: widget.color,
-              //   child: Container(),
-              // ),
-              //LineAreaPage(),
-              //LineAreaPage(),
               ((this.sleepData == null || this.sleepData.length == 0)
-                  ? Center(
-                      child: Container(
-                        height: MediaQuery.of(context).size.height / 2,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          //crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Center(
-                              child: Icon(
-                                Icons.sentiment_dissatisfied,
-                                color: Colors.orange,
-                                size: 60.0,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Center(
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'Für den ausgewählten Zeitraum ' +
-                                        title +
-                                        ' liegen keine Daten vor.',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  // FlatButton(
-                                  //     onPressed: () async {
-                                  //       var file = 'inputAccelero.csv';
-
-                                  //       var res = await uploadFile(
-                                  //           file, 'http://10.0.2.2:5000/data');
-
-                                  //       print(res);
-                                  //       dbHelper.resultsToDb();
-                                  //     },
-                                  //     child: Text('Daten hochladen'))
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
+                  ? NoDataWidget(title: this.title)
                   : Container(
                       padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
                       child: Column(
@@ -482,9 +433,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                           //     ' Stunden'),
                         ],
                       ),
-                    )
-              //LineAreaPage()
-              ),
+                    )),
             ],
           ),
         ),
@@ -504,10 +453,19 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     onPressed: null,
                     child: const Icon(
                       Icons.upload_file,
-                    ))
+                    ),
+                  )
                 : FloatingActionButton(
                     child: const Icon(Icons.upload_file),
                     onPressed: () async {
+                      final snackBar = SnackBar(
+                        content: Text('Daten werden verarbeitet'),
+                      );
+
+                      // Find the Scaffold in the widget tree and use
+                      // it to show a SnackBar.
+                      Scaffold.of(context).showSnackBar(snackBar);
+
                       hideWidget();
                       var file = 'inputAccelero.csv';
 

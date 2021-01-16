@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:foreground_service/foreground_service.dart';
 
 const String DEVICE_NOT_CONNECTED = "Connect your fitness tracker.";
 const String DEVICE_CONNECTED = "Fitness tracker connected.";
@@ -136,9 +137,10 @@ class BleDeviceController {
           }
         }
 
+        ForegroundService.sendToPort(accelData);
         //print("data packet nr. ${data[1]}");
-        print(accelData);
-        print("${data[2]}, ${data[3]}, ${data[4]}, ${data[5]}, ${data[6]}, ${data[7]}");
+        //print(accelData);
+        //print("${data[2]}, ${data[3]}, ${data[4]}, ${data[5]}, ${data[6]}, ${data[7]}");
       }
     }
   }

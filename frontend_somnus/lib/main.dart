@@ -12,6 +12,7 @@ import 'widgets/singletons/ble_device_controller.dart';
 
 int disclaimerScreen;
 int tutorialScreen;
+List<String> messages;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +29,8 @@ Future<void> main() async {
 
 //use an async method so we can await
 void maybeStartFGS() async {
+  messages = new List();
+
   ///if the app was killed+relaunched, this function will be executed again
   ///but if the foreground service stayed alive,
   ///this does not need to be re-done
@@ -51,18 +54,26 @@ void maybeStartFGS() async {
   ///this exists solely in the main app/isolate,
   ///so needs to be redone after every app kill+relaunch
   await ForegroundService.setupIsolateCommunication((data) {
-    print("Received data: " + data);
+    messages.add(data);
   });
 }
 
 void foregroundServiceFunction() async {
   if (!ForegroundService.isIsolateCommunicationSetup) {
+    messages = new List();
     ForegroundService.setupIsolateCommunication((data) {
-      print("Received data: " + data);
+      messages.add(data);
     });
   }
 
   // TODO: check how to communicate in background!
+
+  print("Received messages: " + messages.length.toString());
+
+  if (messages.length > 0) {
+    print("Last message: " + messages.last);
+    messages = new List();
+  }
 
   //ForegroundService.sendToPort("message from bg isolate");
 }

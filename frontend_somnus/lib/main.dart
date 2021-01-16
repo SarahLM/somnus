@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/screens/disclaimer_screen.dart';
+import 'package:frontend_somnus/screens/hypnogram_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'screens/tabs_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+<<<<<<< HEAD
 import 'package:foreground_service/foreground_service.dart';
 import 'widgets/singletons/ble_device_controller.dart';
+=======
+import './screens/edit_data_screen.dart';
+>>>>>>> Add editData Form
 
 int disclaimerScreen;
 int tutorialScreen;
@@ -133,7 +138,9 @@ class _MyAppState extends State<MyApp>{
             : "/",
         routes: {
           '/': (context) => TabsScreen(),
-          'disclaimerScreen': (context) => DisclaimerScreen()
+          'disclaimerScreen': (context) => DisclaimerScreen(),
+          EditDataScreen.routeName: (ctx) => EditDataScreen(),
+          HypnogramScreen.routeName: (ctx) => HypnogramScreen(Colors.white)
         },
         theme: ThemeData(
             //primaryColor: Color(0xFF0F24D9),

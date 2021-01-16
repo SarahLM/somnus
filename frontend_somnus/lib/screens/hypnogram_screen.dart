@@ -27,6 +27,7 @@ class HypnogramScreen extends StatefulWidget {
 
   @override
   _HypnogramScreenState createState() => _HypnogramScreenState();
+  static const routeName = '/hypnogram-screen';
 }
 
 class _HypnogramScreenState extends State<HypnogramScreen>
@@ -293,7 +294,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     ? Theme.of(context).accentColor
                     : Colors.white,
                 onPressed: () async {
-                  final dataPoints =
+                  dataPoints =
                       await Provider.of<DataStates>(context, listen: false)
                           .getDataForDateRange(
                     DateTime.now(),
@@ -475,6 +476,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                       print(res);
                       await dbHelper.resultsToDb();
                       hideWidget();
+                      Navigator.of(context)
+                          .pushReplacementNamed(HypnogramScreen.routeName);
                     },
                   ),
           ],

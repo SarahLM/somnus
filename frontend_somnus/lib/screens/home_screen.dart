@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
-          child: BleConnect(),
+          //child: BleConnect(),
         ),
       ),
     );

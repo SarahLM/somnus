@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/screens/disclaimer_screen.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +8,7 @@ import 'screens/tabs_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:foreground_service/foreground_service.dart';
+import 'widgets/singletons/ble_device_controller.dart';
 
 int disclaimerScreen;
 int tutorialScreen;
@@ -30,7 +32,7 @@ void maybeStartFGS() async {
   ///but if the foreground service stayed alive,
   ///this does not need to be re-done
   if (!(await ForegroundService.foregroundServiceIsStarted())) {
-    await ForegroundService.setServiceIntervalSeconds(5);
+    await ForegroundService.setServiceIntervalSeconds(1);
 
     //necessity of editMode is dubious (see function comments)
     await ForegroundService.notification.startEditMode();
@@ -38,7 +40,7 @@ void maybeStartFGS() async {
     await ForegroundService.notification
         .setTitle("Somnus");
     await ForegroundService.notification
-        .setText("Connect to your fitness tracker!");
+        .setText(DEVICE_NOT_CONNECTED);
 
     await ForegroundService.notification.finishEditMode();
 
@@ -49,20 +51,20 @@ void maybeStartFGS() async {
   ///this exists solely in the main app/isolate,
   ///so needs to be redone after every app kill+relaunch
   await ForegroundService.setupIsolateCommunication((data) {
-    debugPrint("main received: $data");
+    print("Received data: " + data);
   });
 }
 
-void foregroundServiceFunction() {
-  //ForegroundService.notification.setText("The time was: ${DateTime.now()}");
-
+void foregroundServiceFunction() async {
   if (!ForegroundService.isIsolateCommunicationSetup) {
     ForegroundService.setupIsolateCommunication((data) {
-      debugPrint("bg isolate received: $data");
+      print("Received data: " + data);
     });
   }
 
-  ForegroundService.sendToPort("message from bg isolate");
+  // TODO: check how to communicate in background!
+
+  //ForegroundService.sendToPort("message from bg isolate");
 }
 
 class MyApp extends StatefulWidget {

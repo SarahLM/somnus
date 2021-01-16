@@ -5,11 +5,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:foreground_service/foreground_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/block/aes_fast.dart';
 import 'package:pointycastle/block/modes/ecb.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'singletons/ble_device_controller.dart';
 
 class BleConnect extends StatefulWidget {
   @override
@@ -17,40 +19,11 @@ class BleConnect extends StatefulWidget {
 }
 
 class _BleConnectState extends State<BleConnect> {
-  Uint8List secretKey = Uint8List.fromList(
-      [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 64, 65, 66, 67, 68, 69]);
-  Uint8List setNotifTrueCmd = Uint8List.fromList([1, 0]);
-  Uint8List sendSecretKeyCmd = Uint8List.fromList([1, 0]);
-  Uint8List sendEncrKeyCmd = Uint8List.fromList([3, 0]);
-  Uint8List sendRandCmd = Uint8List.fromList([2, 0]);
-  Uint8List sensorRawDataCmd = Uint8List.fromList([1, 1, 25]);
-  String uuidMiBandService0 = "0000fee0-0000-1000-8000-00805f9b34fb";
-  String uuidMiBandService1 = "0000fee1-0000-1000-8000-00805f9b34fb";
-  String uuidServiceImmediateAlert = "00001802-0000-1000-8000-00805f9b34fb";
-  String uuidCharAuth = "00000009-0000-3512-2118-0009af100700";
-  String uuidCharAuthDesc = "00002902-0000-1000-8000-00805f9b34fb";
-  String uuidCharImmediateAlert = "00002a06-0000-1000-8000-00805f9b34fb";
-  String uuidCharSensor = "00000001-0000-3512-2118-0009af100700";
-  String uuidCharAccelerometer = "00000002-0000-3512-2118-0009af100700";
-
-  BleManager bleManager;
-  Peripheral fitnessTracker;
-  List<Service> fitnessTrackerServices;
-  Service miBandService0;
-  Service miBandService1;
   Service immediateAlertService;
   Characteristic authChar;
   Characteristic immediateAlertChar;
-  Characteristic sensorChar;
-  Characteristic accelerometerChar;
 
-  bool _authenticated = false;
-  bool _highAlerted = false;
-  bool _receivingRawSensorData = false;
   bool _bleManagerScanning = false;
-  int _rawDataPacketsCounter;
-  Future _bleConnectFuture;
-  Timer accelDataAliveTimer;
   List<Peripheral> bleDevices = new List<Peripheral>();
 
   @override
@@ -70,8 +43,10 @@ class _BleConnectState extends State<BleConnect> {
   void _localInitStateAsync () async {
     // TODO: if bluetooth is on
     if (await _checkPermissions()) {
-      bleManager = BleManager();
-      await bleManager.createClient();
+      bleDeviceController.bleManager = BleManager();
+      print("bleManager was set: ");
+      print(bleDeviceController.bleManager);
+      await bleDeviceController.bleManager.createClient();
       _scanForBleDevices();
     } else {
       print("Permissions not accepted. Closing app.");
@@ -126,7 +101,7 @@ class _BleConnectState extends State<BleConnect> {
   }
 
   Future<void> _selectBleDevice(Peripheral selectedDevice, BuildContext localContext) async {
-    fitnessTracker = selectedDevice;
+    bleDeviceController.fitnessTracker = selectedDevice;
 
     if (await _connectToBleDevice()) {
       print("Connected to BLE device.");
@@ -134,8 +109,8 @@ class _BleConnectState extends State<BleConnect> {
       if (await _bleDeviceIsMiBand()) {
         await _authenticateMiBand();
       } else {
-        if (await fitnessTracker.isConnected()) {
-          fitnessTracker.disconnectOrCancelConnection();
+        if (await bleDeviceController.fitnessTracker.isConnected()) {
+          bleDeviceController.fitnessTracker.disconnectOrCancelConnection();
         }
 
         _showDialog("Device not compatible", "The selected device is not "
@@ -152,13 +127,13 @@ class _BleConnectState extends State<BleConnect> {
 
     await _getAllServices();
 
-    fitnessTrackerServices.forEach((element) {
-      if (element.uuid == uuidMiBandService0) {
+    bleDeviceController.fitnessTrackerServices.forEach((element) {
+      if (element.uuid == bleDeviceController.uuidMiBandService0) {
         service0Present = true;
-        miBandService0 = element;
-      } else if (element.uuid == uuidMiBandService1) {
+        bleDeviceController.miBandService0 = element;
+      } else if (element.uuid == bleDeviceController.uuidMiBandService1) {
         service1Present = true;
-        miBandService1 = element;
+        bleDeviceController.miBandService1 = element;
       }
     });
 
@@ -183,135 +158,9 @@ class _BleConnectState extends State<BleConnect> {
     );
   }
 
-  Future<void> _alertMildMiBand() async {
-    immediateAlertService = fitnessTrackerServices.firstWhere((e) => e.uuid == uuidServiceImmediateAlert);
-    immediateAlertChar = (await immediateAlertService.characteristics())
-        .firstWhere((e) => e.uuid == uuidCharImmediateAlert);
-    immediateAlertChar.write(Uint8List.fromList([1]), false);
-  }
-
-  Future<void> _alertHighMiBand() async {
-    immediateAlertService = fitnessTrackerServices.firstWhere((e) => e.uuid == uuidServiceImmediateAlert);
-    immediateAlertChar = (await immediateAlertService.characteristics())
-        .firstWhere((e) => e.uuid == uuidCharImmediateAlert);
-
-    if (_highAlerted){
-      immediateAlertChar.write(Uint8List.fromList([0]), false);
-      _highAlerted = false;
-    } else {
-      immediateAlertChar.write(Uint8List.fromList([2]), false);
-      _highAlerted = true;
-    }
-  }
-
-  Future<void> _startReceivingRawSensorData() async {
-    List<Characteristic> miBandSrvChars;
-
-    // get characteristic for sensors
-    miBandSrvChars = await fitnessTracker.characteristics(miBandService0.uuid);
-    miBandSrvChars.forEach((element) {
-      if (element.uuid == uuidCharSensor) {
-        sensorChar = element;
-      } else if (element.uuid == uuidCharAccelerometer) {
-        accelerometerChar = element;
-      }
-    });
-
-    // set raw data output and notifications
-    if (accelerometerChar.isNotifiable) {
-      Stopwatch s = new Stopwatch();
-
-      _enableSendingRawSensorData();
-      _rawDataPacketsCounter = 0;
-      s.start();
-      // start listening for accelerometer data
-      accelerometerChar.monitor().listen((data) {
-        _handleRawAccelerometerData(data);
-        //print("elapsed seconds: ${s.elapsedMilliseconds/1000}");
-      });
-
-      // send alive packages so accelerometer data is continiously sent
-      accelDataAliveTimer = Timer.periodic((Duration(seconds:30)), (Timer t) => _enableSendingRawSensorData());
-      setState(() {
-        _receivingRawSensorData = true;
-      });
-    }
-  }
-
-  Future<void> _enableSendingRawSensorData() async {
-    // enable sensor raw data
-    await sensorChar.write(sensorRawDataCmd, false);
-    await sensorChar.write(Uint8List.fromList([2]), false);
-  }
-
-  Future<void> _stopReceivingRawSensorData() async {
-    await sensorChar.write(Uint8List.fromList([3]), false);
-    setState(() {
-      _receivingRawSensorData = false;
-    });
-  }
-
-  void _handleRawAccelerometerData(Uint8List data) {
-    String accelData = "";
-    // first byte is always one
-    if (data[0] == 1) {
-      // second byte is a counter
-      // if counter is expected value, take the accelerometer data, else ignore
-      if (data[1] == _rawDataPacketsCounter) {
-        int counter = 0;
-
-        _rawDataPacketsCounter = (_rawDataPacketsCounter == 255) ? 0 : ++_rawDataPacketsCounter;
-
-        // the next 3 x 2 bytes are the accelerometer data
-        // 2 bytes: first byte is the value, second is the sign (0=+, 255=-)
-        // first 2 bytes = x, second 2 bytes = y, third 2 bytes = z
-        // there can be 1, 2 or 3 XYZ values
-        for (int i=2; i<data.length; i++) {
-          // if even
-          if (i % 2 == 0) {
-            accelData += (counter == 0) ? "x:" : "";
-            accelData += (counter == 1) ? "y:" : "";
-            accelData += (counter == 2) ? "z:" : "";
-            counter = (counter == 2) ? 0 : ++counter;
-
-            accelData += (data[i+1] == 0) ? "+" : "-";
-            accelData += (data[i].toDouble() / 255.toDouble()).toString() + " ";
-
-            /*
-            if (counter == 0) {
-              accelData = "x: ";
-              accelData += (data[i+1] == 0) ? "+" : "-";
-
-              accelData += (data[i].toDouble() / 255.toDouble()).toString() + "\n";
-              print(accelData);
-            } else if (counter == 1) {
-              accelData = "y: ";
-              accelData += (data[i+1] == 0) ? "+" : "-";
-
-              accelData += (data[i].toDouble() / 255.toDouble()).toString() + "\n";
-              print(accelData);
-            } else if (counter == 2) {
-              accelData = "z: ";
-              accelData += (data[i+1] == 0) ? "+" : "-";
-
-              accelData += (data[i].toDouble() / 255.toDouble()).toString() + "\n";
-              print(accelData);
-            }
-
-            counter = (counter == 2) ? 0 : ++counter;*/
-          }
-        }
-
-        //print("data packet nr. ${data[1]}");
-        print(accelData);
-        print("${data[2]}, ${data[3]}, ${data[4]}, ${data[5]}, ${data[6]}, ${data[7]}");
-      }
-    }
-  }
-
   @override
   void dispose() {
-    accelDataAliveTimer?.cancel();
+    //accelDataAliveTimer?.cancel();
     super.dispose();
   }
 
@@ -319,16 +168,16 @@ class _BleConnectState extends State<BleConnect> {
     List<Characteristic> miBandSrvChars;
 
     // get authentication characteristic
-    miBandSrvChars = await fitnessTracker.characteristics(miBandService1.uuid);
+    miBandSrvChars = await bleDeviceController.fitnessTracker.characteristics(bleDeviceController.miBandService1.uuid);
     miBandSrvChars.forEach((element) {
-      if (element.uuid == uuidCharAuth) {
+      if (element.uuid == bleDeviceController.uuidCharAuth) {
         authChar = element;
       }
     });
 
     // set notifications on authentication char
     if (authChar.isNotifiable) {
-      await authChar.write(setNotifTrueCmd, false);
+      await authChar.write(bleDeviceController.setNotifTrueCmd, false);
       authChar.monitor().listen((data) {
         _handleAuthNotification(data);
       });
@@ -351,12 +200,11 @@ class _BleConnectState extends State<BleConnect> {
       print("Error - Request random number failed.");
       authenticationFailed = true;
     } else if (data[0] == 16 && data[1] == 3 && data[2] == 1) {
-      setState(() {
-        _authenticated = true;
-      });
       print("AUTHENTICATED!!!");
+      ForegroundService.notification.setText(DEVICE_CONNECTED);
       _showDialog("Connection success", "Your device is connected.");
       await _printServicesAndChars();
+      bleDeviceController.startReceivingRawSensorData();
     } else if (data[0] == 16 && data[1] == 3 && data[2] == 4) {
       print("Error - Encryption failed.");
       authenticationFailed = true;
@@ -366,8 +214,8 @@ class _BleConnectState extends State<BleConnect> {
     }
 
     if (authenticationFailed) {
-      if (await fitnessTracker.isConnected()) {
-        fitnessTracker.disconnectOrCancelConnection();
+      if (await bleDeviceController.fitnessTracker.isConnected()) {
+        bleDeviceController.fitnessTracker.disconnectOrCancelConnection();
       }
       _showDialog("Connection error", "The authentication process failed. " +
           "Make sure the device is near and Bluetooth is enabled. Then try " +
@@ -381,10 +229,10 @@ class _BleConnectState extends State<BleConnect> {
     String serviceWithChars;
     print("Printing all services");
 
-    for (Service service in fitnessTrackerServices) {
+    for (Service service in bleDeviceController.fitnessTrackerServices) {
       serviceWithChars = "";
       serviceWithChars += "- ${service.uuid}\n";
-      chars = await fitnessTracker.characteristics(service.uuid);
+      chars = await bleDeviceController.fitnessTracker.characteristics(service.uuid);
       chars.forEach((characteristic) {
         serviceWithChars += "--- ${characteristic.uuid}\n";
       });
@@ -395,40 +243,40 @@ class _BleConnectState extends State<BleConnect> {
 
   Future<void> _sendSecretKeyToBand() async {
     Uint8List buffer = Uint8List.fromList(
-        [...sendSecretKeyCmd.toList(), ...secretKey.toList()]);
+        [...bleDeviceController.sendSecretKeyCmd.toList(), ...bleDeviceController.secretKey.toList()]);
     await authChar.write(buffer, false);
   }
 
   Future<void> _requestRand() async {
-    await authChar.write(sendRandCmd, false);
+    await authChar.write(bleDeviceController.sendRandCmd, false);
   }
 
   Future<void> _sendEncrRand(Uint8List randomNumber) async {
     Uint8List encryptedRandomNumber = _encrypt(randomNumber);
     Uint8List buffer =
-    Uint8List.fromList([...sendEncrKeyCmd, ...encryptedRandomNumber]);
+    Uint8List.fromList([...bleDeviceController.sendEncrKeyCmd, ...encryptedRandomNumber]);
     await authChar.write(buffer, false);
   }
 
   Uint8List _encrypt(Uint8List plainText) {
     BlockCipher cipher = ECBBlockCipher(AESFastEngine());
-    cipher.init(true, KeyParameter(secretKey));
+    cipher.init(true, KeyParameter(bleDeviceController.secretKey));
     Uint8List cipherText = cipher.process(plainText);
     return cipherText;
   }
 
   Future<void> _getAllServices() async {
-    await fitnessTracker.discoverAllServicesAndCharacteristics();
-    fitnessTrackerServices = await fitnessTracker.services(); //getting all services
-    fitnessTrackerServices.forEach((element) {
+    await bleDeviceController.fitnessTracker.discoverAllServicesAndCharacteristics();
+    bleDeviceController.fitnessTrackerServices = await bleDeviceController.fitnessTracker.services(); //getting all services
+    bleDeviceController.fitnessTrackerServices.forEach((element) {
       print(element.uuid);
     });
   }
 
   Future<void> _scanForBleDevices() async {
-    if (fitnessTracker != null) {
-      if (await fitnessTracker.isConnected()) {
-        fitnessTracker.disconnectOrCancelConnection();
+    if (bleDeviceController.fitnessTracker != null) {
+      if (await bleDeviceController.fitnessTracker.isConnected()) {
+        bleDeviceController.fitnessTracker.disconnectOrCancelConnection();
       }
     }
 
@@ -436,12 +284,12 @@ class _BleConnectState extends State<BleConnect> {
       bleDevices = new List<Peripheral>();
       _bleManagerScanning = true;
     });
-    BluetoothState currentState = await bleManager.bluetoothState();
+    BluetoothState currentState = await bleDeviceController.bleManager.bluetoothState();
 
     if (currentState == BluetoothState.POWERED_ON) {
       Stopwatch s = new Stopwatch();
       s.start();
-      await for (ScanResult scanResult in bleManager.startPeripheralScan()) {
+      await for (ScanResult scanResult in bleDeviceController.bleManager.startPeripheralScan()) {
         if (scanResult.peripheral.name != null) {
           if (!_deviceInList(bleDevices, scanResult.peripheral.identifier)) {
             print("Peripheral { id: ${scanResult.peripheral.identifier}, name: ${scanResult.peripheral.name}, rssi: ${scanResult.peripheral.rssi}}");
@@ -453,7 +301,7 @@ class _BleConnectState extends State<BleConnect> {
 
         // after 10 seconds stop scan
         if (s.elapsedMilliseconds >= 10000) {
-          bleManager.stopPeripheralScan();
+          bleDeviceController.bleManager.stopPeripheralScan();
           print("Stopped BLE Scan");
           setState(() {
             _bleManagerScanning = false;
@@ -482,26 +330,26 @@ class _BleConnectState extends State<BleConnect> {
 
   Future<bool> _connectToBleDevice () async {
     if (_bleManagerScanning) {
-      bleManager.stopPeripheralScan();
+      bleDeviceController.bleManager.stopPeripheralScan();
       setState(() {
         _bleManagerScanning = false;
       });
     }
 
-    print("Connecting to peripheral { id: ${fitnessTracker.identifier}, name: ${fitnessTracker.name}");
-    fitnessTracker.observeConnectionState(
+    print("Connecting to peripheral { id: ${bleDeviceController.fitnessTracker.identifier}, name: ${bleDeviceController.fitnessTracker.name}");
+    bleDeviceController.fitnessTracker.observeConnectionState(
         emitCurrentValue: true, completeOnDisconnect: true)
         .listen((connectionState) {
-          print("Peripheral ${fitnessTracker.identifier} connection state is $connectionState.");
+          print("Peripheral ${bleDeviceController.fitnessTracker.identifier} connection state is $connectionState.");
     });
 
     try {
-      await fitnessTracker.connect();
+      await bleDeviceController.fitnessTracker.connect();
     } catch (e) {
       return false;
     }
 
-    return await fitnessTracker.isConnected();
+    return await bleDeviceController.fitnessTracker.isConnected();
   }
 
   Future<bool> _checkPermissions() async {

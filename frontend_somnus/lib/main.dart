@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'screens/tabs_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:foreground_service/foreground_service.dart';
 
 int disclaimerScreen;
 int tutorialScreen;
@@ -19,9 +20,70 @@ Future<void> main() async {
   //await prefs.setInt("tutorialScreen", 1);
   Intl.defaultLocale = "de_DE";
   runApp(MyApp());
+
+  maybeStartFGS();
 }
 
-class MyApp extends StatelessWidget {
+//use an async method so we can await
+void maybeStartFGS() async {
+  ///if the app was killed+relaunched, this function will be executed again
+  ///but if the foreground service stayed alive,
+  ///this does not need to be re-done
+  if (!(await ForegroundService.foregroundServiceIsStarted())) {
+    await ForegroundService.setServiceIntervalSeconds(5);
+
+    //necessity of editMode is dubious (see function comments)
+    await ForegroundService.notification.startEditMode();
+
+    await ForegroundService.notification
+        .setTitle("Somnus");
+    await ForegroundService.notification
+        .setText("Connect to your fitness tracker!");
+
+    await ForegroundService.notification.finishEditMode();
+
+    await ForegroundService.startForegroundService(foregroundServiceFunction);
+    await ForegroundService.getWakeLock();
+  }
+
+  ///this exists solely in the main app/isolate,
+  ///so needs to be redone after every app kill+relaunch
+  await ForegroundService.setupIsolateCommunication((data) {
+    debugPrint("main received: $data");
+  });
+}
+
+void foregroundServiceFunction() {
+  //ForegroundService.notification.setText("The time was: ${DateTime.now()}");
+
+  if (!ForegroundService.isIsolateCommunicationSetup) {
+    ForegroundService.setupIsolateCommunication((data) {
+      debugPrint("bg isolate received: $data");
+    });
+  }
+
+  ForegroundService.sendToPort("message from bg isolate");
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp>{
+  @override
+  void initState() {
+    super.initState();
+
+    _activateForegroundService();
+  }
+
+  void _activateForegroundService() async {
+    if (!(await ForegroundService.foregroundServiceIsStarted())) {
+      maybeStartFGS();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(

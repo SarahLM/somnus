@@ -6,6 +6,9 @@ import 'package:foreground_service/foreground_service.dart';
 const String DEVICE_NOT_CONNECTED = "Connect your fitness tracker.";
 const String DEVICE_CONNECTED = "Fitness tracker connected.";
 
+const double ACCEL_MAX_DECIMAL_VALUE = 2;
+const double ACCEL_RAW_VALUE_FOR_DECIMAL_ONE = 128;
+
 var bleDeviceController = BleDeviceController();
 
 class BleDeviceController {
@@ -87,13 +90,13 @@ class BleDeviceController {
   }
 
   void _handleRawAccelerometerData(Uint8List data) {
-    String accelData = "";
     // first byte is always one
     if (data[0] == 1) {
       // second byte is a counter
       // if counter is expected value, take the accelerometer data, else ignore
       if (data[1] == _rawDataPacketsCounter) {
         int counter = 0;
+        List<double> accelData = new List(3);
 
         _rawDataPacketsCounter = (_rawDataPacketsCounter == 255) ? 0 : ++_rawDataPacketsCounter;
 
@@ -104,44 +107,31 @@ class BleDeviceController {
         for (int i=2; i<data.length; i++) {
           // if even
           if (i % 2 == 0) {
-            accelData += (counter == 0) ? "x:" : "";
-            accelData += (counter == 1) ? "y:" : "";
-            accelData += (counter == 2) ? "z:" : "";
-            counter = (counter == 2) ? 0 : ++counter;
 
-            accelData += (data[i+1] == 0) ? "+" : "-";
-            accelData += (data[i].toDouble() / 255.toDouble()).toString() + " ";
-
-            /*
             if (counter == 0) {
-              accelData = "x: ";
-              accelData += (data[i+1] == 0) ? "+" : "-";
-
-              accelData += (data[i].toDouble() / 255.toDouble()).toString() + "\n";
-              print(accelData);
+              accelData[0] = _calculateDecimalValue(data[i], data[i+1]);
             } else if (counter == 1) {
-              accelData = "y: ";
-              accelData += (data[i+1] == 0) ? "+" : "-";
-
-              accelData += (data[i].toDouble() / 255.toDouble()).toString() + "\n";
-              print(accelData);
+              accelData[1] = _calculateDecimalValue(data[i], data[i+1]);
             } else if (counter == 2) {
-              accelData = "z: ";
-              accelData += (data[i+1] == 0) ? "+" : "-";
+              accelData[2] = _calculateDecimalValue(data[i], data[i+1]);
 
-              accelData += (data[i].toDouble() / 255.toDouble()).toString() + "\n";
-              print(accelData);
+              ForegroundService.sendToPort(accelData);
             }
 
-            counter = (counter == 2) ? 0 : ++counter;*/
+            counter = (counter == 2) ? 0 : ++counter;
           }
         }
-
-        ForegroundService.sendToPort(accelData);
-        //print("data packet nr. ${data[1]}");
-        //print(accelData);
-        //print("${data[2]}, ${data[3]}, ${data[4]}, ${data[5]}, ${data[6]}, ${data[7]}");
       }
     }
+  }
+
+  double _calculateDecimalValue(int firstValue, int secondValue) {
+    double value = firstValue.toDouble() / ACCEL_RAW_VALUE_FOR_DECIMAL_ONE;
+
+    if (secondValue == 255) {
+      value = value - ACCEL_MAX_DECIMAL_VALUE;
+    }
+
+    return value;
   }
 }

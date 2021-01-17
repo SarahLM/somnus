@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/screens/disclaimer_screen.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +11,8 @@ import 'widgets/singletons/ble_device_controller.dart';
 
 int disclaimerScreen;
 int tutorialScreen;
-List<String> messages;
+List<double> accelData;
+List<double> latestAccelData;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +29,8 @@ Future<void> main() async {
 
 //use an async method so we can await
 void maybeStartFGS() async {
-  messages = new List();
+  accelData = new List();
+  latestAccelData = new List();
 
   ///if the app was killed+relaunched, this function will be executed again
   ///but if the foreground service stayed alive,
@@ -54,25 +55,32 @@ void maybeStartFGS() async {
   ///this exists solely in the main app/isolate,
   ///so needs to be redone after every app kill+relaunch
   await ForegroundService.setupIsolateCommunication((data) {
-    messages.add(data);
+    accelData = new List.from(accelData)..addAll(data);
+    latestAccelData = data;
   });
 }
 
 void foregroundServiceFunction() async {
   if (!ForegroundService.isIsolateCommunicationSetup) {
-    messages = new List();
+    accelData = new List();
+    latestAccelData = new List();
+
     ForegroundService.setupIsolateCommunication((data) {
-      messages.add(data);
+      accelData = new List.from(accelData)..addAll(data);
+      latestAccelData = data;
     });
   }
 
   // TODO: check how to communicate in background!
 
-  print("Received messages: " + messages.length.toString());
+  print("Received accelerometer records: " + (accelData.length / 3).toString());
 
-  if (messages.length > 0) {
-    print("Last message: " + messages.last);
-    messages = new List();
+  if (latestAccelData.length > 0) {
+    print("Latest accelerometer record: x=" + latestAccelData[0].toString() +
+        " y=" + latestAccelData[1].toString() + " z=" + latestAccelData[2].toString());
+
+    accelData = new List();
+    latestAccelData = new List();
   }
 
   //ForegroundService.sendToPort("message from bg isolate");

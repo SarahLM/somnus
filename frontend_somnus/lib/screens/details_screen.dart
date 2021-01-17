@@ -113,64 +113,67 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
             FlatButton(
                 child: Text('Daten bearbeiten'),
                 onPressed: () {
-                  showModalBottomSheet<dynamic>(
+                  showModalBottomSheet(
                     context: context,
-                    builder: (BuildContext context) {
-                      return Container(
-                        height: MediaQuery.of(context).size.height * 0.75,
-                        child: ListView(
-                          children: [
-                            SizedBox(height: 10),
-                            ListTile(
-                              leading: Icon(Icons.schedule),
-                              title: Text(
-                                  "Startzeit: ${twoDigits(start_time.hour)}:${twoDigits(start_time.minute)}"),
-                              trailing: Icon(Icons.keyboard_arrow_down),
-                              onTap: _pickStartTime,
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.schedule),
-                              title: Text(
-                                  "Endzeit: ${twoDigits(end_time.hour)}:${twoDigits(end_time.minute)}"),
-                              trailing: Icon(Icons.keyboard_arrow_down),
-                              onTap: _pickEndTime,
-                            ),
-                            ListTile(
-                              title: const Text('Schlaf'),
-                              leading: Radio(
-                                value: States.schlaf,
-                                groupValue: _site,
-                                onChanged: (States value) {
-                                  setState(() {
-                                    _site = value;
-                                  });
-                                },
+                    builder: (context) {
+                      return StatefulBuilder(builder:
+                          (BuildContext context, StateSetter setModalState) {
+                        return Container(
+                          height: MediaQuery.of(context).size.height * 0.75,
+                          child: ListView(
+                            children: [
+                              SizedBox(height: 10),
+                              ListTile(
+                                leading: Icon(Icons.schedule),
+                                title: Text(
+                                    "Startzeit: ${twoDigits(start_time.hour)}:${twoDigits(start_time.minute)}"),
+                                trailing: Icon(Icons.keyboard_arrow_down),
+                                onTap: _pickStartTime,
                               ),
-                            ),
-                            ListTile(
-                              title: const Text('Wach'),
-                              leading: Radio(
-                                value: States.wach,
-                                groupValue: _site,
-                                onChanged: (States value) {
-                                  setState(() {
-                                    _site = value;
-                                  });
-                                },
+                              ListTile(
+                                leading: Icon(Icons.schedule),
+                                title: Text(
+                                    "Endzeit: ${twoDigits(end_time.hour)}:${twoDigits(end_time.minute)}"),
+                                trailing: Icon(Icons.keyboard_arrow_down),
+                                onTap: _pickEndTime,
                               ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            FlatButton(
-                              onPressed: () async {
-                                _updateRows();
-                              },
-                              child: Text('Daten ändern'),
-                            )
-                          ],
-                        ),
-                      );
+                              ListTile(
+                                title: const Text('Schlaf'),
+                                leading: Radio(
+                                  value: States.schlaf,
+                                  groupValue: _site,
+                                  onChanged: (States value) {
+                                    setModalState(() {
+                                      _site = value;
+                                    });
+                                  },
+                                ),
+                              ),
+                              ListTile(
+                                title: const Text('Wach'),
+                                leading: Radio(
+                                  value: States.wach,
+                                  groupValue: _site,
+                                  onChanged: (States value) {
+                                    setModalState(() {
+                                      _site = value;
+                                    });
+                                  },
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              FlatButton(
+                                onPressed: () async {
+                                  _updateRows();
+                                },
+                                child: Text('Daten ändern'),
+                              )
+                            ],
+                          ),
+                        );
+                      });
                     },
                   );
 

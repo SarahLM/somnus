@@ -47,6 +47,10 @@ class _HypnogramScreenState extends State<HypnogramScreen>
   final dbHelper = DatabaseHelper.instance;
 
   bool _canShowButton = true;
+  var multipleDays = new DateFormat('dd.MM.yyyy kk:mm ');
+  var singleDay = new DateFormat('kk:mm');
+  DateFormat dateFormat;
+  double interval;
 
   void hideWidget() {
     setState(() {
@@ -253,6 +257,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     title = '';
                     sleepData = dataPoints;
                     timePrinted = (DateTime.now().toString());
+                    dateFormat = singleDay;
                   });
                 },
               ),
@@ -283,10 +288,11 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     title = '';
                     sleepData = dataPoints;
                     timePrinted = (DateTime.now())
-                            .add(new Duration(days: -2))
+                            .add(new Duration(days: -1))
                             .toString() +
                         ' bis ' +
                         DateTime.now().toString();
+                    dateFormat = singleDay;
                   });
                 },
               ),
@@ -324,6 +330,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         DateFormat('dd.MM. yyyy')
                             .format(DateTime.now())
                             .toString();
+                    dateFormat = multipleDays;
                     print(sleepData);
                   });
                 },
@@ -380,6 +387,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                                   .toString();
                           sleepData = dataPoints;
                           timePrinted = title;
+                          dateFormat = multipleDays;
                         });
                       }
                     },
@@ -404,6 +412,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                               child: Sync(
                                 title: this.title,
                                 sleepData: this.sleepData,
+                                dateFormat: this.dateFormat,
+                                interval: this.interval,
                               ),
                             ),
                           ),

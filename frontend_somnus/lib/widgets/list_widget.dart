@@ -40,13 +40,19 @@ class _ListWidgetState extends State<ListWidget> {
   ];
 
   List<Color> colorList = [
-    Color(0xFF0529B3),
-    Color(0xFF570899),
+    Color(0xFF141F9C),
+    Color(0xFF141F9C),
+    Color(0xFF0C135C),
+    Color(0xFF1D2DDC),
+    Color(0xFF1E2FE8),
+    Color(0xFF1927C2),
+    Color(0xFF502EE8),
+    Color(0xFF4327C2),
   ];
 
   _getColor(DateTime date) {
     var color;
-    date.weekday % 2 == 0 ? color = colorList[0] : color = colorList[1];
+    color = colorList[date.weekday];
     return color;
   }
 

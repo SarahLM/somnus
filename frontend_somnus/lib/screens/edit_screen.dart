@@ -33,6 +33,10 @@ class _EditScreenState extends State<EditScreen>
 
   List<DateEntry> dateEntries = [];
   List<DateEntry> dates;
+  DateFormat dateFormat;
+  var multipleDays = new DateFormat('dd.MM.yyyy kk:mm ');
+  var singleDay = new DateFormat('kk:mm');
+  double interval;
 
   List<Widget> widgetToShow = [];
   @override
@@ -52,6 +56,8 @@ class _EditScreenState extends State<EditScreen>
     widgetToShow.add(Sync(
       title: this.title,
       sleepData: this.sleepData,
+      interval: 1,
+      dateFormat: this.singleDay,
     ));
   }
 
@@ -88,9 +94,6 @@ class _EditScreenState extends State<EditScreen>
                   ? Theme.of(context).accentColor
                   : Colors.white,
               onPressed: () async {
-                // final dataStatesData =
-                //Provider.of<DataStates>(context, listen: false);
-                //final dataPoints = dataStatesData.items;
                 final dataPoints =
                     await Provider.of<DataStates>(context, listen: false)
                         .getDataForSingleDate(DateTime.now());
@@ -101,12 +104,15 @@ class _EditScreenState extends State<EditScreen>
                   _pressedButton4 = false;
                   title = '';
                   sleepData = dataPoints;
+                  interval = 1;
                   this.sleepData.length == 0
                       ? buildWidgetList(Text('Keine Daten'))
                       : buildWidgetList(
                           Sync(
                             title: this.title,
                             sleepData: this.sleepData,
+                            dateFormat: this.dateFormat,
+                            interval: this.interval,
                           ),
                         );
                   //timePrinted = (DateTime.now().toString());

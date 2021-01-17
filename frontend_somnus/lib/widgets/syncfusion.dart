@@ -6,13 +6,16 @@ import 'package:intl/intl.dart';
 class Sync extends StatelessWidget {
   final String title;
   final List<DataPoint> sleepData;
+  final DateFormat dateFormat;
+  final double interval;
   final Color colorAsleep = Color(0xFF0529B3);
   final Color colorAwake = Color(0xFFFF9221);
-  final f = new DateFormat('dd.MM.yyyy kk:mm ');
 
   Sync({
-    this.title,
-    this.sleepData,
+    @required this.title,
+    @required this.sleepData,
+    @required this.dateFormat,
+    @required this.interval,
   });
 
   @override
@@ -55,8 +58,8 @@ class Sync extends StatelessWidget {
                         primaryXAxis: DateTimeAxis(
                           isVisible: true,
                           majorGridLines: MajorGridLines(width: 0),
-                          dateFormat: f,
-                          interval: 1,
+                          dateFormat: this.dateFormat,
+                          interval: this.interval,
                           labelRotation: 90,
                           plotBands: <PlotBand>[
                             /*   Plot band: different height for sleep and awake */

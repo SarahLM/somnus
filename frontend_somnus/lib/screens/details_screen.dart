@@ -174,7 +174,7 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
                     },
                   );
 
-                  Navigator.of(context).pushNamed(EditDataScreen.routeName);
+                  // Navigator.of(context).pushNamed(EditDataScreen.routeName);
                 })
           ],
         ),

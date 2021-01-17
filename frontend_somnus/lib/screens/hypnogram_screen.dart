@@ -70,9 +70,32 @@ class _HypnogramScreenState extends State<HypnogramScreen>
     });
   }
 
+  Future<List<DataPoint>> getDataToday() async {
+    return await Provider.of<DataStates>(context, listen: false)
+        .getDataForSingleDate(DateTime.now());
+  }
+
+  Future<List<DataPoint>> getDataYesterday() async {
+    return await Provider.of<DataStates>(context, listen: false)
+        .getDataForSingleDate(DateTime.now().add(new Duration(days: -1)));
+  }
+
+  Future<List<DataPoint>> getDataSevenDays() async {
+    return await Provider.of<DataStates>(context, listen: false)
+        .getDataForDateRange(
+      DateTime.now(),
+      (new DateTime.now()).add(new Duration(days: -7)),
+    );
+  }
+
+  Future<List<DataPoint>> getDataCustomRange() async {
+    await Provider.of<DataStates>(context, listen: false)
+        .getDataForDateRange((picked[1]), (picked[0]));
+  }
+
   final GlobalKey<State<StatefulWidget>> _printKey = GlobalKey();
 
-  Future<Uint8List> _printScreen() async {
+  _printScreen() {
     //const imageProvider = const AssetImage('assets/images/somnus_logo.png');
     // final image1 = await flutterImageProvider(imageProvider);
     Printing.layoutPdf(onLayout: (PdfPageFormat format) async {
@@ -220,12 +243,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     ? Theme.of(context).accentColor
                     : Colors.white,
                 onPressed: () async {
-                  // final dataStatesData =
-                  //Provider.of<DataStates>(context, listen: false);
-                  //final dataPoints = dataStatesData.items;
-                  final dataPoints =
-                      await Provider.of<DataStates>(context, listen: false)
-                          .getDataForSingleDate(DateTime.now());
+                  dataPoints = await getDataToday();
+
                   setState(() {
                     _pressedButton1 = true;
                     _pressedButton2 = false;
@@ -254,15 +273,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     ? Theme.of(context).accentColor
                     : Colors.white,
                 onPressed: () async {
-                  // final dataPoints =
-                  //     Provider.of<DataStates>(context, listen: false).findByDate(
-                  //         (new DateTime.now()).add(new Duration(days: -2)),
-                  //         DateTime.now());
+                  dataPoints = await getDataYesterday();
 
-                  dataPoints =
-                      await Provider.of<DataStates>(context, listen: false)
-                          .getDataForSingleDate(
-                              DateTime.now().add(new Duration(days: -1)));
                   setState(() {
                     _pressedButton2 = true;
                     _pressedButton1 = false;
@@ -276,7 +288,6 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         ' bis ' +
                         DateTime.now().toString();
                   });
-                  //dataStates.getResult();
                 },
               ),
               FlatButton(
@@ -296,12 +307,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     ? Theme.of(context).accentColor
                     : Colors.white,
                 onPressed: () async {
-                  dataPoints =
-                      await Provider.of<DataStates>(context, listen: false)
-                          .getDataForDateRange(
-                    DateTime.now(),
-                    (new DateTime.now()).add(new Duration(days: -7)),
-                  );
+                  dataPoints = await getDataSevenDays();
+
                   setState(() {
                     _pressedButton3 = true;
                     _pressedButton1 = false;
@@ -359,11 +366,10 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                       if (picked != null && picked.length == 2) {
                         print(picked);
                         print(picked.runtimeType);
-                        dataPoints = await Provider.of<DataStates>(context,
-                                listen: false)
-                            .getDataForDateRange((picked[1]), (picked[0]));
+                        dataPoints = await getDataCustomRange();
+
                         setState(() {
-                          title = DateFormat('dd.MM. yyyy')
+                          title = DateFormat('dd.MM.yyyy')
                                   .format(picked[0])
                                   .toString() +
                               ' bis ' +

@@ -3,7 +3,6 @@ import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/providers/dates.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/screens/details_screen.dart';
-import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 

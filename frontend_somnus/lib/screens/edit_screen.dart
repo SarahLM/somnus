@@ -282,10 +282,6 @@ class _EditScreenState extends State<EditScreen>
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.edit),
-        onPressed: null,
-      ),
     );
   }
 

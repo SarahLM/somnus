@@ -366,7 +366,9 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                       if (picked != null && picked.length == 2) {
                         print(picked);
                         print(picked.runtimeType);
-                        dataPoints = await getDataCustomRange(picked);
+                        dataPoints = await Provider.of<DataStates>(context,
+                                listen: false)
+                            .getDataForDateRange((picked[1]), (picked[0]));
 
                         setState(() {
                           title = DateFormat('dd.MM.yyyy')
@@ -378,7 +380,6 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                                   .toString();
                           sleepData = dataPoints;
                           timePrinted = title;
-                          picked = picked;
                         });
                       }
                     },
@@ -443,12 +444,12 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         ],
                       ),
                     )),
-              !_canShowButton
-                  ? Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(),
-                    )
-                  : const SizedBox.shrink()
+              // !_canShowButton
+              //     ? Padding(
+              //         padding: const EdgeInsets.all(8.0),
+              //         child: CircularProgressIndicator(),
+              //       )
+              //     : const SizedBox.shrink()
             ],
           ),
         ),
@@ -457,20 +458,22 @@ class _HypnogramScreenState extends State<HypnogramScreen>
           children: [
             this.sleepData.length != 0
                 ? FloatingActionButton(
+                    heroTag: null,
                     child: const Icon(Icons.print),
                     onPressed: _printScreen,
                   )
                 : const SizedBox.shrink(),
             !_canShowButton
-                ? //const SizedBox.shrink()
-                FloatingActionButton(
-                    backgroundColor: Colors.grey,
-                    onPressed: null,
-                    child: const Icon(
-                      Icons.upload_file,
-                    ),
-                  )
+                ? CircularProgressIndicator()
+                // FloatingActionButton(
+                //     backgroundColor: Colors.grey,
+                //     onPressed: null,
+                //     child: const Icon(
+                //       Icons.upload_file,
+                //     ),
+                //   )
                 : FloatingActionButton(
+                    heroTag: null,
                     child: const Icon(Icons.upload_file),
                     onPressed: () async {
                       final snackBar = SnackBar(
@@ -500,7 +503,9 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         dataPoints = await getDataSevenDays();
                       }
                       if (_pressedButton4) {
-                        dataPoints = await getDataCustomRange(picked);
+                        dataPoints = await Provider.of<DataStates>(context,
+                                listen: false)
+                            .getDataForDateRange((picked[1]), (picked[0]));
                       }
                       setState(() {
                         sleepData = dataPoints;

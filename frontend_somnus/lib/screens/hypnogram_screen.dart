@@ -43,6 +43,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
 
   List<DataPoint> sleepData = [];
   List<DataPoint> dataPoints;
+  List<DateTime> picked;
   final dbHelper = DatabaseHelper.instance;
 
   bool _canShowButton = true;
@@ -344,8 +345,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         _pressedButton2 = false;
                         _pressedButton3 = false;
                       });
-                      final List<DateTime> picked =
-                          await DateRagePicker.showDatePicker(
+                      picked = await DateRagePicker.showDatePicker(
                         locale: const Locale("de", "DE"),
                         context: context,
                         initialFirstDate: new DateTime.now(),
@@ -371,6 +371,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                                   .toString();
                           sleepData = dataPoints;
                           timePrinted = title;
+                          picked = picked;
                         });
                       }
                     },
@@ -476,8 +477,33 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                       print(res);
                       await dbHelper.resultsToDb();
                       hideWidget();
-                      Navigator.of(context)
-                          .pushReplacementNamed(HypnogramScreen.routeName);
+                      if (_pressedButton1) {
+                        dataPoints = await Provider.of<DataStates>(context,
+                                listen: false)
+                            .getDataForSingleDate(DateTime.now());
+                      }
+                      if (_pressedButton2) {
+                        dataPoints = await Provider.of<DataStates>(context,
+                                listen: false)
+                            .getDataForSingleDate(
+                                DateTime.now().add(new Duration(days: -1)));
+                      }
+                      if (_pressedButton3) {
+                        dataPoints = await Provider.of<DataStates>(context,
+                                listen: false)
+                            .getDataForDateRange(
+                          DateTime.now(),
+                          (new DateTime.now()).add(new Duration(days: -7)),
+                        );
+                      }
+                      if (_pressedButton4) {
+                        dataPoints = await Provider.of<DataStates>(context,
+                                listen: false)
+                            .getDataForDateRange((picked[1]), (picked[0]));
+                      }
+                      setState(() {
+                        sleepData = dataPoints;
+                      });
                     },
                   ),
           ],

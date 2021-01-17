@@ -22,9 +22,9 @@ Future<void> main() async {
   //tutorialScreen = prefs.getInt("tutorialScreen");
   //await prefs.setInt("tutorialScreen", 1);
   Intl.defaultLocale = "de_DE";
-  runApp(MyApp());
 
-  maybeStartFGS();
+  await maybeStartFGS();
+  runApp(MyApp());
 }
 
 //use an async method so we can await

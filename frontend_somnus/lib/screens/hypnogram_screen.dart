@@ -88,7 +88,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
     );
   }
 
-  Future<List<DataPoint>> getDataCustomRange() async {
+  Future<List<DataPoint>> getDataCustomRange(picked) async {
     await Provider.of<DataStates>(context, listen: false)
         .getDataForDateRange((picked[1]), (picked[0]));
   }
@@ -366,7 +366,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                       if (picked != null && picked.length == 2) {
                         print(picked);
                         print(picked.runtimeType);
-                        dataPoints = await getDataCustomRange();
+                        dataPoints = await getDataCustomRange(picked);
 
                         setState(() {
                           title = DateFormat('dd.MM.yyyy')
@@ -491,28 +491,16 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                       await dbHelper.resultsToDb();
                       hideWidget();
                       if (_pressedButton1) {
-                        dataPoints = await Provider.of<DataStates>(context,
-                                listen: false)
-                            .getDataForSingleDate(DateTime.now());
+                        dataPoints = await getDataToday();
                       }
                       if (_pressedButton2) {
-                        dataPoints = await Provider.of<DataStates>(context,
-                                listen: false)
-                            .getDataForSingleDate(
-                                DateTime.now().add(new Duration(days: -1)));
+                        dataPoints = await getDataYesterday();
                       }
                       if (_pressedButton3) {
-                        dataPoints = await Provider.of<DataStates>(context,
-                                listen: false)
-                            .getDataForDateRange(
-                          DateTime.now(),
-                          (new DateTime.now()).add(new Duration(days: -7)),
-                        );
+                        dataPoints = await getDataSevenDays();
                       }
                       if (_pressedButton4) {
-                        dataPoints = await Provider.of<DataStates>(context,
-                                listen: false)
-                            .getDataForDateRange((picked[1]), (picked[0]));
+                        dataPoints = await getDataCustomRange(picked);
                       }
                       setState(() {
                         sleepData = dataPoints;

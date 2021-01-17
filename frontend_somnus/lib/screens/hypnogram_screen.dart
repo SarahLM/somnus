@@ -258,10 +258,11 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                   //     Provider.of<DataStates>(context, listen: false).findByDate(
                   //         (new DateTime.now()).add(new Duration(days: -2)),
                   //         DateTime.now());
-                  final DateTime date1 = DateTime.now();
-                  dataPoints = await Provider.of<DataStates>(context,
-                          listen: false)
-                      .getDataForSingleDate(date1.add(new Duration(days: -1)));
+
+                  dataPoints =
+                      await Provider.of<DataStates>(context, listen: false)
+                          .getDataForSingleDate(
+                              DateTime.now().add(new Duration(days: -1)));
                   setState(() {
                     _pressedButton2 = true;
                     _pressedButton1 = false;
@@ -436,6 +437,12 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         ],
                       ),
                     )),
+              !_canShowButton
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CircularProgressIndicator(),
+                    )
+                  : const SizedBox.shrink()
             ],
           ),
         ),

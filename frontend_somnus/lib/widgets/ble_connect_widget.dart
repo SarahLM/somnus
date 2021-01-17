@@ -10,7 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/block/aes_fast.dart';
 import 'package:pointycastle/block/modes/ecb.dart';
-import 'package:loader_overlay/loader_overlay.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'singletons/ble_device_controller.dart';
 
 class BleConnect extends StatefulWidget {
@@ -24,6 +24,7 @@ class _BleConnectState extends State<BleConnect> {
   Characteristic immediateAlertChar;
 
   bool _bleManagerScanning = false;
+  bool _isLoading = false;
   List<Peripheral> bleDevices = new List<Peripheral>();
 
   @override
@@ -66,8 +67,7 @@ class _BleConnectState extends State<BleConnect> {
 
     return MaterialApp(
       title: "test",
-        home: LoaderOverlay(
-            useDefaultLoading: true,
+        home: LoadingOverlay(
             child: Column(
                 children: <Widget>[
                 RaisedButton(
@@ -95,13 +95,18 @@ class _BleConnectState extends State<BleConnect> {
                   ),
                 ),
               ]
-          )
+          ),
+          isLoading: _isLoading,
+          opacity: 0.5,
+          progressIndicator: CircularProgressIndicator(),
       )
     );
   }
 
   Future<void> _selectBleDevice(Peripheral selectedDevice, BuildContext localContext) async {
     bleDeviceController.fitnessTracker = selectedDevice;
+
+    setState(() { _isLoading = true;});
 
     if (await _connectToBleDevice()) {
       print("Connected to BLE device.");
@@ -113,6 +118,7 @@ class _BleConnectState extends State<BleConnect> {
           bleDeviceController.fitnessTracker.disconnectOrCancelConnection();
         }
 
+        setState(() { _isLoading = false;});
         _showDialog("Device not compatible", "The selected device is not "
             "compatible with this app. Choose another device or check the "
             "manual for compatible devices.");
@@ -201,6 +207,7 @@ class _BleConnectState extends State<BleConnect> {
       authenticationFailed = true;
     } else if (data[0] == 16 && data[1] == 3 && data[2] == 1) {
       print("AUTHENTICATED!!!");
+      setState(() { _isLoading = false;});
       ForegroundService.notification.setText(DEVICE_CONNECTED);
       _showDialog("Connection success", "Your device is connected.");
       await _printServicesAndChars();
@@ -217,6 +224,7 @@ class _BleConnectState extends State<BleConnect> {
       if (await bleDeviceController.fitnessTracker.isConnected()) {
         bleDeviceController.fitnessTracker.disconnectOrCancelConnection();
       }
+      setState(() { _isLoading = false;});
       _showDialog("Connection error", "The authentication process failed. " +
           "Make sure the device is near and Bluetooth is enabled. Then try " +
           "again.\n\nIf the error remains, make sure the device is compatible " +

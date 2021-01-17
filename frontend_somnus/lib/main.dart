@@ -16,8 +16,6 @@ import './screens/edit_data_screen.dart';
 
 int disclaimerScreen;
 int tutorialScreen;
-List<double> accelData;
-List<double> latestAccelData;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,9 +32,6 @@ Future<void> main() async {
 
 //use an async method so we can await
 void maybeStartFGS() async {
-  accelData = new List();
-  latestAccelData = new List();
-
   ///if the app was killed+relaunched, this function will be executed again
   ///but if the foreground service stayed alive,
   ///this does not need to be re-done
@@ -60,38 +55,16 @@ void maybeStartFGS() async {
   ///this exists solely in the main app/isolate,
   ///so needs to be redone after every app kill+relaunch
   await ForegroundService.setupIsolateCommunication((data) {
-    accelData = new List.from(accelData)..addAll(data);
-    latestAccelData = data;
+    foregroundServiceSetText(data);
   });
 }
 
 void foregroundServiceFunction() async {
   if (!ForegroundService.isIsolateCommunicationSetup) {
-    accelData = new List();
-    latestAccelData = new List();
-
     ForegroundService.setupIsolateCommunication((data) {
-      accelData = new List.from(accelData)..addAll(data);
-      latestAccelData = data;
+      foregroundServiceSetText(data);
     });
   }
-
-  // TODO: check how to communicate in background!
-
-  print("Received accelerometer records: " + (accelData.length / 3).toString());
-
-  if (latestAccelData.length > 0) {
-    foregroundServiceSetText(DEVICE_CONNECTED);
-    print("Latest accelerometer record: x=" + latestAccelData[0].toString() +
-        " y=" + latestAccelData[1].toString() + " z=" + latestAccelData[2].toString());
-
-    accelData = new List();
-    latestAccelData = new List();
-  } else {
-    foregroundServiceSetText(DEVICE_NOT_CONNECTED);
-  }
-
-  //ForegroundService.sendToPort("message from bg isolate");
 }
 
 void foregroundServiceSetText(String text) async {

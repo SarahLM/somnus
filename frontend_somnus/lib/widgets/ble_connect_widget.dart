@@ -45,8 +45,6 @@ class _BleConnectState extends State<BleConnect> {
     // TODO: if bluetooth is on
     if (await _checkPermissions()) {
       bleDeviceController.bleManager = BleManager();
-      print("bleManager was set: ");
-      print(bleDeviceController.bleManager);
       await bleDeviceController.bleManager.createClient();
       _scanForBleDevices();
     } else {

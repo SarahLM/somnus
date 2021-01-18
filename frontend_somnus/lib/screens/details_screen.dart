@@ -1,38 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
+import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import './edit_data_screen.dart';
 import 'database_helper.dart';
 
 class EditDetailsScreen extends StatefulWidget {
-  final List<DataPoint> sleepData;
+  List<DataPoint> sleepData;
   final String title;
+  final DateTime date;
 
-  EditDetailsScreen({this.sleepData, this.title});
+  EditDetailsScreen({this.sleepData, this.title, this.date});
 
   @override
   _EditDetailsScreenState createState() => _EditDetailsScreenState();
 }
 
-enum States { schlaf, wach }
-enum SingingCharacter { lafayette, jefferson }
-SingingCharacter _character = SingingCharacter.lafayette;
-
 class _EditDetailsScreenState extends State<EditDetailsScreen> {
-  TimeOfDay start_time;
-  TimeOfDay end_time;
+  TimeOfDay startTime;
+  TimeOfDay endTime;
+
   final dbHelper = DatabaseHelper.instance;
 
   States _site = States.schlaf;
 
   String twoDigits(int n) => n.toString().padLeft(2, "0");
+  var singleDay = new DateFormat('kk:mm');
 
   @override
   void initState() {
     super.initState();
-    start_time = TimeOfDay.now();
-    end_time = TimeOfDay.now();
+    startTime = TimeOfDay.now();
+    endTime = TimeOfDay.now();
+    print(widget.date);
   }
 
   _pickStartTime() async {
@@ -51,7 +53,7 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
     );
     if (t != null)
       setState(() {
-        start_time = t;
+        startTime = t;
       });
   }
 
@@ -71,7 +73,7 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
     );
     if (t != null)
       setState(() {
-        end_time = t;
+        endTime = t;
       });
   }
 
@@ -87,18 +89,29 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
     Map<String, dynamic> row = {
       DatabaseHelper.columnSleepwake: _site == States.schlaf ? 0.0 : 1.0
     };
-    String startTimeNew = formatTimeOfDay(start_time);
-    String endTimeNew = formatTimeOfDay(end_time);
+    String startTimeNew = formatTimeOfDay(startTime);
+    String endTimeNew = formatTimeOfDay(endTime);
+
+    print('this date');
+    print(widget.date);
     print(startTimeNew);
     print(endTimeNew);
     final rowsAffected = await dbHelper.updateDataPerRange(
-        row, startTimeNew, endTimeNew, '2021-01-17');
+        row, startTimeNew, endTimeNew, '2021-01-14');
     print('updated $rowsAffected row(s)');
+
+    final dataPoints = await Provider.of<DataStates>(context, listen: false)
+        .getDataForSingleDate(widget.date);
+    setState(() {
+      widget.sleepData = dataPoints;
+    });
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(),
       body: Center(
         child: Column(
@@ -106,6 +119,8 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
             Sync(
               title: widget.title,
               sleepData: widget.sleepData,
+              interval: 1,
+              dateFormat: singleDay,
             ),
             SizedBox(
               height: 10,
@@ -119,21 +134,21 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
                       return StatefulBuilder(builder:
                           (BuildContext context, StateSetter setModalState) {
                         return Container(
-                          height: MediaQuery.of(context).size.height * 0.75,
+                          height: MediaQuery.of(context).size.height * 0.5,
                           child: ListView(
                             children: [
                               SizedBox(height: 10),
                               ListTile(
                                 leading: Icon(Icons.schedule),
                                 title: Text(
-                                    "Startzeit: ${twoDigits(start_time.hour)}:${twoDigits(start_time.minute)}"),
+                                    "Startzeit: ${twoDigits(startTime.hour)}:${twoDigits(startTime.minute)}"),
                                 trailing: Icon(Icons.keyboard_arrow_down),
                                 onTap: _pickStartTime,
                               ),
                               ListTile(
                                 leading: Icon(Icons.schedule),
                                 title: Text(
-                                    "Endzeit: ${twoDigits(end_time.hour)}:${twoDigits(end_time.minute)}"),
+                                    "Endzeit: ${twoDigits(endTime.hour)}:${twoDigits(endTime.minute)}"),
                                 trailing: Icon(Icons.keyboard_arrow_down),
                                 onTap: _pickEndTime,
                               ),

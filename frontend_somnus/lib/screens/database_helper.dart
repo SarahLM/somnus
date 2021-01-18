@@ -131,7 +131,7 @@ class DatabaseHelper {
     print(date);
     return await db.update(results, row,
         where:
-            "$columnDate='$date' AND $columnTime BETWEEN '$time1' AND '$time2'");
+            "$columnDate LIKE '%$date%' AND $columnTime BETWEEN '$time1' AND '$time2'");
   }
 
   // Deletes the row specified by the id. The number of affected rows is
@@ -190,7 +190,7 @@ class DatabaseHelper {
       int count = await checkValue(insertArray[0], insertArray[1]);
       if (count == 0) {
         //  print('Insert');
-        insertsleepwake(row);
+        await insertsleepwake(row);
       } else {
         // print('No insert');
       }

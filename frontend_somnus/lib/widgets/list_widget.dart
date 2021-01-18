@@ -19,6 +19,7 @@ class ListWidget extends StatefulWidget {
 class _ListWidgetState extends State<ListWidget> {
   List<DataPoint> sleepData;
   String title = '';
+  DateTime date;
 
   final DateFormat formatter = DateFormat('dd.MM.yyyy');
 
@@ -41,7 +42,6 @@ class _ListWidgetState extends State<ListWidget> {
 
   List<Color> colorList = [
     Color(0xFF141F9C),
-    Color(0xFF141F9C),
     Color(0xFF0C135C),
     Color(0xFF1D2DDC),
     Color(0xFF1E2FE8),
@@ -52,7 +52,7 @@ class _ListWidgetState extends State<ListWidget> {
 
   _getColor(DateTime date) {
     var color;
-    color = colorList[date.weekday];
+    color = colorList[date.weekday - 1];
     return color;
   }
 
@@ -65,6 +65,7 @@ class _ListWidgetState extends State<ListWidget> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: InkWell(
               onTap: () async {
+                print('Tap ' + d.date.toString());
                 final sleepData =
                     await Provider.of<DataStates>(context, listen: false)
                         .getDataForSingleDate(d.date);
@@ -75,10 +76,12 @@ class _ListWidgetState extends State<ListWidget> {
 
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (_) => EditDetailsScreen(
-                            title: this.title,
-                            sleepData: this.sleepData,
-                          )),
+                    builder: (_) => EditDetailsScreen(
+                      title: this.title,
+                      sleepData: this.sleepData,
+                      date: d.date,
+                    ),
+                  ),
                 );
               },
               child: Card(

@@ -1,8 +1,15 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:foreground_service/foreground_service.dart';
 import 'package:frontend_somnus/screens/database_helper.dart';
 import 'package:intl/intl.dart';
+
+enum Status {
+  accelDataWrittenToDB,
+  accelDataNotWrittenToDB,
+}
 
 const String DEVICE_NOT_CONNECTED = "Connect your fitness tracker.";
 const String DEVICE_CONNECTED = "Fitness tracker connected.";
@@ -52,6 +59,31 @@ class BleDeviceController {
   final dbHelper = DatabaseHelper.instance;
   List<double> accelDataSinceLastDBAccess = new List();
   List<double> latestAccelData = new List(3);
+
+  Future<void> reset() async {
+    if (_accelDataAliveTimer != null) {
+      _accelDataAliveTimer.cancel();
+    }
+    if (_accelDataToDBTimer != null) {
+      _accelDataToDBTimer.cancel();
+    }
+    if (fitnessTracker != null) {
+      if (await bleDeviceController.fitnessTracker.isConnected()) {
+        fitnessTracker.disconnectOrCancelConnection();
+      }
+    }
+
+    bleManager = null;
+    fitnessTracker = null;
+    fitnessTrackerServices = null;
+    miBandService0 = null;
+    miBandService1 = null;
+    _rawDataPacketsCounter = null;
+    _sensorChar = null;
+    _accelerometerChar = null;
+    accelDataSinceLastDBAccess = new List();
+    latestAccelData = new List(3);
+  }
 
   Future<void> startReceivingRawSensorData() async {
     List<Characteristic> miBandSrvChars;
@@ -143,23 +175,40 @@ class BleDeviceController {
   }
 
   void _writeAccelDataToDB() async {
-    Map<String, dynamic> row = new Map();
 
-    final DateFormat serverFormaterDate = DateFormat('yyyy-MM-dd');
-    final DateFormat serverFormaterTime = DateFormat('HH:mm:ss:SS');
-    final date = DateTime.now();
-    final currentDate = serverFormaterDate.format(date);
-    final currentTime = serverFormaterTime.format(date);
+    print(latestAccelData[0].toString() + latestAccelData[1].toString() + latestAccelData[2].toString());
 
-    row[DatabaseHelper.columnDate] = currentDate;
-    row[DatabaseHelper.columnTime] = currentTime;
-    row[DatabaseHelper.columnX] = latestAccelData[0];
-    row[DatabaseHelper.columnY] = latestAccelData[1];
-    row[DatabaseHelper.columnZ] = latestAccelData[2];
-    row[DatabaseHelper.columnLUX] = 0;
-    row[DatabaseHelper.columnT] = 0;
+    // don't write an entry to database when no data was received
+    if (latestAccelData[0] != null && latestAccelData[1] != null && latestAccelData[2] != null) {
+      Map<String, dynamic> row = new Map();
 
-    //print(row);
-    await dbHelper.insert(row);
+      final DateFormat serverFormaterDate = DateFormat('yyyy-MM-dd');
+      final DateFormat serverFormaterTime = DateFormat('HH:mm:ss:SS');
+      final date = DateTime.now();
+      final currentDate = serverFormaterDate.format(date);
+      final currentTime = serverFormaterTime.format(date);
+
+      row[DatabaseHelper.columnDate] = currentDate;
+      row[DatabaseHelper.columnTime] = currentTime;
+      row[DatabaseHelper.columnX] = latestAccelData[0];
+      row[DatabaseHelper.columnY] = latestAccelData[1];
+      row[DatabaseHelper.columnZ] = latestAccelData[2];
+      row[DatabaseHelper.columnLUX] = 0;
+      row[DatabaseHelper.columnT] = 0;
+
+      //print(row);
+      await dbHelper.insert(row);
+      try {
+        ForegroundService.sendToPort(Status.accelDataWrittenToDB);
+      } catch {
+        exit(0);
+      }
+
+
+      accelDataSinceLastDBAccess = new List();
+      latestAccelData = new List(3);
+    } else {
+      ForegroundService.sendToPort(Status.accelDataNotWrittenToDB);
+    }
   }
 }

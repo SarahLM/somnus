@@ -43,6 +43,8 @@ class _BleConnectState extends State<BleConnect> {
 
   void _localInitStateAsync () async {
     // TODO: if bluetooth is on
+    await bleDeviceController.reset();
+
     if (await _checkPermissions()) {
       bleDeviceController.bleManager = BleManager();
       await bleDeviceController.bleManager.createClient();
@@ -102,6 +104,12 @@ class _BleConnectState extends State<BleConnect> {
   }
 
   Future<void> _selectBleDevice(Peripheral selectedDevice, BuildContext localContext) async {
+    if (bleDeviceController.fitnessTracker != null) {
+      if (await bleDeviceController.fitnessTracker.isConnected()) {
+        bleDeviceController.fitnessTracker.disconnectOrCancelConnection();
+      }
+    }
+
     bleDeviceController.fitnessTracker = selectedDevice;
 
     setState(() { _isLoading = true;});

@@ -16,6 +16,9 @@ import './screens/edit_data_screen.dart';
 
 int disclaimerScreen;
 int tutorialScreen;
+int deviceNotConnectedCounter = 0;
+
+Status status;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,15 +58,43 @@ void maybeStartFGS() async {
   ///this exists solely in the main app/isolate,
   ///so needs to be redone after every app kill+relaunch
   await ForegroundService.setupIsolateCommunication((data) {
-    foregroundServiceSetText(data);
+    status = data;
   });
 }
 
 void foregroundServiceFunction() async {
   if (!ForegroundService.isIsolateCommunicationSetup) {
     ForegroundService.setupIsolateCommunication((data) {
-      foregroundServiceSetText(data);
+      status = data;
     });
+  }
+
+  switch (status) {
+    case Status.accelDataWrittenToDB:
+      foregroundServiceSetText(DEVICE_CONNECTED);
+      deviceNotConnectedCounter = 0;
+      break;
+    case Status.accelDataNotWrittenToDB:
+      // Counting how often the accel data was not written to the database.
+      // If it was not written more than 3 times, the app should tell the user.
+      // This is because the continious reading of accel data from the MiBand
+      // is only possible, if we send an alive command every 30 seconds. But
+      // this procedure requires a couple seconds, where no data can be
+      // received. So we are ignoring the first 3 status messages.
+      deviceNotConnectedCounter++;
+      if (deviceNotConnectedCounter > 3) {
+        foregroundServiceSetText(DEVICE_NOT_CONNECTED);
+
+        // If the messages are still not written to the database during 10 min
+        // the user should be notified again and the counter will be resetted.
+        if (deviceNotConnectedCounter >= 603) {
+          ForegroundService.notification.setText(DEVICE_NOT_CONNECTED);
+          deviceNotConnectedCounter = 3;
+        }
+      }
+      break;
+    default:
+      foregroundServiceSetText(DEVICE_NOT_CONNECTED);
   }
 }
 

@@ -128,10 +128,14 @@ class DatabaseHelper {
     Database db = await instance.database;
     print(time1);
     print(time2);
-    print(date);
+    var dateArray = date.toString().split(' ');
+    var dateToQuery = dateArray[0];
+    print('date2 in update ' + dateToQuery.toString());
+
+    print('date in update ' + dateArray.toString());
     return await db.update(results, row,
         where:
-            "$columnDate LIKE '%$date%' AND $columnTime BETWEEN '$time1' AND '$time2'");
+            "$columnDate='$dateToQuery' AND $columnTime BETWEEN '$time1' AND '$time2'");
   }
 
   // Deletes the row specified by the id. The number of affected rows is

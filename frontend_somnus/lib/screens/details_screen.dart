@@ -19,12 +19,14 @@ class EditDetailsScreen extends StatefulWidget {
 }
 
 class _EditDetailsScreenState extends State<EditDetailsScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   TimeOfDay startTime;
   TimeOfDay endTime;
 
   final dbHelper = DatabaseHelper.instance;
 
   States _site = States.schlaf;
+  int rowsAffected;
 
   String twoDigits(int n) => n.toString().padLeft(2, "0");
   var singleDay = new DateFormat('kk:mm');
@@ -96,21 +98,24 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
     print(widget.date);
     print(startTimeNew);
     print(endTimeNew);
-    final rowsAffected = await dbHelper.updateDataPerRange(
-        row, startTimeNew, endTimeNew, '2021-01-14');
+    this.rowsAffected = await dbHelper.updateDataPerRange(
+        row, startTimeNew, endTimeNew, widget.date);
     print('updated $rowsAffected row(s)');
 
     final dataPoints = await Provider.of<DataStates>(context, listen: false)
         .getDataForSingleDate(widget.date);
     setState(() {
       widget.sleepData = dataPoints;
+      this.rowsAffected = this.rowsAffected;
     });
+
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(),
       body: Center(
@@ -182,6 +187,19 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
                               FlatButton(
                                 onPressed: () async {
                                   _updateRows();
+
+                                  final snackBar = SnackBar(
+                                    content: this.rowsAffected > 0
+                                        ? Text(
+                                            "$rowsAffected Datensätze wurden bearbeitet")
+                                        : Text(
+                                            'Für den ausgewählten Zetraum liegen keine Datensätze vor'),
+                                  );
+
+                                  // Find the Scaffold in the widget tree and use
+                                  // it to show a SnackBar.
+                                  _scaffoldKey.currentState
+                                      .showSnackBar(snackBar);
                                 },
                                 child: Text('Daten ändern'),
                               )

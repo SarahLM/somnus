@@ -88,6 +88,15 @@ class BleDeviceController {
   Future<void> startReceivingRawSensorData() async {
     List<Characteristic> miBandSrvChars;
 
+    /* ---- DEBUG ----
+     * For testing whether the app has written data to the database.
+     *
+    //final allRows = await dbHelper.queryFirstNRowsOfDay(3000, "2021-01-19");
+    final allRows = await dbHelper.queryLastNRows(500);
+    print('queried rows:');
+    allRows.forEach((row) => print(row));
+    */
+
     // get characteristic for sensors
     miBandSrvChars = await fitnessTracker.characteristics(miBandService0.uuid);
     miBandSrvChars.forEach((element) {
@@ -200,7 +209,7 @@ class BleDeviceController {
       await dbHelper.insert(row);
       try {
         ForegroundService.sendToPort(Status.accelDataWrittenToDB);
-      } catch {
+      } catch (e) {
         exit(0);
       }
 

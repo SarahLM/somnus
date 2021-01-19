@@ -95,7 +95,10 @@ void foregroundServiceFunction() async {
       break;
     default:
       foregroundServiceSetText(DEVICE_NOT_CONNECTED);
+      break;
   }
+
+  status = null;
 }
 
 void foregroundServiceSetText(String text) async {

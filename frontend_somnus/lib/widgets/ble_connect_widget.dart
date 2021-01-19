@@ -43,6 +43,8 @@ class _BleConnectState extends State<BleConnect> {
 
   void _localInitStateAsync () async {
     // TODO: if bluetooth is on
+    // TODO: after connect, close screen automatically
+    // TODO: automatically reconnect, when device was out of range and then returns
     await bleDeviceController.reset();
 
     if (await _checkPermissions()) {

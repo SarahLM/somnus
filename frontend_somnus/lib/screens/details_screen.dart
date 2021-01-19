@@ -86,7 +86,7 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
     return format.format(dt);
   }
 
-  void _updateRows() async {
+  Future<int> _updateRows() async {
     // row to update
     Map<String, dynamic> row = {
       DatabaseHelper.columnSleepwake: _site == States.schlaf ? 0.0 : 1.0
@@ -110,6 +110,7 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
     });
 
     Navigator.of(context).pop();
+    return rowsAffected;
   }
 
   @override
@@ -134,12 +135,15 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
                 child: Text('Daten bearbeiten'),
                 onPressed: () {
                   showModalBottomSheet(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
                     context: context,
                     builder: (context) {
                       return StatefulBuilder(builder:
                           (BuildContext context, StateSetter setModalState) {
                         return Container(
-                          height: MediaQuery.of(context).size.height * 0.5,
+                          height: MediaQuery.of(context).size.height * 0.3,
                           child: ListView(
                             children: [
                               SizedBox(height: 10),
@@ -157,36 +161,44 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
                                 trailing: Icon(Icons.keyboard_arrow_down),
                                 onTap: _pickEndTime,
                               ),
-                              ListTile(
-                                title: const Text('Schlaf'),
-                                leading: Radio(
-                                  value: States.schlaf,
-                                  groupValue: _site,
-                                  onChanged: (States value) {
-                                    setModalState(() {
-                                      _site = value;
-                                    });
-                                  },
-                                ),
-                              ),
-                              ListTile(
-                                title: const Text('Wach'),
-                                leading: Radio(
-                                  value: States.wach,
-                                  groupValue: _site,
-                                  onChanged: (States value) {
-                                    setModalState(() {
-                                      _site = value;
-                                    });
-                                  },
-                                ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ListTile(
+                                      title: const Text('Schlaf'),
+                                      leading: Radio(
+                                        value: States.schlaf,
+                                        groupValue: _site,
+                                        onChanged: (States value) {
+                                          setModalState(() {
+                                            _site = value;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: ListTile(
+                                      title: const Text('Wach'),
+                                      leading: Radio(
+                                        value: States.wach,
+                                        groupValue: _site,
+                                        onChanged: (States value) {
+                                          setModalState(() {
+                                            _site = value;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                               SizedBox(
                                 height: 10,
                               ),
                               FlatButton(
                                 onPressed: () async {
-                                  _updateRows();
+                                  await _updateRows();
 
                                   final snackBar = SnackBar(
                                     content: this.rowsAffected > 0

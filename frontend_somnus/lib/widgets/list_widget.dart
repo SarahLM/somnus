@@ -65,7 +65,6 @@ class _ListWidgetState extends State<ListWidget> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: InkWell(
               onTap: () async {
-                print('Tap ' + d.date.toString());
                 final sleepData =
                     await Provider.of<DataStates>(context, listen: false)
                         .getDataForSingleDate(d.date);

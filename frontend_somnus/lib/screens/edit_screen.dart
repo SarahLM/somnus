@@ -179,19 +179,26 @@ class _EditScreenState extends State<EditScreen>
                   ? Theme.of(context).accentColor
                   : Colors.white,
               onPressed: () async {
-                final dataPoints =
-                    await Provider.of<DataStates>(context, listen: false)
-                        .getDataForDateRange(
+                // final dataPoints =
+                //     await Provider.of<DataStates>(context, listen: false)
+                //         .getDataForDateRange(
+                //   DateTime.now(),
+                //   (new DateTime.now()).add(new Duration(days: -30)),
+                // );
+                dates = await Provider.of<DataStates>(context, listen: false)
+                    .getEditDataForDateRange(
                   DateTime.now(),
-                  (new DateTime.now()).add(new Duration(days: -7)),
+                  (new DateTime.now()).add(new Duration(days: -30)),
                 );
+
                 setState(() {
                   _pressedButton3 = true;
                   _pressedButton1 = false;
                   _pressedButton2 = false;
                   _pressedButton4 = false;
                   title = '';
-                  sleepData = dataPoints;
+                  this.dateEntries = dates;
+                  //sleepData = dataPoints;
                   // timePrinted = DateFormat('dd.MM. yyyy')
                   //         .format((DateTime.now()).add(new Duration(days: -7)))
                   //         .toString() +
@@ -202,7 +209,7 @@ class _EditScreenState extends State<EditScreen>
                   // print(sleepData);
                 });
                 buildWidgetList(
-                  Text('30 Tage'),
+                  ListWidget(data1: this.dateEntries),
                 );
               },
             ),

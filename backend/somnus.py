@@ -132,7 +132,7 @@ class Somnus:
         os.mkdir(self.sub_dst)  # set up output directory
         if self.verbose:
             print("Loading CSV data, split data into 24 hour periods...")
-        self.split_days_geneactiv_csv()
+        self.split_days_csv()
         if self.verbose:
             print("Extracting activity index from accelerometer data...")
         self.extract_activity_index()
@@ -143,7 +143,7 @@ class Somnus:
             print("Clearing intermediate data...")
         self.clear_data()
 
-    def split_days_geneactiv_csv(self):
+    def split_days_csv(self):
         """
         Splits the GeneActiv accelerometer data into 24 hour chunks, defined from noon to noon.
 
@@ -157,38 +157,29 @@ class Somnus:
             self.src,
             # Column(s) to use as the row labels of the DataFrame, either given as string name or column index.
             index_col=0,
-            skiprows=100,
+            #skiprows=100,
             header=None,
-            names=["Time", "X", "Y", "Z", "LUX", "Button", "T", "A", "B", "C", "D", "E"],
-            usecols=["Time", "X", "Y", "Z", "LUX", "T"],
+            #names=["Time", "X", "Y", "Z", "LUX", "Button", "T", "A", "B", "C", "D", "E"],
+            names=["Time", "X", "Y", "Z"],
+
+            #usecols=["Time", "X", "Y", "Z", "LUX", "T"],
+            usecols=["Time", "X", "Y", "Z"],
             dtype={
                 "Time": object,
                 "X": np.float64,
                 "Y": np.float64,
-                "Z": np.float64,
-                "LUX": np.int64,
-                "Button": bool,
-                "T": np.float64,
-                "A": np.float64,
-                "B": np.float64,
-                "C": np.float64,
-                "D": np.float64,
-                "E": np.float64
+                "Z": np.float64
 
             },
             low_memory=False,
         )
-        # print("data ")
-        # print(data)
         data.index = pd.to_datetime(data.index, format="%Y-%m-%d %H:%M:%S:%f").values
-        # print("data spaeter: " + str(data))
         # remove any specified time periods from the beginning and end of the file
         data = data.loc[
                data.index[0]
                + pd.Timedelta(self.start_buffer): data.index[-1]
                                                   - pd.Timedelta(self.stop_buffer)
                ]
-        # print("data nch loc: " + str(data))
         # cut to defined start and end times if specified
         if self.start_time and self.stop_time:
             self.start_time = pd.to_datetime(
@@ -207,11 +198,8 @@ class Somnus:
             self.stop_time = pd.to_datetime(
                 self.stop_time, format="%Y-%m-%d %H:%M:%S:%f"
             )
-            print("nachher: starttime: " + str(self.start_time))
-            print("nachher: stoptime: " + str(self.stop_time))
             data = data.loc[: self.stop_time]
         # split data into days from noon to noon
-        # print("data vor days" + str(data))
         days = data.groupby(pd.Grouper(level=0, freq="24h", base=12))
 
         # iterate through days keeping track of the day
@@ -221,10 +209,8 @@ class Somnus:
         print("days: " + str(days))
         for day in days:
             # save each 24 hour day separately if there's enough data to analyze
-            # print("vor df" + str(day[1]))
             df = day[1].copy()
             print("df: " + str(len(df)))
-            # print("nach df" + str(day[1]))
             # available_hours = (len(df) / float(self.fs)) / 3600.0
             available_hours = len(df) / 3600.0
             print("available: " + str(available_hours))
@@ -330,8 +316,6 @@ class Somnus:
                 mode="w",
             )
             df.to_csv(self.sub_dst + "/result_sleep_prediction.csv")
-        # return df.to_csv("resultalt.csv")
-
 
     def clear_data(self):
         """
@@ -485,28 +469,3 @@ def activity_index(signal_df, channels=["X", "Y", "Z"]):
         ai_df = pd.DataFrame()
         ai_df["activity_index"] = [np.var(signal_df[channels], axis=0).mean() ** 0.5]
         return ai_df
-
-
-
-
-
-
-
-# def run_sleep_detection(input_file):
-#     src_name = input_file.split("/")[-1][0:-4]
-#     print('Sleep Detection gestartet')
-#     try:
-#         rmtree(sub_dst)  # removes old files from result directory.
-#         print('emptied result directory')
-#     except OSError:
-#         print('result was already empty')
-#     os.mkdir(sub_dst)  # set up output directory
-#     print("Loading CSV data, split data into 24 hour periods...")
-#     split_csv_acc_data_in_days()
-#     print("Extracting activity index from accelerometer data...")
-#     extract_activity_index()
-#     print("Running sleep/wake predictions...")
-#     sleep_wake_predict()
-#     print("Clearing intermediate data...")
-#     clear_data()
-#     return

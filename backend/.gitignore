@@ -2,5 +2,7 @@
 *.xml
 .DS_Store
 venv
-results/*
-/fileUploads/*
+venv2
+/.idea/*
+%results/*
+%/fileUploads/*

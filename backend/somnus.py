@@ -3,24 +3,7 @@ import pandas as pd
 import numpy as np
 from scipy import signal
 from shutil import copy, rmtree
-#pd.options.mode.chained_assignment = None  # unterdrueckt SettingWithCopyWarning (wegen Verkettung)
-#input_file = "inputAccelero.csv"
 
-#src_name = input_file.split("/")[-1][0:-4]
-# results_directory = 'results'
-# sub_dst = (results_directory + "/" + src_name)
-# start_buffer = "0s"
-# stop_buffer = "0s"
-# minimum_hours = 6
-# window_size = 30
-# fs = 100  # sampling frequency
-# band_pass_cutoff = (0.25, 12.0,)  # cutoffs for band pass filter
-# minimum_rest_block = 30
-# minimum_rest_threshold = 0.0
-# maximum_rest_threshold = 1000.0
-# allowed_rest_break = 60
-# min_t = 25.0  # temperature_threshold
-#from backend2.somnus import split_csv_acc_data_in_days, extract_activity_index, sleep_wake_predict, clear_data
 
 pd.options.mode.chained_assignment = None
 __all__ = ["Somnus", "ColeKripke", "band_pass_filter", "activity_index"]
@@ -73,7 +56,6 @@ class Somnus:
         self,
         input_file,
         sampling_frequency,
-        #sub_dst,
         results_directory='results',
         start_buffer="0s",
         stop_buffer="0s",
@@ -141,49 +123,6 @@ class Somnus:
         Runs the full package on the provided file.
 
         # """
-        # print('anfang run')
-        # try:
-        #     print('mach output dir')
-        #     os.mkdir(self.sub_dst)  # set up output directory
-        # except OSError:
-        #     pass
-        # #
-        # # split the data into 24 hour periods
-        # if self.verbose:
-        #     print("Loading CSV data...")
-        # self.split_days_geneactiv_csv()
-        # #
-        # # extract the activity index feature
-        # if self.verbose:
-        #     print("Extracting activity index...")
-        # self.extract_activity_index()
-        # #
-        # # run major rest period detection
-        # #if self.verbose:
-        #  #   print("Detecting major rest period...")
-        # #self.major_rest_period()
-        # #print("nach major rest")
-        # #
-        # # run sleep wake predictions on the major rest period
-        # if self.verbose:
-        #     print("Running sleep/wake predictions...")
-        # self.sleep_wake_predict()
-        # #
-        # # calculate endpoints based on the above predictions
-        # if self.verbose:
-        #     print("Calculating endpoints...")
-        # self.calculate_endpoints()
-        # #
-        # # aggregate results
-        # if self.verbose:
-        #     print("Aggregating results...")
-        # self.aggregate_results()
-        # #
-        # # clear data
-        # if self.clear:
-        #     if self.verbose:
-        #         print("Clearing intermediate data...")
-        #     self.clear_data()
         print('Sleep Detection gestartet')
         try:
             rmtree(self.sub_dst)  # removes old files from result directory.
@@ -251,8 +190,6 @@ class Somnus:
                ]
         # print("data nch loc: " + str(data))
         # cut to defined start and end times if specified
-        print("vorher: starttime: " + str(self.start_time))
-        print("vorher: stoptime: " + str(self.stop_time))
         if self.start_time and self.stop_time:
             self.start_time = pd.to_datetime(
                 self.start_time, format="%Y-%m-%d %H:%M:%S:%f"
@@ -298,8 +235,6 @@ class Somnus:
                     self.src_name, str(count).zfill(2)
                 )
                 df.to_hdf(self.sub_dst + dst, key="raw_geneactiv_data_24hr", mode="w")
-                print("dateib gescht")
-        return
 
     def extract_activity_index(self):
         """
@@ -395,7 +330,7 @@ class Somnus:
                 mode="w",
             )
             df.to_csv(self.sub_dst + "/result_sleep_prediction.csv")
-        return df.to_csv("resultalt.csv")
+        # return df.to_csv("resultalt.csv")
 
 
     def clear_data(self):

@@ -2,16 +2,18 @@ import time
 import os
 import io
 import csv
+from datetime import date
 
 from werkzeug.utils import secure_filename
 
-import somnus2
+import somnus
 import pandas as pd
 from flask import Flask, send_file, request, redirect, url_for, make_response, flash
 
-UPLOAD_FOLDER = '/fileUploads'
-ALLOWED_EXTENSIONS = {'csv'}
 
+ALLOWED_EXTENSIONS = {'csv'}
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = PROJECT_ROOT + '/fileUploads'
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -24,10 +26,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # noinspection PyInterpreter
 @app.route('/')
 def hello_world():
-    # if __name__ == "__main__":
-    # run_demo('heyhohohoho')
-    # return 'abgeschlossen' + str(testvariable)
-    return run_demo('lalelu')
+    return 'success'
 
 
 def transform(text_file_contents):
@@ -45,7 +44,7 @@ def upload_file():
         # check if the post request has the file part
         if 'file' not in request.files:
             print(request.__dict__.items())
-            print ('no file drin')
+            print('no file')
         file = request.files['file']
         # if user does not select file, browser also
         # submit an empty part without filename
@@ -53,59 +52,28 @@ def upload_file():
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            # data = '/fileUploads'
-            # file.save(data)
-            data = csv.reader(file, delimiter=',')
-
-            f = open('incoming.csv', 'w')
-            with f:
-
-                writer = csv.writer(f)
-                for row in data:
-                    writer.writerow(row)
-            return run_data('incoming.csv')
-   # return run_data()
-# def csvuebergabe():
-#     print ('datei uebergeben')
-#     # print (request.get_data(file.name))
-#     # return send_file('resultalt.csv')
-#     # data = request.get_data(file)
-#     # with open(request.files['File'], 'r') as data:
-#         # spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-#         #dataread = data.csv.reader(data, delimiter=',')
-#     dataread = request.files.read()
-#     return run_data(dataread)
-#     # return run_data()
+            # to make sure file is unique
+            timestamp = str(time.time())
+            newfilename = timestamp + 'fileUpload.csv'
+        # function to secure a filename before storing it directly on the filesystem
+            data = secure_filename(newfilename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], data))
+            return run_data(data, timestamp)
 
 
-def run_data(src):
+def run_data(src, stamp):
     # def run_data():
     # src = __file__.split(".py")[0] + ".bin"
-    # src = "inputAccelero.csv"
-    #print (src)
+    src = PROJECT_ROOT + '/fileUploads/' + src
     st = time.time()
     try:
-        somnus2.Somnus(input_file=src, sampling_frequency=100, verbose=True)
+        somnus.Somnus(input_file=src, sampling_frequency=100, verbose=True)
     except Exception as e:
         print("Error processing: {}\nError: {}".format(src, e))
-    # stp = time.time()
-    print("Test")
-    #return 'endeneu'
-    return send_file('results/incoming/result_sleep_prediction.csv')
+    # return send_file('results/25698fileUpload/result_sleep_prediction.csv')
+    # return specific response
+    return send_file('results/' + stamp +'fileUpload/result_sleep_prediction.csv')
 
 
-def run_demo(testvariable):
-    # src = __file__.split(".py")[0] + ".bin"
-    src = "inputAccelero.csv"
 
-    st = time.time()
-    try:
-        somnus2.Somnus(input_file=src, sampling_frequency=100, verbose=True)
-    except Exception as e:
-        print("Error processing: {}\nError: {}".format(src, e))
-    stp = time.time()
-    print("total run time: {} minutes".format((stp - st) / 60.0))
-    print("Test" + testvariable)
-    # return testvariable
-    return send_file('resultalt.csv')
-    # return 'neuerReturn'
+

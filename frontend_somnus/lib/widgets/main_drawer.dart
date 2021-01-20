@@ -17,7 +17,7 @@ class MainDrawer extends StatelessWidget {
             padding: EdgeInsets.all(20),
             alignment: Alignment.centerLeft,
             child: Text(
-              'Navigate to ..',
+              'Gehe zu ..',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 30,
@@ -74,8 +74,8 @@ class MainDrawer extends StatelessWidget {
               ),
             ),
             onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => ConnectDeviceScreen()));
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => ConnectDeviceScreen()));
             },
           ),
         ],

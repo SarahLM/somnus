@@ -23,7 +23,7 @@ class _TabsScreenState extends State<TabsScreen> {
     },
     {
       'page': HypnogramScreen(Colors.white),
-      'title': 'Hypnogramm',
+      'title': 'Analyse',
     },
     {
       'page': EditScreen(Colors.red),
@@ -99,7 +99,7 @@ class _TabsScreenState extends State<TabsScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
+            icon: Icon(Icons.analytics),
             label: 'Hypnogramm',
           ),
           BottomNavigationBarItem(

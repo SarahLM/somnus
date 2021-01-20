@@ -31,7 +31,6 @@ class _BleConnectState extends State<BleConnect> {
   void initState() {
     super.initState();
     _localInitStateAsync();
-    //_bleConnectFuture = _bleTest();
   }
 
   @override
@@ -296,13 +295,19 @@ class _BleConnectState extends State<BleConnect> {
       }
     }
 
-    setState(() {
-      bleDevices = new List<Peripheral>();
-      _bleManagerScanning = true;
-    });
     BluetoothState currentState = await bleDeviceController.bleManager.bluetoothState();
 
+    if (currentState != BluetoothState.POWERED_ON) {
+      await bleDeviceController.bleManager.enableRadio();
+      currentState = await bleDeviceController.bleManager.bluetoothState();
+    }
+
     if (currentState == BluetoothState.POWERED_ON) {
+      setState(() {
+        bleDevices = new List<Peripheral>();
+        _bleManagerScanning = true;
+      });
+
       Stopwatch s = new Stopwatch();
       s.start();
       await for (ScanResult scanResult in bleDeviceController.bleManager.startPeripheralScan()) {

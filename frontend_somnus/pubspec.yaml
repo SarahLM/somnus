@@ -86,8 +86,8 @@ flutter:
       - assets/images/tutorial_connect.png
       - assets/images/tutorial_hypnogram.png
       - assets/images/tutorial_analysis.png
-      - assets/inputAccelero.csv
       - assets/result.csv
+      - assets/getrennt.csv
       
 
 

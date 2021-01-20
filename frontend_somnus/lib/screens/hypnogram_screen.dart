@@ -27,6 +27,7 @@ class HypnogramScreen extends StatefulWidget {
 
   @override
   _HypnogramScreenState createState() => _HypnogramScreenState();
+  static const routeName = '/hypnogram-screen';
 }
 
 class _HypnogramScreenState extends State<HypnogramScreen>
@@ -42,9 +43,14 @@ class _HypnogramScreenState extends State<HypnogramScreen>
 
   List<DataPoint> sleepData = [];
   List<DataPoint> dataPoints;
+  List<DateTime> picked;
   final dbHelper = DatabaseHelper.instance;
 
   bool _canShowButton = true;
+  var multipleDays = new DateFormat('dd.MM.yyyy kk:mm ');
+  var singleDay = new DateFormat('kk:mm');
+  DateFormat dateFormat;
+  double interval;
 
   void hideWidget() {
     setState(() {
@@ -68,9 +74,32 @@ class _HypnogramScreenState extends State<HypnogramScreen>
     });
   }
 
+  Future<List<DataPoint>> getDataToday() async {
+    return await Provider.of<DataStates>(context, listen: false)
+        .getDataForSingleDate(DateTime.now());
+  }
+
+  Future<List<DataPoint>> getDataYesterday() async {
+    return await Provider.of<DataStates>(context, listen: false)
+        .getDataForSingleDate(DateTime.now().add(new Duration(days: -1)));
+  }
+
+  Future<List<DataPoint>> getDataSevenDays() async {
+    return await Provider.of<DataStates>(context, listen: false)
+        .getDataForDateRange(
+      DateTime.now(),
+      (new DateTime.now()).add(new Duration(days: -7)),
+    );
+  }
+
+  Future<List<DataPoint>> getDataCustomRange(picked) async {
+    await Provider.of<DataStates>(context, listen: false)
+        .getDataForDateRange((picked[1]), (picked[0]));
+  }
+
   final GlobalKey<State<StatefulWidget>> _printKey = GlobalKey();
 
-  Future<Uint8List> _printScreen() async {
+  _printScreen() {
     //const imageProvider = const AssetImage('assets/images/somnus_logo.png');
     // final image1 = await flutterImageProvider(imageProvider);
     Printing.layoutPdf(onLayout: (PdfPageFormat format) async {
@@ -154,8 +183,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
     var request = http.MultipartRequest('POST', Uri.parse(url));
     var multipartFile = http.MultipartFile.fromBytes(
       'file',
-      (await rootBundle.load('assets/inputAccelero.csv')).buffer.asUint8List(),
-      filename: 'inputAccelero.csv', // use the real name if available, or omit
+      (await rootBundle.load('assets/getrennt.csv')).buffer.asUint8List(),
+      filename: 'getrennt.csv', // use the real name if available, or omit
     );
 
     //await new File('assets/out.csv').create(recursive: false);
@@ -218,12 +247,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     ? Theme.of(context).accentColor
                     : Colors.white,
                 onPressed: () async {
-                  // final dataStatesData =
-                  //Provider.of<DataStates>(context, listen: false);
-                  //final dataPoints = dataStatesData.items;
-                  final dataPoints =
-                      await Provider.of<DataStates>(context, listen: false)
-                          .getDataForSingleDate(DateTime.now());
+                  dataPoints = await getDataToday();
+
                   setState(() {
                     _pressedButton1 = true;
                     _pressedButton2 = false;
@@ -232,6 +257,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     title = '';
                     sleepData = dataPoints;
                     timePrinted = (DateTime.now().toString());
+                    dateFormat = singleDay;
                   });
                 },
               ),
@@ -252,14 +278,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     ? Theme.of(context).accentColor
                     : Colors.white,
                 onPressed: () async {
-                  // final dataPoints =
-                  //     Provider.of<DataStates>(context, listen: false).findByDate(
-                  //         (new DateTime.now()).add(new Duration(days: -2)),
-                  //         DateTime.now());
-                  final DateTime date1 = DateTime.now();
-                  dataPoints = await Provider.of<DataStates>(context,
-                          listen: false)
-                      .getDataForSingleDate(date1.add(new Duration(days: -1)));
+                  dataPoints = await getDataYesterday();
+
                   setState(() {
                     _pressedButton2 = true;
                     _pressedButton1 = false;
@@ -268,12 +288,12 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     title = '';
                     sleepData = dataPoints;
                     timePrinted = (DateTime.now())
-                            .add(new Duration(days: -2))
+                            .add(new Duration(days: -1))
                             .toString() +
                         ' bis ' +
                         DateTime.now().toString();
+                    dateFormat = singleDay;
                   });
-                  //dataStates.getResult();
                 },
               ),
               FlatButton(
@@ -293,12 +313,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     ? Theme.of(context).accentColor
                     : Colors.white,
                 onPressed: () async {
-                  final dataPoints =
-                      await Provider.of<DataStates>(context, listen: false)
-                          .getDataForDateRange(
-                    DateTime.now(),
-                    (new DateTime.now()).add(new Duration(days: -7)),
-                  );
+                  dataPoints = await getDataSevenDays();
+
                   setState(() {
                     _pressedButton3 = true;
                     _pressedButton1 = false;
@@ -314,6 +330,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         DateFormat('dd.MM. yyyy')
                             .format(DateTime.now())
                             .toString();
+                    dateFormat = multipleDays;
                     print(sleepData);
                   });
                 },
@@ -343,8 +360,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         _pressedButton2 = false;
                         _pressedButton3 = false;
                       });
-                      final List<DateTime> picked =
-                          await DateRagePicker.showDatePicker(
+                      picked = await DateRagePicker.showDatePicker(
                         locale: const Locale("de", "DE"),
                         context: context,
                         initialFirstDate: new DateTime.now(),
@@ -360,8 +376,9 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         dataPoints = await Provider.of<DataStates>(context,
                                 listen: false)
                             .getDataForDateRange((picked[1]), (picked[0]));
+
                         setState(() {
-                          title = DateFormat('dd.MM. yyyy')
+                          title = DateFormat('dd.MM.yyyy')
                                   .format(picked[0])
                                   .toString() +
                               ' bis ' +
@@ -370,6 +387,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                                   .toString();
                           sleepData = dataPoints;
                           timePrinted = title;
+                          dateFormat = multipleDays;
                         });
                       }
                     },
@@ -394,6 +412,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                               child: Sync(
                                 title: this.title,
                                 sleepData: this.sleepData,
+                                dateFormat: this.dateFormat,
+                                interval: this.interval,
                               ),
                             ),
                           ),
@@ -434,6 +454,12 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         ],
                       ),
                     )),
+              // !_canShowButton
+              //     ? Padding(
+              //         padding: const EdgeInsets.all(8.0),
+              //         child: CircularProgressIndicator(),
+              //       )
+              //     : const SizedBox.shrink()
             ],
           ),
         ),
@@ -442,20 +468,22 @@ class _HypnogramScreenState extends State<HypnogramScreen>
           children: [
             this.sleepData.length != 0
                 ? FloatingActionButton(
+                    heroTag: null,
                     child: const Icon(Icons.print),
                     onPressed: _printScreen,
                   )
                 : const SizedBox.shrink(),
             !_canShowButton
-                ? //const SizedBox.shrink()
-                FloatingActionButton(
-                    backgroundColor: Colors.grey,
-                    onPressed: null,
-                    child: const Icon(
-                      Icons.upload_file,
-                    ),
-                  )
+                ? CircularProgressIndicator()
+                // FloatingActionButton(
+                //     backgroundColor: Colors.grey,
+                //     onPressed: null,
+                //     child: const Icon(
+                //       Icons.upload_file,
+                //     ),
+                //   )
                 : FloatingActionButton(
+                    heroTag: null,
                     child: const Icon(Icons.upload_file),
                     onPressed: () async {
                       final snackBar = SnackBar(
@@ -467,7 +495,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                       Scaffold.of(context).showSnackBar(snackBar);
 
                       hideWidget();
-                      var file = 'inputAccelero.csv';
+                      var file = 'getrennt.csv';
 
                       var res =
                           await uploadFile(file, 'http://10.0.2.2:5000/data');
@@ -475,6 +503,23 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                       print(res);
                       await dbHelper.resultsToDb();
                       hideWidget();
+                      if (_pressedButton1) {
+                        dataPoints = await getDataToday();
+                      }
+                      if (_pressedButton2) {
+                        dataPoints = await getDataYesterday();
+                      }
+                      if (_pressedButton3) {
+                        dataPoints = await getDataSevenDays();
+                      }
+                      if (_pressedButton4) {
+                        dataPoints = await Provider.of<DataStates>(context,
+                                listen: false)
+                            .getDataForDateRange((picked[1]), (picked[0]));
+                      }
+                      setState(() {
+                        sleepData = dataPoints;
+                      });
                     },
                   ),
           ],

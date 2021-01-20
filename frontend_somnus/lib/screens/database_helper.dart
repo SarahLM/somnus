@@ -123,6 +123,21 @@ class DatabaseHelper {
     return await db.update(table, row, where: '$columnId = ?', whereArgs: [id]);
   }
 
+  Future<int> updateDataPerRange(
+      Map<String, dynamic> row, time1, time2, date) async {
+    Database db = await instance.database;
+    print(time1);
+    print(time2);
+    var dateArray = date.toString().split(' ');
+    var dateToQuery = dateArray[0];
+    print('date2 in update ' + dateToQuery.toString());
+
+    print('date in update ' + dateArray.toString());
+    return await db.update(results, row,
+        where:
+            "$columnDate='$dateToQuery' AND $columnTime BETWEEN '$time1' AND '$time2'");
+  }
+
   // Deletes the row specified by the id. The number of affected rows is
   // returned. This should be 1 as long as the row exists.
   Future<int> delete(int id) async {

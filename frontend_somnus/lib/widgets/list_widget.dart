@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/providers/dates.dart';
 import 'package:frontend_somnus/providers/states.dart';
-import 'package:frontend_somnus/screens/edit_detail_screen.dart';
-import 'package:frontend_somnus/widgets/syncfusion.dart';
+import 'package:frontend_somnus/screens/details_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +19,7 @@ class ListWidget extends StatefulWidget {
 class _ListWidgetState extends State<ListWidget> {
   List<DataPoint> sleepData;
   String title = '';
+  DateTime date;
 
   final DateFormat formatter = DateFormat('dd.MM.yyyy');
 
@@ -41,13 +41,18 @@ class _ListWidgetState extends State<ListWidget> {
   ];
 
   List<Color> colorList = [
-    Color(0xFF0529B3),
-    Color(0xFF570899),
+    Color(0xFF141F9C),
+    Color(0xFF0C135C),
+    Color(0xFF1D2DDC),
+    Color(0xFF1E2FE8),
+    Color(0xFF1927C2),
+    Color(0xFF502EE8),
+    Color(0xFF4327C2),
   ];
 
   _getColor(DateTime date) {
     var color;
-    date.weekday % 2 == 0 ? color = colorList[0] : color = colorList[1];
+    color = colorList[date.weekday - 1];
     return color;
   }
 
@@ -70,10 +75,12 @@ class _ListWidgetState extends State<ListWidget> {
 
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (_) => EditDetailsScreen(
-                            title: this.title,
-                            sleepData: this.sleepData,
-                          )),
+                    builder: (_) => EditDetailsScreen(
+                      title: this.title,
+                      sleepData: this.sleepData,
+                      date: d.date,
+                    ),
+                  ),
                 );
               },
               child: Card(
@@ -98,103 +105,8 @@ class _ListWidgetState extends State<ListWidget> {
               ),
             ),
           );
-
-          // return Card(
-          //   child: Row(
-          //     children: <Widget>[
-          //       Container(
-          //         width: 55,
-          //         margin: EdgeInsets.symmetric(
-          //           vertical: 10,
-          //           horizontal: 15,
-          //         ),
-          //         decoration: BoxDecoration(
-          //           // borderRadius:
-          //           //     new BorderRadius.all(new Radius.circular(50.0)),
-          //           border: Border.all(
-          //             color: Colors.purple,
-          //             width: 2,
-          //           ),
-          //         ),
-          //         padding: EdgeInsets.all(10),
-          //         child: Text(
-          //           formatDay.format(d.date).toString(),
-          //           style: TextStyle(
-          //             fontWeight: FontWeight.bold,
-          //             fontSize: 20,
-          //             color: Colors.purple,
-          //           ),
-          //         ),
-          //       ),
-          //       Column(
-          //         crossAxisAlignment: CrossAxisAlignment.start,
-          //         children: <Widget>[
-          //           Text(
-          //             formatter.format(d.date).toString(),
-          //             style: TextStyle(
-          //               fontSize: 16,
-          //               fontWeight: FontWeight.bold,
-          //             ),
-          //           ),
-          //           Text(
-          //             'Test',
-          //             style: TextStyle(
-          //               color: Colors.grey,
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ],
-          //   ),
-          // );
         }).toList(),
       ),
     );
   }
 }
-
-// Card(
-//   child: Row(
-//     children: <Widget>[
-//       Container(
-//         margin: EdgeInsets.symmetric(
-//           vertical: 10,
-//           horizontal: 15,
-//         ),
-//         decoration: BoxDecoration(
-//           border: Border.all(
-//             color: Colors.purple,
-//             width: 2,
-//           ),
-//         ),
-//         padding: EdgeInsets.all(10),
-//         child: Text(
-//           'Test',
-//           style: TextStyle(
-//             fontWeight: FontWeight.bold,
-//             fontSize: 20,
-//             color: Colors.purple,
-//           ),
-//         ),
-//       ),
-//       Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: <Widget>[
-//           Text(
-//             '11.01.2020',
-//             style: TextStyle(
-//               fontSize: 16,
-//               fontWeight: FontWeight.bold,
-//             ),
-//           ),
-//           Text(
-//             'Test',
-//             style: TextStyle(
-//               color: Colors.grey,
-//             ),
-//           ),
-//         ],
-//       ),
-//     ],
-//   ),
-// ),

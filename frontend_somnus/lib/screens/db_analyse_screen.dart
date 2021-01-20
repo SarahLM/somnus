@@ -116,7 +116,7 @@ class MyHomePage extends StatelessWidget {
     // row to insert
     Map<String, dynamic> row = {
       DatabaseHelper.columnDate:
-          '2021-01-' + (random.nextInt(1) + 10).toString(),
+          '2021-01-' + (random.nextInt(21) + 10).toString(),
       DatabaseHelper.columnTime: (random.nextInt(14) + 10).toString() +
           ':' +
           (random.nextInt(50) + 10).toString() +

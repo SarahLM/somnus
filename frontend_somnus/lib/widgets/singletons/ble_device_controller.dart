@@ -5,6 +5,9 @@ import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:foreground_service/foreground_service.dart';
 import 'package:frontend_somnus/screens/database_helper.dart';
 import 'package:intl/intl.dart';
+import 'package:pointycastle/api.dart';
+import 'package:pointycastle/block/aes_fast.dart';
+import 'package:pointycastle/block/modes/ecb.dart';
 
 enum Status {
   accelDataWrittenToDB,
@@ -31,6 +34,7 @@ class BleDeviceController {
   final Uint8List secretKey = Uint8List.fromList(
       [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 64, 65, 66, 67, 68, 69]);
   final Uint8List setNotifTrueCmd = Uint8List.fromList([1, 0]);
+  final Uint8List setNotifFalseCmd = Uint8List.fromList([0, 0]);
   final Uint8List sendSecretKeyCmd = Uint8List.fromList([1, 0]);
   final Uint8List sendEncrKeyCmd = Uint8List.fromList([3, 0]);
   final Uint8List sendRandCmd = Uint8List.fromList([2, 0]);
@@ -52,6 +56,7 @@ class BleDeviceController {
   Service miBandService1;
 
   int _rawDataPacketsCounter;
+  Characteristic _authChar;
   Characteristic _sensorChar;
   Characteristic _accelerometerChar;
   Timer _accelDataAliveTimer;
@@ -59,6 +64,7 @@ class BleDeviceController {
   final dbHelper = DatabaseHelper.instance;
   List<double> accelDataSinceLastDBAccess = new List();
   List<double> latestAccelData = new List(3);
+  Function(bool) authenticatedCallback;
 
   Future<void> reset() async {
     if (_accelDataAliveTimer != null) {
@@ -68,12 +74,37 @@ class BleDeviceController {
       _accelDataToDBTimer.cancel();
     }
     if (fitnessTracker != null) {
-      if (await bleDeviceController.fitnessTracker.isConnected()) {
-        await fitnessTracker.disconnectOrCancelConnection();
+      if (await fitnessTracker.isConnected()) {
+        print("Stopping notifications");
+        await _stopReceivingRawSensorData();
+
+        try {
+          await bleManager.cancelTransaction("HandleAccelerometerData");
+          print("Stopped acceleromater characteristic");
+        } catch (e) {
+          print("Cancel transaction error");
+          print(e);
+        }
+
+        try {
+          await fitnessTracker.disconnectOrCancelConnection();
+          print("Disconnected");
+        } catch (e) {
+          print("Disconnect error");
+          print(e);
+          print("Connection state: " + fitnessTracker.isConnected().toString());
+        }
       }
     }
     if (bleManager != null) {
-      await bleManager.destroyClient();
+      print("BleManager != null");
+      print(bleManager);
+      try {
+        await bleManager.destroyClient();
+      } catch (e) {
+        print("Error on BLE manager destroy client.");
+        print(e);
+      }
     }
 
     bleManager = null;
@@ -86,6 +117,112 @@ class BleDeviceController {
     _accelerometerChar = null;
     accelDataSinceLastDBAccess = new List();
     latestAccelData = new List(3);
+  }
+
+  Future<bool> bleDeviceIsMiBand() async {
+    bool service0Present = false;
+    bool service1Present = false;
+
+    await _getAllServices();
+
+    fitnessTrackerServices.forEach((element) {
+      if (element.uuid == uuidMiBandService0) {
+        service0Present = true;
+        miBandService0 = element;
+      } else if (element.uuid == uuidMiBandService1) {
+        service1Present = true;
+        miBandService1 = element;
+      }
+    });
+
+    return (service0Present && service1Present);
+  }
+
+  Future<void> _getAllServices() async {
+    await fitnessTracker.discoverAllServicesAndCharacteristics();
+    fitnessTrackerServices = await fitnessTracker.services(); //getting all services
+    fitnessTrackerServices.forEach((element) {
+      print(element.uuid);
+    });
+  }
+
+  Future<void> authenticateMiBand(Function(bool) callback) async {
+    List<Characteristic> miBandSrvChars;
+
+    authenticatedCallback = callback;
+
+    // get authentication characteristic
+    miBandSrvChars = await fitnessTracker.characteristics(miBandService1.uuid);
+    miBandSrvChars.forEach((element) {
+      if (element.uuid == uuidCharAuth) {
+        _authChar = element;
+      }
+    });
+
+    // set notifications on authentication char
+    if (_authChar.isNotifiable) {
+      await _authChar.write(setNotifTrueCmd, false);
+      _authChar.monitor(transactionId: "HandleAuthenticationNotification").listen((data) {
+        _handleAuthNotification(data);
+      });
+
+      await _sendSecretKeyToBand();
+    }
+  }
+
+  Future<void> _handleAuthNotification(Uint8List data) async {
+    if (data[0] == 16 && data[1] == 1 && data[2] == 1) {
+      await _requestRand();
+    } else if (data[0] == 16 && data[1] == 1 && data[2] == 4) {
+      print("Error - Key sending failed.");
+      _authenticationProcessFinish(false);
+    } else if (data[0] == 16 && data[1] == 2 && data[2] == 1) {
+      await _sendEncrRand(data.sublist(3));
+    } else if (data[0] == 16 && data[1] == 2 && data[2] == 4) {
+      print("Error - Request random number failed.");
+      _authenticationProcessFinish(false);
+    } else if (data[0] == 16 && data[1] == 3 && data[2] == 1) {
+      print("AUTHENTICATED!!!");
+      ForegroundService.notification.setText(DEVICE_CONNECTED);
+      _authenticationProcessFinish(true);
+      startReceivingRawSensorData();
+    } else if (data[0] == 16 && data[1] == 3 && data[2] == 4) {
+      print("Error - Encryption failed.");
+      _authenticationProcessFinish(false);
+    } else {
+      print("Error - Authentication failed for unknown reason.");
+      _authenticationProcessFinish(false);
+    }
+  }
+
+  void _authenticationProcessFinish(bool authenticated) async {
+    await _authChar.write(setNotifFalseCmd, false);
+    await bleManager.cancelTransaction("HandleAuthenticationNotification");
+    authenticatedCallback(authenticated);
+  }
+
+  Future<void> _sendSecretKeyToBand() async {
+    Uint8List buffer = Uint8List.fromList(
+        [...sendSecretKeyCmd.toList(), ...secretKey.toList()]);
+    await _authChar.write(buffer, false);
+  }
+
+  Future<void> _requestRand() async {
+    await _authChar.write(sendRandCmd, false);
+  }
+
+  Future<void> _sendEncrRand(Uint8List randomNumber) async {
+    Uint8List encryptedRandomNumber = _encrypt(randomNumber);
+    Uint8List buffer =
+    Uint8List.fromList([...sendEncrKeyCmd, ...encryptedRandomNumber]);
+    await _authChar.write(buffer, false);
+  }
+
+  Uint8List _encrypt(Uint8List plainText) {
+    BlockCipher cipher = ECBBlockCipher(AESFastEngine());
+    cipher.init(true, KeyParameter(secretKey));
+    Uint8List cipherText = cipher.process(plainText);
+    return cipherText;
   }
 
   Future<void> startReceivingRawSensorData() async {
@@ -114,11 +251,11 @@ class BleDeviceController {
     if (_accelerometerChar.isNotifiable) {
       Stopwatch s = new Stopwatch();
 
-      _enableSendingRawSensorData();
+      await _enableSendingRawSensorData();
       _rawDataPacketsCounter = 0;
       s.start();
       // start listening for accelerometer data
-      _accelerometerChar.monitor().listen((data) {
+      _accelerometerChar.monitor(transactionId: "HandleAccelerometerData").listen((data) {
         _handleRawAccelerometerData(data);
         //print("elapsed seconds: ${s.elapsedMilliseconds/1000}");
       });
@@ -186,7 +323,7 @@ class BleDeviceController {
     return value;
   }
 
-  void _writeAccelDataToDB() async {
+  Future<void> _writeAccelDataToDB() async {
 
     print(latestAccelData[0].toString() + latestAccelData[1].toString() + latestAccelData[2].toString());
 

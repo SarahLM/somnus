@@ -1,15 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
-import 'package:foreground_service/foreground_service.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pointycastle/api.dart';
-import 'package:pointycastle/block/aes_fast.dart';
-import 'package:pointycastle/block/modes/ecb.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'singletons/ble_device_controller.dart';
 
@@ -20,7 +15,6 @@ class BleConnect extends StatefulWidget {
 
 class _BleConnectState extends State<BleConnect> {
   Service immediateAlertService;
-  Characteristic authChar;
   Characteristic immediateAlertChar;
 
   bool _bleManagerScanning = false;
@@ -84,7 +78,6 @@ class _BleConnectState extends State<BleConnect> {
                         return Card(
                           child: ListTile(
                             onTap: () async {
-                              // TODO: Add loading circle when connecting
                               _selectBleDevice(bleDevices[index], context);
                               },
                             title: Text(bleDevices[index].name),
@@ -118,8 +111,8 @@ class _BleConnectState extends State<BleConnect> {
     if (await _connectToBleDevice()) {
       print("Connected to BLE device.");
       
-      if (await _bleDeviceIsMiBand()) {
-        await _authenticateMiBand();
+      if (await bleDeviceController.bleDeviceIsMiBand()) {
+        await bleDeviceController.authenticateMiBand(_authenticationFinish);
       } else {
         if (await bleDeviceController.fitnessTracker.isConnected()) {
           bleDeviceController.fitnessTracker.disconnectOrCancelConnection();
@@ -131,26 +124,30 @@ class _BleConnectState extends State<BleConnect> {
             "manual for compatible devices.");
         print("Disconnected from BLE device.");
       }
+    } else {
+      setState(() { _isLoading = false;});
+      _showDialog("Device not compatible", "The selected device is not "
+          "compatible with this app. Choose another device or check the "
+          "manual for compatible devices.");
+      print("Disconnected from BLE device.");
     }
   }
-  
-  Future<bool> _bleDeviceIsMiBand() async {
-    bool service0Present = false;
-    bool service1Present = false;
 
-    await _getAllServices();
-
-    bleDeviceController.fitnessTrackerServices.forEach((element) {
-      if (element.uuid == bleDeviceController.uuidMiBandService0) {
-        service0Present = true;
-        bleDeviceController.miBandService0 = element;
-      } else if (element.uuid == bleDeviceController.uuidMiBandService1) {
-        service1Present = true;
-        bleDeviceController.miBandService1 = element;
+  void _authenticationFinish(bool authenticationSuccess) async {
+    if (authenticationSuccess) {
+      setState(() { _isLoading = false;});
+      _showDialog("Connection success", "Your device is connected.");
+      await _printServicesAndChars();
+    } else {
+      if (await bleDeviceController.fitnessTracker.isConnected()) {
+        bleDeviceController.fitnessTracker.disconnectOrCancelConnection();
       }
-    });
-
-    return (service0Present && service1Present);
+      setState(() { _isLoading = false;});
+      _showDialog("Connection error", "The authentication process failed. " +
+          "Make sure the device is near and Bluetooth is enabled. Then try " +
+          "again.\n\nIf the error remains, make sure the device is compatible " +
+          "(For more information see the manual).");
+    }
   }
 
   void _showDialog(String title, String message) {
@@ -177,68 +174,6 @@ class _BleConnectState extends State<BleConnect> {
     super.dispose();
   }
 
-  Future<void> _authenticateMiBand() async {
-    List<Characteristic> miBandSrvChars;
-
-    // get authentication characteristic
-    miBandSrvChars = await bleDeviceController.fitnessTracker.characteristics(bleDeviceController.miBandService1.uuid);
-    miBandSrvChars.forEach((element) {
-      if (element.uuid == bleDeviceController.uuidCharAuth) {
-        authChar = element;
-      }
-    });
-
-    // set notifications on authentication char
-    if (authChar.isNotifiable) {
-      await authChar.write(bleDeviceController.setNotifTrueCmd, false);
-      authChar.monitor().listen((data) {
-        _handleAuthNotification(data);
-      });
-
-      await _sendSecretKeyToBand();
-    }
-  }
-
-  Future<void> _handleAuthNotification(Uint8List data) async {
-    bool authenticationFailed = false;
-
-    if (data[0] == 16 && data[1] == 1 && data[2] == 1) {
-      await _requestRand();
-    } else if (data[0] == 16 && data[1] == 1 && data[2] == 4) {
-      print("Error - Key sending failed.");
-      authenticationFailed = true;
-    } else if (data[0] == 16 && data[1] == 2 && data[2] == 1) {
-      await _sendEncrRand(data.sublist(3));
-    } else if (data[0] == 16 && data[1] == 2 && data[2] == 4) {
-      print("Error - Request random number failed.");
-      authenticationFailed = true;
-    } else if (data[0] == 16 && data[1] == 3 && data[2] == 1) {
-      print("AUTHENTICATED!!!");
-      setState(() { _isLoading = false;});
-      ForegroundService.notification.setText(DEVICE_CONNECTED);
-      _showDialog("Connection success", "Your device is connected.");
-      await _printServicesAndChars();
-      bleDeviceController.startReceivingRawSensorData();
-    } else if (data[0] == 16 && data[1] == 3 && data[2] == 4) {
-      print("Error - Encryption failed.");
-      authenticationFailed = true;
-    } else {
-      print("Error - Authentication failed for unknown reason.");
-      authenticationFailed = true;
-    }
-
-    if (authenticationFailed) {
-      if (await bleDeviceController.fitnessTracker.isConnected()) {
-        bleDeviceController.fitnessTracker.disconnectOrCancelConnection();
-      }
-      setState(() { _isLoading = false;});
-      _showDialog("Connection error", "The authentication process failed. " +
-          "Make sure the device is near and Bluetooth is enabled. Then try " +
-          "again.\n\nIf the error remains, make sure the device is compatible " +
-          "(For more information see the manual).");
-    }
-  }
-
   Future<void> _printServicesAndChars() async {
     List<Characteristic> chars;
     String serviceWithChars;
@@ -254,38 +189,6 @@ class _BleConnectState extends State<BleConnect> {
 
       print(serviceWithChars);
     }
-  }
-
-  Future<void> _sendSecretKeyToBand() async {
-    Uint8List buffer = Uint8List.fromList(
-        [...bleDeviceController.sendSecretKeyCmd.toList(), ...bleDeviceController.secretKey.toList()]);
-    await authChar.write(buffer, false);
-  }
-
-  Future<void> _requestRand() async {
-    await authChar.write(bleDeviceController.sendRandCmd, false);
-  }
-
-  Future<void> _sendEncrRand(Uint8List randomNumber) async {
-    Uint8List encryptedRandomNumber = _encrypt(randomNumber);
-    Uint8List buffer =
-    Uint8List.fromList([...bleDeviceController.sendEncrKeyCmd, ...encryptedRandomNumber]);
-    await authChar.write(buffer, false);
-  }
-
-  Uint8List _encrypt(Uint8List plainText) {
-    BlockCipher cipher = ECBBlockCipher(AESFastEngine());
-    cipher.init(true, KeyParameter(bleDeviceController.secretKey));
-    Uint8List cipherText = cipher.process(plainText);
-    return cipherText;
-  }
-
-  Future<void> _getAllServices() async {
-    await bleDeviceController.fitnessTracker.discoverAllServicesAndCharacteristics();
-    bleDeviceController.fitnessTrackerServices = await bleDeviceController.fitnessTracker.services(); //getting all services
-    bleDeviceController.fitnessTrackerServices.forEach((element) {
-      print(element.uuid);
-    });
   }
 
   Future<void> _scanForBleDevices() async {

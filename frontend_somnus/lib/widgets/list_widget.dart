@@ -8,9 +8,9 @@ import 'package:provider/provider.dart';
 
 class ListWidget extends StatefulWidget {
   ListWidget({
-    this.data1,
+    this.data,
   });
-  List<DateEntry> data1;
+  List<DateEntry> data;
 
   @override
   _ListWidgetState createState() => _ListWidgetState();
@@ -24,21 +24,6 @@ class _ListWidgetState extends State<ListWidget> {
   final DateFormat formatter = DateFormat('dd.MM.yyyy');
 
   final DateFormat formatDay = DateFormat('EE');
-
-  final List<DateEntry> data = [
-    DateEntry(
-      date: DateTime(2021, 12, 21),
-    ),
-    DateEntry(
-      date: DateTime(2021, 12, 22),
-    ),
-    DateEntry(
-      date: DateTime(2021, 12, 23),
-    ),
-    DateEntry(
-      date: DateTime(2021, 12, 24),
-    ),
-  ];
 
   List<Color> colorList = [
     Color(0xFF141F9C),
@@ -60,7 +45,7 @@ class _ListWidgetState extends State<ListWidget> {
   Widget build(BuildContext context) {
     return Container(
       child: Column(
-        children: widget.data1.map((d) {
+        children: widget.data.map((d) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: InkWell(
@@ -68,9 +53,11 @@ class _ListWidgetState extends State<ListWidget> {
                 final sleepData =
                     await Provider.of<DataStates>(context, listen: false)
                         .getDataForSingleDate(d.date);
+                title = formatter.format(d.date);
+                print(title);
                 setState(() {
                   this.sleepData = sleepData;
-                  this.title = '';
+                  this.title = title;
                 });
 
                 Navigator.of(context).push(

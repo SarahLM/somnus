@@ -38,6 +38,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
   bool _pressedButton4 = false;
   String title = '';
   String timePrinted;
+  final DateFormat formatter = DateFormat('dd.MM.yyyy');
 
   final dataStates = DataStates();
 
@@ -47,7 +48,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
   final dbHelper = DatabaseHelper.instance;
 
   bool _canShowButton = true;
-  var multipleDays = new DateFormat('dd.MM.yyyy kk:mm ');
+  // var multipleDays = new DateFormat('dd.MM.yyyy kk:mm ');
   var singleDay = new DateFormat('kk:mm');
   DateFormat dateFormat;
   double interval;
@@ -70,7 +71,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
     setState(() {
       sleepData = dataPoints;
       timePrinted = DateTime.now().toString();
-      title = '';
+      title = formatter.format(DateTime.now());
     });
   }
 
@@ -93,7 +94,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
   }
 
   Future<List<DataPoint>> getDataCustomRange(picked) async {
-    await Provider.of<DataStates>(context, listen: false)
+    return await Provider.of<DataStates>(context, listen: false)
         .getDataForDateRange((picked[1]), (picked[0]));
   }
 
@@ -254,9 +255,9 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     _pressedButton2 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
-                    title = '';
+                    title = formatter.format(DateTime.now());
                     sleepData = dataPoints;
-                    timePrinted = (DateTime.now().toString());
+                    timePrinted = formatter.format(DateTime.now());
                     dateFormat = singleDay;
                   });
                 },
@@ -285,7 +286,9 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     _pressedButton1 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
-                    title = '';
+                    this.title = formatter
+                        .format(DateTime.now().add(new Duration(days: -1)));
+
                     sleepData = dataPoints;
                     timePrinted = (DateTime.now())
                             .add(new Duration(days: -1))
@@ -330,7 +333,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         DateFormat('dd.MM. yyyy')
                             .format(DateTime.now())
                             .toString();
-                    dateFormat = multipleDays;
+                    dateFormat = singleDay;
                     print(sleepData);
                   });
                 },
@@ -387,7 +390,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                                   .toString();
                           sleepData = dataPoints;
                           timePrinted = title;
-                          dateFormat = multipleDays;
+                          dateFormat = singleDay;
                         });
                       }
                     },

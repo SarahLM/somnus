@@ -7,12 +7,9 @@ import 'package:provider/provider.dart';
 import 'screens/tabs_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-<<<<<<< HEAD
 import 'package:foreground_service/foreground_service.dart';
 import 'widgets/singletons/ble_device_controller.dart';
-=======
 import './screens/edit_data_screen.dart';
->>>>>>> Add editData Form
 
 int disclaimerScreen;
 int tutorialScreen;
@@ -46,10 +43,8 @@ void maybeStartFGS() async {
     //necessity of editMode is dubious (see function comments)
     await ForegroundService.notification.startEditMode();
 
-    await ForegroundService.notification
-        .setTitle("Somnus");
-    await ForegroundService.notification
-        .setText(DEVICE_NOT_CONNECTED);
+    await ForegroundService.notification.setTitle("Somnus");
+    await ForegroundService.notification.setText(DEVICE_NOT_CONNECTED);
 
     await ForegroundService.notification.finishEditMode();
 
@@ -82,8 +77,12 @@ void foregroundServiceFunction() async {
 
   if (latestAccelData.length > 0) {
     foregroundServiceSetText(DEVICE_CONNECTED);
-    print("Latest accelerometer record: x=" + latestAccelData[0].toString() +
-        " y=" + latestAccelData[1].toString() + " z=" + latestAccelData[2].toString());
+    print("Latest accelerometer record: x=" +
+        latestAccelData[0].toString() +
+        " y=" +
+        latestAccelData[1].toString() +
+        " z=" +
+        latestAccelData[2].toString());
 
     accelData = new List();
     latestAccelData = new List();
@@ -105,7 +104,7 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp>{
+class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();

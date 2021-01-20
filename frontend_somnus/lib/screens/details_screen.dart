@@ -118,7 +118,7 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
     return Scaffold(
       key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(),
+      appBar: AppBar(title: Text('Daten bearbeiten')),
       body: Center(
         child: Column(
           children: [

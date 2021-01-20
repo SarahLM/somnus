@@ -42,10 +42,8 @@ void maybeStartFGS() async {
     //necessity of editMode is dubious (see function comments)
     await ForegroundService.notification.startEditMode();
 
-    await ForegroundService.notification
-        .setTitle("Somnus");
-    await ForegroundService.notification
-        .setText(DEVICE_NOT_CONNECTED);
+    await ForegroundService.notification.setTitle("Somnus");
+    await ForegroundService.notification.setText(DEVICE_NOT_CONNECTED);
 
     await ForegroundService.notification.finishEditMode();
 
@@ -110,7 +108,7 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp>{
+class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();

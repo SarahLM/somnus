@@ -163,7 +163,7 @@ class _EditScreenState extends State<EditScreen>
                   //         DateTime.now().toString();
                 });
                 buildWidgetList(
-                  ListWidget(data1: this.dateEntries),
+                  ListWidget(data: this.dateEntries),
                 );
 
                 //dataStates.getResult();
@@ -216,7 +216,7 @@ class _EditScreenState extends State<EditScreen>
                   // print(sleepData);
                 });
                 buildWidgetList(
-                  ListWidget(data1: this.dateEntries),
+                  ListWidget(data: this.dateEntries),
                 );
               },
             ),
@@ -278,7 +278,7 @@ class _EditScreenState extends State<EditScreen>
                         // timePrinted = title;
                       });
                       buildWidgetList(
-                        ListWidget(data1: this.dateEntries),
+                        ListWidget(data: this.dateEntries),
                       );
                     }
                   },

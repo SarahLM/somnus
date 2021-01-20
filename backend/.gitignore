@@ -1,0 +1,8 @@
+*.pyc
+*.xml
+.DS_Store
+venv
+venv2
+/.idea/*
+%results/*
+%/fileUploads/*

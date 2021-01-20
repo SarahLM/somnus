@@ -103,6 +103,9 @@ class Sync extends StatelessWidget {
                         series: <ChartSeries>[
                           // Initialize line series
                           StepAreaSeries<DataPoint, DateTime>(
+                              emptyPointSettings: EmptyPointSettings(
+                                  mode: EmptyPointMode.zero,
+                                  color: Colors.transparent),
                               //animationDuration: 2000,
                               color: colorAwake,
                               // const Color.fromRGBO(

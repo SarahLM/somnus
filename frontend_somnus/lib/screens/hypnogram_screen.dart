@@ -183,8 +183,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
     var request = http.MultipartRequest('POST', Uri.parse(url));
     var multipartFile = http.MultipartFile.fromBytes(
       'file',
-      (await rootBundle.load('assets/inputAccelero.csv')).buffer.asUint8List(),
-      filename: 'inputAccelero.csv', // use the real name if available, or omit
+      (await rootBundle.load('assets/getrennt.csv')).buffer.asUint8List(),
+      filename: 'getrennt.csv', // use the real name if available, or omit
     );
 
     //await new File('assets/out.csv').create(recursive: false);
@@ -495,7 +495,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                       Scaffold.of(context).showSnackBar(snackBar);
 
                       hideWidget();
-                      var file = 'inputAccelero.csv';
+                      var file = 'getrennt.csv';
 
                       var res =
                           await uploadFile(file, 'http://10.0.2.2:5000/data');

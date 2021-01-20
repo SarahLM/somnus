@@ -25,7 +25,6 @@ class Sync extends StatelessWidget {
       child: Center(
         child: Column(
           children: [
-            this.title != '' ? Text(this.title) : Text(''),
             Container(
               height: 418,
               child: Card(
@@ -41,6 +40,7 @@ class Sync extends StatelessWidget {
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
+                    this.title != '' ? Text(this.title) : Text(''),
                     SfCartesianChart(
                         plotAreaBorderColor: Colors.transparent,
                         //plotAreaBackgroundColor: Colors.grey,
@@ -103,9 +103,6 @@ class Sync extends StatelessWidget {
                         series: <ChartSeries>[
                           // Initialize line series
                           StepAreaSeries<DataPoint, DateTime>(
-                              emptyPointSettings: EmptyPointSettings(
-                                  mode: EmptyPointMode.zero,
-                                  color: Colors.transparent),
                               //animationDuration: 2000,
                               color: colorAwake,
                               // const Color.fromRGBO(

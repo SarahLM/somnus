@@ -4,6 +4,7 @@ import 'package:frontend_somnus/providers/dates.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/screens/hypnogram_screen.dart';
 import 'package:frontend_somnus/widgets/list_widget.dart';
+import 'package:frontend_somnus/widgets/no_data_widget.dart';
 import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:frontend_somnus/widgets/theme.dart';
 import 'package:intl/intl.dart';
@@ -39,6 +40,9 @@ class _EditScreenState extends State<EditScreen>
   double interval;
 
   List<Widget> widgetToShow = [];
+  final DateFormat serverFormater = DateFormat('dd.MM.yyyy');
+  var dateToday = DateTime.now();
+
   @override
   initState() {
     getInitialData();
@@ -50,15 +54,18 @@ class _EditScreenState extends State<EditScreen>
         .getDataForSingleDate(DateTime.now());
     setState(() {
       sleepData = dataPoints;
+      title = serverFormater.format(dateToday);
       //timePrinted = DateTime.now().toString();
-      title = '';
+      // this.title = serverFormater.format(DateTime.now());
     });
-    widgetToShow.add(Sync(
-      title: this.title,
-      sleepData: this.sleepData,
-      interval: 1,
-      dateFormat: this.singleDay,
-    ));
+    sleepData.length != 0
+        ? widgetToShow.add(Sync(
+            title: title,
+            sleepData: this.sleepData,
+            interval: 1,
+            dateFormat: this.singleDay,
+          ))
+        : widgetToShow.add(NoDataWidget(title: ''));
   }
 
   buildWidgetList(Widget widget) {
@@ -106,7 +113,7 @@ class _EditScreenState extends State<EditScreen>
                   sleepData = dataPoints;
                   interval = 1;
                   this.sleepData.length == 0
-                      ? buildWidgetList(Text('Keine Daten'))
+                      ? buildWidgetList(NoDataWidget(title: ''))
                       : buildWidgetList(
                           Sync(
                             title: this.title,
@@ -255,6 +262,9 @@ class _EditScreenState extends State<EditScreen>
                       dataPoints =
                           await Provider.of<DataStates>(context, listen: false)
                               .getDataForDateRange((picked[1]), (picked[0]));
+                      dates = await Provider.of<DataStates>(context,
+                              listen: false)
+                          .getEditDataForDateRange((picked[1]), (picked[0]));
                       setState(() {
                         title = DateFormat('dd.MM. yyyy')
                                 .format(picked[0])
@@ -264,8 +274,12 @@ class _EditScreenState extends State<EditScreen>
                                 .format(picked[1])
                                 .toString();
                         sleepData = dataPoints;
+                        this.dateEntries = dates;
                         // timePrinted = title;
                       });
+                      buildWidgetList(
+                        ListWidget(data1: this.dateEntries),
+                      );
                     }
                   },
                 ),

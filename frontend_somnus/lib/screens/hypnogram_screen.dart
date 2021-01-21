@@ -230,9 +230,6 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                                 ),
                               ),
                             ),
-                            // HypnogramPieChart(
-                            //   sleepData: sleepData,
-                            // ),
                           ],
                         )),
                 ],
@@ -243,15 +240,28 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                 height: 200,
               );
       case WidgetMarker.piechart:
-        return !isLoading
-            ? HypnogramPieChart(
-                sleepData: this.sleepData,
-              )
-            : Container(
-                child: Text('Daten werden geladen ...'),
-                alignment: Alignment.center,
-                height: 200,
-              );
+        if (!isLoading && sleepData.length != 0) {
+          return HypnogramPieChart(
+            sleepData: this.sleepData,
+          );
+        } else {
+          if (isLoading) {
+            return Container(
+              child: Text('Daten werden geladen ...'),
+              alignment: Alignment.center,
+              height: 200,
+            );
+          }
+          if (sleepData.length == 0) {
+            return NoDataWidget(title: title);
+          }
+        }
+
+        Container(
+          child: Text('Daten werden geladen ...'),
+          alignment: Alignment.center,
+          height: 200,
+        );
     }
   }
 

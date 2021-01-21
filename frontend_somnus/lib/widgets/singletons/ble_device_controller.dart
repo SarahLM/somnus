@@ -259,12 +259,14 @@ class BleDeviceController {
         _handleRawAccelerometerData(data);
         //print("elapsed seconds: ${s.elapsedMilliseconds/1000}");
       });
-
-      // send alive packages so accelerometer data is continiously sent
-      _accelDataAliveTimer = Timer.periodic((Duration(seconds:30)), (Timer t) => _enableSendingRawSensorData());
-      _accelDataToDBTimer = Timer.periodic((Duration(seconds: 1)), (Timer t) => _writeAccelDataToDB());
     }
+
+    // send alive packages so accelerometer data is continiously sent
+    _accelDataAliveTimer = Timer.periodic((Duration(seconds:30)), (Timer t) => _enableSendingRawSensorData());
+    _accelDataToDBTimer = Timer.periodic((Duration(seconds: 1)), (Timer t) => _writeAccelDataToDB());
   }
+
+
 
   Future<void> _enableSendingRawSensorData() async {
     // enable sensor raw data
@@ -277,6 +279,7 @@ class BleDeviceController {
   }
 
   Future<void> _handleRawAccelerometerData(Uint8List data) async {
+    print("data:" + data.toString());
     // first byte is always one
     if (data[0] == 1) {
       // second byte is a counter
@@ -326,6 +329,7 @@ class BleDeviceController {
   Future<void> _writeAccelDataToDB() async {
 
     print(latestAccelData[0].toString() + latestAccelData[1].toString() + latestAccelData[2].toString());
+    print("Connection state: " + (await fitnessTracker.isConnected()).toString());
 
     // don't write an entry to database when no data was received
     if (latestAccelData[0] != null && latestAccelData[1] != null && latestAccelData[2] != null) {
@@ -353,11 +357,16 @@ class BleDeviceController {
         exit(0);
       }
 
-
       accelDataSinceLastDBAccess = new List();
       latestAccelData = new List(3);
     } else {
       ForegroundService.sendToPort(Status.accelDataNotWrittenToDB);
+
+      if (!(await fitnessTracker.isConnected())){
+        fitnessTracker.connect();
+      } else {
+
+      }
     }
   }
 }

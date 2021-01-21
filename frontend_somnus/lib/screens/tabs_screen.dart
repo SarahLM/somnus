@@ -100,7 +100,7 @@ class _TabsScreenState extends State<TabsScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.analytics),
-            label: 'Hypnogramm',
+            label: 'Analyse',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.edit),

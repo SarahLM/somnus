@@ -1,7 +1,10 @@
+import shutil
 import time
 import os
+from flask_api import status
 import io
 import csv
+import glob
 from datetime import date
 
 from werkzeug.utils import secure_filename
@@ -38,19 +41,21 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+
 @app.route('/data', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
             print(request.__dict__.items())
-            print('no file')
+            return 'no selected file', status.HTTP_412_PRECONDITION_FAILED
         file = request.files['file']
+        if not allowed_file(file.filename):
+            return 'invalid data, expected csv', status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
         # if user does not select file, browser also
         # submit an empty part without filename
         if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
+            return 'expected file', status.HTTP_412_PRECONDITION_FAILED
         if file and allowed_file(file.filename):
             # to make sure file is unique
             timestamp = str(time.time())
@@ -58,7 +63,7 @@ def upload_file():
         # function to secure a filename before storing it directly on the filesystem
             data = secure_filename(newfilename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], data))
-            return run_data(data, timestamp)
+            return run_data(data, timestamp), clearbackend()
 
 
 def run_data(src, stamp):
@@ -72,8 +77,25 @@ def run_data(src, stamp):
         print("Error processing: {}\nError: {}".format(src, e))
     # return send_file('results/25698fileUpload/result_sleep_prediction.csv')
     # return specific response
-    return send_file('results/' + stamp +'fileUpload/result_sleep_prediction.csv')
+    print('vor senden')
+    #return send_file('results/' + stamp +'fileUpload/result_sleep_prediction.csv')
+    return send_file('results/' + stamp +'fileUpload.csv')
 
+
+def clearbackend():
+    upfiles = glob.glob('fileUploads/*.csv')
+    for f in upfiles:
+        print('löschen')
+        os.remove(f)
+    resultfiles = glob.glob('results/*.csv')
+    for f in resultfiles:
+        print('löschen results')
+        os.remove(f)
+    #dir_path = PROJECT_ROOT + "/results/*"
+    #try:
+     #   shutil.rmtree(dir_path)
+    #except OSError as e:
+     #   print("Error: %s : %s" % (dir_path, e.strerror))
 
 
 

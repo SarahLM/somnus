@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
-import 'package:frontend_somnus/providers/dates.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
 import 'package:frontend_somnus/widgets/no_data_widget.dart';
@@ -17,6 +16,8 @@ import 'package:frontend_somnus/widgets/theme.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:http/http.dart' as http;
 import 'database_helper.dart';
+
+enum WidgetMarker { hypnogram, piechart }
 
 class HypnogramScreen extends StatefulWidget {
   final Color color;
@@ -38,16 +39,13 @@ class _HypnogramScreenState extends State<HypnogramScreen>
   var syncList = List<Widget>();
   var list = List<Widget>();
   bool isLoading = false;
-
   final dataStates = DataStates();
-
   List<DataPoint> sleepData = [];
   List<DataPoint> dataPoints;
   List<DateTime> picked;
   final dbHelper = DatabaseHelper.instance;
-
   bool _canShowButton = true;
-  // var multipleDays = new DateFormat('dd.MM.yyyy kk:mm ');
+  WidgetMarker selectedWidgetMarker = WidgetMarker.hypnogram;
 
   void hideWidget() {
     setState(() {
@@ -208,6 +206,51 @@ class _HypnogramScreenState extends State<HypnogramScreen>
       list.add(Sync(title: formatter.format(dates[i].date), sleepData: data));
     }
     return list;
+  }
+
+  Widget getWidget() {
+    switch (selectedWidgetMarker) {
+      case WidgetMarker.hypnogram:
+        return !isLoading
+            ? Column(
+                children: [
+                  ((this.sleepData == null || this.sleepData.length == 0)
+                      ? NoDataWidget(title: this.title)
+                      : Column(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(
+                                  left: 15, right: 15, bottom: 15),
+                              child: RepaintBoundary(
+                                key: _printKey,
+                                child: Column(
+                                  children: syncList,
+                                ),
+                              ),
+                            ),
+                            // HypnogramPieChart(
+                            //   sleepData: sleepData,
+                            // ),
+                          ],
+                        )),
+                ],
+              )
+            : Container(
+                child: Text('Daten werden geladen ...'),
+                alignment: Alignment.center,
+                height: 200,
+              );
+      case WidgetMarker.piechart:
+        return !isLoading
+            ? HypnogramPieChart(
+                sleepData: this.sleepData,
+              )
+            : Container(
+                child: Text('Daten werden geladen ...'),
+                alignment: Alignment.center,
+                height: 200,
+              );
+    }
   }
 
   // Widget buildFlatButton(String title, bool button) {
@@ -428,35 +471,46 @@ class _HypnogramScreenState extends State<HypnogramScreen>
           ),
         ),
         body: SingleChildScrollView(
-          child: !isLoading
-              ? Column(
-                  children: [
-                    ((this.sleepData == null || this.sleepData.length == 0)
-                        ? NoDataWidget(title: this.title)
-                        : Column(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.only(
-                                    left: 15, right: 15, bottom: 15),
-                                child: RepaintBoundary(
-                                  key: _printKey,
-                                  child: Column(
-                                    children: syncList,
-                                  ),
-                                ),
-                              ),
-                              HypnogramPieChart(
-                                sleepData: sleepData,
-                              ),
-                            ],
-                          )),
-                  ],
-                )
-              : Container(
-                  child: Text('Daten werden geladen ...'),
-                  alignment: Alignment.center,
-                  height: 200,
-                ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  FlatButton(
+                      onPressed: () {
+                        setState(() {
+                          selectedWidgetMarker = WidgetMarker.hypnogram;
+                        });
+                      },
+                      child: Text(
+                        'Hypnogramm',
+                        style: TextStyle(
+                            color:
+                                (selectedWidgetMarker == WidgetMarker.hypnogram)
+                                    ? Colors.black
+                                    : Colors.grey),
+                      )),
+                  FlatButton(
+                      onPressed: () {
+                        setState(() {
+                          selectedWidgetMarker = WidgetMarker.piechart;
+                        });
+                      },
+                      child: Text(
+                        'Schlafdauer',
+                        style: TextStyle(
+                            color:
+                                (selectedWidgetMarker == WidgetMarker.piechart)
+                                    ? Colors.black
+                                    : Colors.grey),
+                      ))
+                ],
+              ),
+              Container(
+                child: getWidget(),
+              ),
+            ],
+          ),
         ),
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,

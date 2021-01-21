@@ -351,13 +351,14 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     _pressedButton4 = false;
                     // isLoading = true;
                   });
+                  dataPoints = await getDataYesterday();
                   list = [];
                   list.add(Sync(
                     sleepData: dataPoints,
                     title: formatter
                         .format(DateTime.now().add(new Duration(days: -1))),
                   ));
-                  dataPoints = await getDataYesterday();
+
                   setState(() {
                     isLoading = false;
                     this.title = formatter
@@ -491,7 +492,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                           });
                         },
                         child: Text(
-                          'Hypnogramm',
+                          'Hypnogramm(e)',
                           style: TextStyle(
                               color: (selectedWidgetMarker ==
                                       WidgetMarker.hypnogram)

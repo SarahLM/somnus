@@ -144,23 +144,25 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     ),
                     pw.Text(
                       'Gesamtlänge der Aufzeichnung:  ' +
-                          durationToString(sleepData.length) +
+                          durationToString(sleepData.length ~/ 2) +
                           ' Stunden',
                     ),
                     pw.SizedBox(
                       height: 4,
                     ),
                     pw.Text('Davon schlafend: ' +
-                        durationToString((sleepData
-                                .where((dataPoint) => dataPoint.state == 0.0))
-                            .toList()
-                            .length) +
+                        durationToString((sleepData.where(
+                                    (dataPoint) => dataPoint.state == 0.0))
+                                .toList()
+                                .length ~/
+                            2) +
                         ' Stunden'),
                     pw.Text('Davon wach: ' +
-                        durationToString((sleepData
-                                .where((dataPoint) => dataPoint.state == 1.0))
-                            .toList()
-                            .length) +
+                        durationToString((sleepData.where(
+                                    (dataPoint) => dataPoint.state == 1.0))
+                                .toList()
+                                .length ~/
+                            2) +
                         ' Stunden'),
                   ],
                 ),

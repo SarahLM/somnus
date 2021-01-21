@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
@@ -22,8 +20,6 @@ import 'database_helper.dart';
 
 class HypnogramScreen extends StatefulWidget {
   final Color color;
-  // buttonTextStyle = TextStyle(color: Theme.of(context).accentColor);
-
   HypnogramScreen(this.color);
 
   @override
@@ -38,11 +34,10 @@ class _HypnogramScreenState extends State<HypnogramScreen>
   bool _pressedButton3 = false;
   bool _pressedButton4 = false;
   String title = '';
-  String timePrinted;
   final DateFormat formatter = DateFormat('dd.MM.yyyy');
   var syncList = List<Widget>();
   var list = List<Widget>();
-  List<DateEntry> dateEntries = [];
+  bool isLoading = false;
 
   final dataStates = DataStates();
 
@@ -53,9 +48,6 @@ class _HypnogramScreenState extends State<HypnogramScreen>
 
   bool _canShowButton = true;
   // var multipleDays = new DateFormat('dd.MM.yyyy kk:mm ');
-  var singleDay = new DateFormat('kk:mm');
-  DateFormat dateFormat;
-  double interval;
 
   void hideWidget() {
     setState(() {
@@ -72,10 +64,14 @@ class _HypnogramScreenState extends State<HypnogramScreen>
   getInitialData() async {
     final dataPoints = await Provider.of<DataStates>(context, listen: false)
         .getDataForSingleDate(DateTime.now());
+    list.add(Sync(
+      sleepData: dataPoints,
+      title: title,
+    ));
     setState(() {
       sleepData = dataPoints;
-      timePrinted = DateTime.now().toString();
       title = formatter.format(DateTime.now());
+      this.syncList = list;
     });
   }
 
@@ -140,7 +136,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         )
                       ],
                     ),
-                    pw.Text('Zeitraum: ' + timePrinted),
+                    pw.Text('Zeitraum: ' + title),
                     pw.Expanded(
                       // ignore: deprecated_member_use
                       child: pw.Image(image),
@@ -203,26 +199,37 @@ class _HypnogramScreenState extends State<HypnogramScreen>
     //return string;
   }
 
-  Widget buildFlatButton(String title, bool button) {
-    return FlatButton(
-      child: Text(
-        title,
-        style: TextStyle(
-          color: button ? Colors.white : Theme.of(context).accentColor,
-        ),
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18.0),
-        side: BorderSide(color: Theme.of(context).accentColor),
-      ),
-      color: button ? Theme.of(context).accentColor : Colors.white,
-      onPressed: () {
-        setState(() {
-          button = true;
-        });
-      },
-    );
+  Future<List<Widget>> buildList(var dates) async {
+    list = [];
+    for (int i = 0; i < dates.length; i++) {
+      print('Date ' + dates[i].date.toString());
+      var data = await Provider.of<DataStates>(context, listen: false)
+          .getDataForSingleDate(dates[i].date);
+      list.add(Sync(title: formatter.format(dates[i].date), sleepData: data));
+    }
+    return list;
   }
+
+  // Widget buildFlatButton(String title, bool button) {
+  //   return FlatButton(
+  //     child: Text(
+  //       title,
+  //       style: TextStyle(
+  //         color: button ? Colors.white : Theme.of(context).accentColor,
+  //       ),
+  //     ),
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(18.0),
+  //       side: BorderSide(color: Theme.of(context).accentColor),
+  //     ),
+  //     color: button ? Theme.of(context).accentColor : Colors.white,
+  //     onPressed: () {
+  //       setState(() {
+  //         button = true;
+  //       });
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -252,17 +259,26 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     ? Theme.of(context).accentColor
                     : Colors.white,
                 onPressed: () async {
-                  dataPoints = await getDataToday();
-
                   setState(() {
                     _pressedButton1 = true;
                     _pressedButton2 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
+                    //isLoading = true;
+                  });
+                  dataPoints = await getDataToday();
+                  list = [];
+                  list.add(
+                    Sync(
+                      sleepData: dataPoints,
+                      title: formatter.format(DateTime.now()),
+                    ),
+                  );
+                  setState(() {
                     title = formatter.format(DateTime.now());
                     sleepData = dataPoints;
-                    timePrinted = formatter.format(DateTime.now());
-                    dateFormat = singleDay;
+                    this.syncList = list;
+                    isLoading = false;
                   });
                 },
               ),
@@ -283,23 +299,26 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     ? Theme.of(context).accentColor
                     : Colors.white,
                 onPressed: () async {
-                  dataPoints = await getDataYesterday();
-
                   setState(() {
                     _pressedButton2 = true;
                     _pressedButton1 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
+                    // isLoading = true;
+                  });
+                  list = [];
+                  list.add(Sync(
+                    sleepData: dataPoints,
+                    title: formatter
+                        .format(DateTime.now().add(new Duration(days: -1))),
+                  ));
+                  dataPoints = await getDataYesterday();
+                  setState(() {
+                    isLoading = false;
                     this.title = formatter
                         .format(DateTime.now().add(new Duration(days: -1)));
-
                     sleepData = dataPoints;
-                    timePrinted = (DateTime.now())
-                            .add(new Duration(days: -1))
-                            .toString() +
-                        ' bis ' +
-                        DateTime.now().toString();
-                    dateFormat = singleDay;
+                    this.syncList = list;
                   });
                 },
               ),
@@ -320,40 +339,27 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     ? Theme.of(context).accentColor
                     : Colors.white,
                 onPressed: () async {
+                  setState(() {
+                    isLoading = true;
+                    _pressedButton3 = true;
+                    _pressedButton1 = false;
+                    _pressedButton2 = false;
+                    _pressedButton4 = false;
+                  });
                   dataPoints = await getDataSevenDays();
                   var dates =
                       await Provider.of<DataStates>(context, listen: false)
                           .getEditDataForDateRange(DateTime.now(),
                               (new DateTime.now()).add(new Duration(days: -7)));
-                  list = [];
-                  for (int i = 0; i < dates.length; i++) {
-                    print('Date ' + dates[i].date.toString());
-                    var data =
-                        await Provider.of<DataStates>(context, listen: false)
-                            .getDataForSingleDate(dates[i].date);
-                    list.add(Sync(
-                        title: formatter.format(dates[i].date),
-                        sleepData: data));
-                  }
-
+                  await buildList(dates);
                   setState(() {
-                    _pressedButton3 = true;
-                    _pressedButton1 = false;
-                    _pressedButton2 = false;
-                    _pressedButton4 = false;
-                    title = '';
-                    sleepData = dataPoints;
-                    timePrinted = DateFormat('dd.MM. yyyy')
-                            .format(
-                                (DateTime.now()).add(new Duration(days: -7)))
-                            .toString() +
+                    title = formatter.format(
+                            (DateTime.now()).add(new Duration(days: -7))) +
                         ' bis ' +
-                        DateFormat('dd.MM. yyyy')
-                            .format(DateTime.now())
-                            .toString();
-                    dateFormat = singleDay;
-                    // print(sleepData);
+                        formatter.format(DateTime.now()).toString();
+                    sleepData = dataPoints;
                     this.syncList = list;
+                    isLoading = false;
                   });
                 },
               ),
@@ -361,7 +367,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                 Builder(
                   builder: (context) => FlatButton(
                     child: new Text(
-                      "Custom",
+                      'Custom',
                       style: TextStyle(
                         color: _pressedButton4
                             ? Colors.white
@@ -388,28 +394,30 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         initialFirstDate: new DateTime.now(),
                         initialLastDate:
                             (new DateTime.now()).add(new Duration(days: 7)),
-                        firstDate: new DateTime(2019),
+                        firstDate: new DateTime(2021),
                         lastDate: new DateTime(2023),
                       );
 
                       if (picked != null && picked.length == 2) {
-                        print(picked);
-                        print(picked.runtimeType);
+                        setState(() {
+                          isLoading = true;
+                        });
+                        //print(picked);
                         dataPoints = await Provider.of<DataStates>(context,
                                 listen: false)
                             .getDataForDateRange((picked[1]), (picked[0]));
+                        var dates = await Provider.of<DataStates>(context,
+                                listen: false)
+                            .getEditDataForDateRange((picked[1]), (picked[0]));
+                        await buildList(dates);
 
                         setState(() {
-                          title = DateFormat('dd.MM.yyyy')
-                                  .format(picked[0])
-                                  .toString() +
+                          title = formatter.format(picked[0]) +
                               ' bis ' +
-                              DateFormat('dd.MM. yyyy')
-                                  .format(picked[1])
-                                  .toString();
+                              formatter.format(picked[1]);
                           sleepData = dataPoints;
-                          timePrinted = title;
-                          dateFormat = singleDay;
+                          this.syncList = list;
+                          isLoading = false;
                         });
                       }
                     },
@@ -420,29 +428,35 @@ class _HypnogramScreenState extends State<HypnogramScreen>
           ),
         ),
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              ((this.sleepData == null || this.sleepData.length == 0)
-                  ? NoDataWidget(title: this.title)
-                  : Column(
-                      children: [
-                        Container(
-                          padding:
-                              EdgeInsets.only(left: 15, right: 15, bottom: 15),
-                          child: RepaintBoundary(
-                            key: _printKey,
-                            child: Column(
-                              children: syncList,
-                            ),
-                          ),
-                        ),
-                        HypnogramPieChart(
-                          sleepData: sleepData,
-                        ),
-                      ],
-                    )),
-            ],
-          ),
+          child: !isLoading
+              ? Column(
+                  children: [
+                    ((this.sleepData == null || this.sleepData.length == 0)
+                        ? NoDataWidget(title: this.title)
+                        : Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.only(
+                                    left: 15, right: 15, bottom: 15),
+                                child: RepaintBoundary(
+                                  key: _printKey,
+                                  child: Column(
+                                    children: syncList,
+                                  ),
+                                ),
+                              ),
+                              HypnogramPieChart(
+                                sleepData: sleepData,
+                              ),
+                            ],
+                          )),
+                  ],
+                )
+              : Container(
+                  child: Text('Daten werden geladen ...'),
+                  alignment: Alignment.center,
+                  height: 200,
+                ),
         ),
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -471,8 +485,6 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         content: Text('Daten werden verarbeitet'),
                       );
 
-                      // Find the Scaffold in the widget tree and use
-                      // it to show a SnackBar.
                       Scaffold.of(context).showSnackBar(snackBar);
 
                       hideWidget();
@@ -486,20 +498,43 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                       hideWidget();
                       if (_pressedButton1) {
                         dataPoints = await getDataToday();
+                        list = [];
+                        list.add(Sync(
+                          sleepData: dataPoints,
+                          title: formatter.format(DateTime.now()),
+                        ));
                       }
                       if (_pressedButton2) {
                         dataPoints = await getDataYesterday();
+                        list = [];
+                        list.add(Sync(
+                          sleepData: dataPoints,
+                          title: formatter.format(
+                              DateTime.now().add(new Duration(days: -1))),
+                        ));
                       }
                       if (_pressedButton3) {
                         dataPoints = await getDataSevenDays();
+                        var dates = await Provider.of<DataStates>(context,
+                                listen: false)
+                            .getEditDataForDateRange(
+                                DateTime.now(),
+                                (new DateTime.now())
+                                    .add(new Duration(days: -7)));
+                        await buildList(dates);
                       }
                       if (_pressedButton4) {
                         dataPoints = await Provider.of<DataStates>(context,
                                 listen: false)
                             .getDataForDateRange((picked[1]), (picked[0]));
+                        var dates = await Provider.of<DataStates>(context,
+                                listen: false)
+                            .getEditDataForDateRange((picked[1]), (picked[0]));
+                        await buildList(dates);
                       }
                       setState(() {
                         sleepData = dataPoints;
+                        this.syncList = list;
                       });
                     },
                   ),

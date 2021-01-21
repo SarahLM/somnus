@@ -125,8 +125,6 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
             Sync(
               title: widget.title,
               sleepData: widget.sleepData,
-              interval: 1,
-              dateFormat: singleDay,
             ),
             SizedBox(
               height: 10,

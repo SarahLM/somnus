@@ -6,16 +6,13 @@ import 'package:intl/intl.dart';
 class Sync extends StatelessWidget {
   final String title;
   final List<DataPoint> sleepData;
-  final DateFormat dateFormat;
-  final double interval;
   final Color colorAsleep = Color(0xFF0529B3);
   final Color colorAwake = Color(0xFFFF9221);
+  final DateFormat formatter = DateFormat('kk:mm');
 
   Sync({
     @required this.title,
     @required this.sleepData,
-    @required this.dateFormat,
-    @required this.interval,
   });
 
   @override
@@ -26,7 +23,7 @@ class Sync extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              height: 418,
+              height: 350,
               child: Card(
                 elevation: 8,
                 //Initialize chart
@@ -36,11 +33,11 @@ class Sync extends StatelessWidget {
                       height: 10,
                     ),
                     Text(
-                      'Hypnogramm',
+                      this.title,
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    this.title != '' ? Text(this.title) : Text(''),
+                    //this.title != '' ? Text(this.title) : Text(''),
                     SfCartesianChart(
                         plotAreaBorderColor: Colors.transparent,
                         //plotAreaBackgroundColor: Colors.grey,
@@ -58,8 +55,8 @@ class Sync extends StatelessWidget {
                         primaryXAxis: DateTimeAxis(
                           isVisible: true,
                           majorGridLines: MajorGridLines(width: 0),
-                          dateFormat: this.dateFormat,
-                          interval: this.interval,
+                          dateFormat: formatter,
+                          interval: 1,
                           labelRotation: 90,
                           plotBands: <PlotBand>[
                             /*   Plot band: different height for sleep and awake */
@@ -94,7 +91,7 @@ class Sync extends StatelessWidget {
                         ),
                         primaryYAxis: NumericAxis(
                           interval: 1,
-                          maximum: 1.0,
+                          maximum: 0.7,
                           //minimum: -0.5,
                           //maximum: 5.1,
                           //rangePadding: ChartRangePadding.additional,
@@ -120,47 +117,47 @@ class Sync extends StatelessWidget {
                     // SizedBox(
                     //   height: 10,
                     // ),
-                    Divider(
-                      color: Theme.of(context).accentColor,
-                      height: 0,
-                      thickness: 2,
-                      indent: 20,
-                      endIndent: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.all(10),
-                              height: 30,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                color: colorAsleep,
-                                //border: Border.all(color: Colors.blueAccent),
-                              ),
-                            ),
-                            Text('Schlaf'),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(right: 10, left: 10),
-                              height: 30,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                color: colorAwake,
-                                //border: Border.all(color: Colors.blueAccent),
-                              ),
-                            ),
-                            Text('Wach')
-                          ],
-                        ),
-                      ],
-                    ),
+                    // Divider(
+                    //   color: Theme.of(context).accentColor,
+                    //   height: 0,
+                    //   thickness: 2,
+                    //   indent: 20,
+                    //   endIndent: 20,
+                    // ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: <Widget>[
+                    //     Row(
+                    //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //       children: [
+                    //         Container(
+                    //           margin: EdgeInsets.all(10),
+                    //           height: 30,
+                    //           width: 20,
+                    //           decoration: BoxDecoration(
+                    //             color: colorAsleep,
+                    //             //border: Border.all(color: Colors.blueAccent),
+                    //           ),
+                    //         ),
+                    //         Text('Schlaf'),
+                    //       ],
+                    //     ),
+                    //     Row(
+                    //       children: [
+                    //         Container(
+                    //           margin: EdgeInsets.only(right: 10, left: 10),
+                    //           height: 30,
+                    //           width: 20,
+                    //           decoration: BoxDecoration(
+                    //             color: colorAwake,
+                    //             //border: Border.all(color: Colors.blueAccent),
+                    //           ),
+                    //         ),
+                    //         Text('Wach')
+                    //       ],
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),

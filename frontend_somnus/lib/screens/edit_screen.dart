@@ -62,8 +62,6 @@ class _EditScreenState extends State<EditScreen>
         ? widgetToShow.add(Sync(
             title: title,
             sleepData: this.sleepData,
-            interval: 1,
-            dateFormat: this.singleDay,
           ))
         : widgetToShow.add(NoDataWidget(title: ''));
   }
@@ -118,8 +116,6 @@ class _EditScreenState extends State<EditScreen>
                           Sync(
                             title: this.title,
                             sleepData: this.sleepData,
-                            dateFormat: this.dateFormat,
-                            interval: this.interval,
                           ),
                         );
                   //timePrinted = (DateTime.now().toString());

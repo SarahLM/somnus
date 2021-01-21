@@ -7,12 +7,9 @@ import 'package:provider/provider.dart';
 import 'screens/tabs_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-<<<<<<< HEAD
 import 'package:foreground_service/foreground_service.dart';
 import 'widgets/singletons/ble_device_controller.dart';
-=======
 import './screens/edit_data_screen.dart';
->>>>>>> Add editData Form
 
 int disclaimerScreen;
 int tutorialScreen;

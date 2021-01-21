@@ -118,6 +118,11 @@ class DatabaseHelper {
     return await db.rawQuery("SELECT * FROM $table WHERE $columnDate='$date' ORDER BY $columnDate LIMIT $count");
   }
 
+  Future<List<Map<String, dynamic>>> queryDataOfDay(date) async {
+    Database db = await instance.database;
+    return await db.rawQuery("SELECT * FROM $table WHERE $columnDate='$date' ORDER BY $columnTime");
+  }
+
   Future<int> doubleValues(date, time) async {
     Database db = await instance.database;
     return Sqflite.firstIntValue(await db.rawQuery(

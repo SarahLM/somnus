@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
+import 'package:frontend_somnus/providers/dates.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/widgets/hypnogram_piechart_widget.dart';
 import 'package:frontend_somnus/widgets/no_data_widget.dart';
@@ -39,6 +40,9 @@ class _HypnogramScreenState extends State<HypnogramScreen>
   String title = '';
   String timePrinted;
   final DateFormat formatter = DateFormat('dd.MM.yyyy');
+  var syncList = List<Widget>();
+  var list = List<Widget>();
+  List<DateEntry> dateEntries = [];
 
   final dataStates = DataStates();
 
@@ -317,6 +321,20 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     : Colors.white,
                 onPressed: () async {
                   dataPoints = await getDataSevenDays();
+                  var dates =
+                      await Provider.of<DataStates>(context, listen: false)
+                          .getEditDataForDateRange(DateTime.now(),
+                              (new DateTime.now()).add(new Duration(days: -7)));
+                  list = [];
+                  for (int i = 0; i < dates.length; i++) {
+                    print('Date ' + dates[i].date.toString());
+                    var data =
+                        await Provider.of<DataStates>(context, listen: false)
+                            .getDataForSingleDate(dates[i].date);
+                    list.add(Sync(
+                        title: formatter.format(dates[i].date),
+                        sleepData: data));
+                  }
 
                   setState(() {
                     _pressedButton3 = true;
@@ -334,7 +352,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                             .format(DateTime.now())
                             .toString();
                     dateFormat = singleDay;
-                    print(sleepData);
+                    // print(sleepData);
+                    this.syncList = list;
                   });
                 },
               ),
@@ -405,64 +424,23 @@ class _HypnogramScreenState extends State<HypnogramScreen>
             children: [
               ((this.sleepData == null || this.sleepData.length == 0)
                   ? NoDataWidget(title: this.title)
-                  : Container(
-                      padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
-                      child: Column(
-                        children: [
-                          Container(
-                            child: RepaintBoundary(
-                              key: _printKey,
-                              child: Sync(
-                                title: this.title,
-                                sleepData: this.sleepData,
-                                dateFormat: this.dateFormat,
-                                interval: this.interval,
-                              ),
+                  : Column(
+                      children: [
+                        Container(
+                          padding:
+                              EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                          child: RepaintBoundary(
+                            key: _printKey,
+                            child: Column(
+                              children: syncList,
                             ),
                           ),
-                          HypnogramPieChart(
-                            sleepData: this.sleepData,
-                          ),
-                          SizedBox(height: 20),
-                          // Text(
-                          //   'Schlafdauer',
-                          //   style: TextStyle(
-                          //       fontSize: 20, fontWeight: FontWeight.bold),
-                          // ),
-                          // Text(
-                          //   'Gesamtlänge der Aufzeichnung:  ' +
-                          //       durationToString(sleepData.length) +
-                          //       ' Stunden',
-                          //   textAlign: TextAlign.center,
-                          //   style: TextStyle(
-                          //     fontWeight: FontWeight.w600,
-                          //     fontSize: 12.0,
-                          //   ),
-                          // ),
-                          // SizedBox(
-                          //   height: 4,
-                          // ),
-                          // Text('Davon schlafend: ' +
-                          //     durationToString((sleepData.where(
-                          //             (dataPoint) => dataPoint.state == 0.0))
-                          //         .toList()
-                          //         .length) +
-                          //     ' Stunden'),
-                          // Text('Davon wach: ' +
-                          //     durationToString((sleepData.where(
-                          //             (dataPoint) => dataPoint.state == 1.0))
-                          //         .toList()
-                          //         .length) +
-                          //     ' Stunden'),
-                        ],
-                      ),
+                        ),
+                        HypnogramPieChart(
+                          sleepData: sleepData,
+                        ),
+                      ],
                     )),
-              // !_canShowButton
-              //     ? Padding(
-              //         padding: const EdgeInsets.all(8.0),
-              //         child: CircularProgressIndicator(),
-              //       )
-              //     : const SizedBox.shrink()
             ],
           ),
         ),

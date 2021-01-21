@@ -470,27 +470,33 @@ class _HypnogramScreenState extends State<HypnogramScreen>
             ],
           ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  FlatButton(
-                      onPressed: () {
-                        setState(() {
-                          selectedWidgetMarker = WidgetMarker.hypnogram;
-                        });
-                      },
-                      child: Text(
-                        'Hypnogramm',
-                        style: TextStyle(
-                            color:
-                                (selectedWidgetMarker == WidgetMarker.hypnogram)
-                                    ? Colors.black
-                                    : Colors.grey),
-                      )),
-                  FlatButton(
+        body: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                backgroundColor: Colors.white,
+                // expandedHeight: 200.0,
+                floating: false,
+                pinned: true,
+                centerTitle: true,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    FlatButton(
+                        onPressed: () {
+                          setState(() {
+                            selectedWidgetMarker = WidgetMarker.hypnogram;
+                          });
+                        },
+                        child: Text(
+                          'Hypnogramm',
+                          style: TextStyle(
+                              color: (selectedWidgetMarker ==
+                                      WidgetMarker.hypnogram)
+                                  ? Colors.black
+                                  : Colors.grey),
+                        )),
+                    FlatButton(
                       onPressed: () {
                         setState(() {
                           selectedWidgetMarker = WidgetMarker.piechart;
@@ -503,19 +509,24 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                                 (selectedWidgetMarker == WidgetMarker.piechart)
                                     ? Colors.black
                                     : Colors.grey),
-                      ))
-                ],
+                      ),
+                    )
+                  ],
+                ),
               ),
-              Container(
-                child: getWidget(),
-              ),
-            ],
+            ];
+          },
+          body: SingleChildScrollView(
+            child: Container(
+              child: getWidget(),
+            ),
           ),
         ),
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            this.sleepData.length != 0
+            this.sleepData.length != 0 &&
+                    selectedWidgetMarker == WidgetMarker.hypnogram
                 ? FloatingActionButton(
                     heroTag: null,
                     child: const Icon(Icons.print),

@@ -10,6 +10,7 @@ import 'package:frontend_somnus/widgets/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
+import 'details_screen.dart';
 
 class EditScreen extends StatefulWidget {
   final Color color;
@@ -22,7 +23,7 @@ class EditScreen extends StatefulWidget {
 
 class _EditScreenState extends State<EditScreen>
     with AutomaticKeepAliveClientMixin<EditScreen> {
-  bool _pressedButton1 = true;
+  // bool _pressedButton1 = true;
   bool _pressedButton2 = false;
   bool _pressedButton3 = false;
   bool _pressedButton4 = false;
@@ -35,9 +36,7 @@ class _EditScreenState extends State<EditScreen>
   List<DateEntry> dateEntries = [];
   List<DateEntry> dates;
   DateFormat dateFormat;
-  var multipleDays = new DateFormat('dd.MM.yyyy kk:mm ');
-  var singleDay = new DateFormat('kk:mm');
-  double interval;
+  var formatter = new DateFormat('dd.MM.yyyy');
 
   List<Widget> widgetToShow = [];
   final DateFormat serverFormater = DateFormat('dd.MM.yyyy');
@@ -50,20 +49,26 @@ class _EditScreenState extends State<EditScreen>
   }
 
   getInitialData() async {
-    final dataPoints = await Provider.of<DataStates>(context, listen: false)
-        .getDataForSingleDate(DateTime.now());
+    dates = await Provider.of<DataStates>(context, listen: false)
+        .getEditDataForDateRange(
+      DateTime.now(),
+      (new DateTime.now()).add(new Duration(days: -7)),
+    );
     setState(() {
-      sleepData = dataPoints;
-      title = serverFormater.format(dateToday);
+      _pressedButton2 = true;
+      //_pressedButton1 = false;
+      _pressedButton3 = false;
+      _pressedButton4 = false;
+      title = '';
+      this.dateEntries = dates;
       //timePrinted = DateTime.now().toString();
       // this.title = serverFormater.format(DateTime.now());
+      this.dateEntries.length != 0
+          ? widgetToShow.add(ListWidget(
+              data: dateEntries,
+            ))
+          : widgetToShow.add(NoDataWidget(title: ''));
     });
-    sleepData.length != 0
-        ? widgetToShow.add(Sync(
-            title: title,
-            sleepData: this.sleepData,
-          ))
-        : widgetToShow.add(NoDataWidget(title: ''));
   }
 
   buildWidgetList(Widget widget) {
@@ -82,46 +87,48 @@ class _EditScreenState extends State<EditScreen>
           alignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            FlatButton(
-              child: Text(
-                'Heute',
-                style: TextStyle(
-                  color: _pressedButton1
-                      ? Colors.white
-                      : Theme.of(context).accentColor,
-                ),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
-                side: BorderSide(color: Theme.of(context).accentColor),
-              ),
-              color: _pressedButton1
-                  ? Theme.of(context).accentColor
-                  : Colors.white,
-              onPressed: () async {
-                final dataPoints =
-                    await Provider.of<DataStates>(context, listen: false)
-                        .getDataForSingleDate(DateTime.now());
-                setState(() {
-                  _pressedButton1 = true;
-                  _pressedButton2 = false;
-                  _pressedButton3 = false;
-                  _pressedButton4 = false;
-                  title = '';
-                  sleepData = dataPoints;
-                  interval = 1;
-                  this.sleepData.length == 0
-                      ? buildWidgetList(NoDataWidget(title: ''))
-                      : buildWidgetList(
-                          Sync(
-                            title: this.title,
-                            sleepData: this.sleepData,
-                          ),
-                        );
-                  //timePrinted = (DateTime.now().toString());
-                });
-              },
-            ),
+            // FlatButton(
+            //   child: Text(
+            //     'Heute',
+            //     style: TextStyle(
+            //       color: _pressedButton1
+            //           ? Colors.white
+            //           : Theme.of(context).accentColor,
+            //     ),
+            //   ),
+            //   shape: RoundedRectangleBorder(
+            //     borderRadius: BorderRadius.circular(18.0),
+            //     side: BorderSide(color: Theme.of(context).accentColor),
+            //   ),
+            //   color: _pressedButton1
+            //       ? Theme.of(context).accentColor
+            //       : Colors.white,
+            //   onPressed: () async {
+            //     final dataPoints =
+            //         await Provider.of<DataStates>(context, listen: false)
+            //             .getDataForSingleDate(DateTime.now());
+            //     setState(() {
+            //       _pressedButton1 = true;
+            //       _pressedButton2 = false;
+            //       _pressedButton3 = false;
+            //       _pressedButton4 = false;
+            //       title = DateTime.now().toString();
+            //       sleepData = dataPoints;
+            //       this.sleepData.length == 0
+            //           ? buildWidgetList(NoDataWidget(title: ''))
+            //           : Navigator.of(context).push(
+            //               MaterialPageRoute(
+            //                 builder: (_) => EditDetailsScreen(
+            //                   title: this.title,
+            //                   sleepData: this.sleepData,
+            //                   date: DateTime.now(),
+            //                 ),
+            //               ),
+            //             );
+            //       //timePrinted = (DateTime.now().toString());
+            //     });
+            //   },
+            // ),
             FlatButton(
               child: Text(
                 '7 Tage',
@@ -146,7 +153,7 @@ class _EditScreenState extends State<EditScreen>
                 );
                 setState(() {
                   _pressedButton2 = true;
-                  _pressedButton1 = false;
+                  //  _pressedButton1 = false;
                   _pressedButton3 = false;
                   _pressedButton4 = false;
                   title = '';
@@ -196,7 +203,7 @@ class _EditScreenState extends State<EditScreen>
 
                 setState(() {
                   _pressedButton3 = true;
-                  _pressedButton1 = false;
+                  // _pressedButton1 = false;
                   _pressedButton2 = false;
                   _pressedButton4 = false;
                   title = '';
@@ -237,7 +244,7 @@ class _EditScreenState extends State<EditScreen>
                   onPressed: () async {
                     setState(() {
                       _pressedButton4 = true;
-                      _pressedButton1 = false;
+                      //   _pressedButton1 = false;
                       _pressedButton2 = false;
                       _pressedButton3 = false;
                     });

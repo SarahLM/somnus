@@ -8,6 +8,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'singletons/ble_device_controller.dart';
 
+const String CONNECTION_TIP_SELECT_DEVICE = "Select your device from the list.";
+const String CONNECTION_TIP_PRESS_BUTTON = "Press the button on the MiBand when it vibrates.";
+
 class BleConnect extends StatefulWidget {
   @override
   _BleConnectState createState() => _BleConnectState();
@@ -20,6 +23,7 @@ class _BleConnectState extends State<BleConnect> {
   bool _bleManagerScanning = false;
   bool _isLoading = false;
   List<Peripheral> bleDevices = new List<Peripheral>();
+  List<TextSpan> _connectionTip = new List();
 
   @override
   void initState() {
@@ -67,6 +71,16 @@ class _BleConnectState extends State<BleConnect> {
                   onPressed: _scanForBleDevicesOnPressed,
                   child: Text("Scan for BLE devices"),
                 ),
+                RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontSize: 25,
+                      color: Colors.black
+                    ),
+                    children: _connectionTip
+                  ),
+                  textAlign: TextAlign.center,
+                ),
                 Container(
                   child: new Expanded(
                     child: ListView.builder(
@@ -86,12 +100,12 @@ class _BleConnectState extends State<BleConnect> {
                     ),
                   ),
                 ),
-              ]
+                ]
+            ),
+            isLoading: _isLoading,
+            opacity: 0.5,
+            progressIndicator: CircularProgressIndicator(),
           ),
-          isLoading: _isLoading,
-          opacity: 0.5,
-          progressIndicator: CircularProgressIndicator(),
-      )
     );
   }
 
@@ -104,26 +118,38 @@ class _BleConnectState extends State<BleConnect> {
 
     bleDeviceController.fitnessTracker = selectedDevice;
 
-    setState(() { _isLoading = true;});
+    setState(() { _isLoading = true; });
 
     if (await _connectToBleDevice()) {
       print("Connected to BLE device.");
       
       if (await bleDeviceController.bleDeviceIsMiBand()) {
+        setState(() {
+          _connectionTip = new List();
+          _connectionTip.add(new TextSpan(text: CONNECTION_TIP_PRESS_BUTTON));
+        });
         await bleDeviceController.authenticateMiBand(_authenticationFinish);
       } else {
         if (await bleDeviceController.fitnessTracker.isConnected()) {
           bleDeviceController.fitnessTracker.disconnectOrCancelConnection();
         }
 
-        setState(() { _isLoading = false;});
+        setState(() {
+          _isLoading = false;
+          _connectionTip = new List();
+          _connectionTip.add(new TextSpan(text: CONNECTION_TIP_SELECT_DEVICE));
+        });
         _showDialog("Device not compatible", "The selected device is not "
             "compatible with this app. Choose another device or check the "
             "manual for compatible devices.");
         print("Disconnected from BLE device.");
       }
     } else {
-      setState(() { _isLoading = false;});
+      setState(() {
+        _isLoading = false;
+        _connectionTip = new List();
+        _connectionTip.add(new TextSpan(text: CONNECTION_TIP_SELECT_DEVICE));
+      });
       _showDialog("Device not compatible", "The selected device is not "
           "compatible with this app. Choose another device or check the "
           "manual for compatible devices.");
@@ -140,7 +166,11 @@ class _BleConnectState extends State<BleConnect> {
       if (await bleDeviceController.fitnessTracker.isConnected()) {
         bleDeviceController.fitnessTracker.disconnectOrCancelConnection();
       }
-      setState(() { _isLoading = false;});
+      setState(() {
+        _isLoading = false;
+        _connectionTip = new List();
+        _connectionTip.add(new TextSpan(text: CONNECTION_TIP_SELECT_DEVICE));
+      });
       _showDialog("Connection error", "The authentication process failed. " +
           "Make sure the device is near and Bluetooth is enabled. Then try " +
           "again.\n\nIf the error remains, make sure the device is compatible " +
@@ -196,6 +226,11 @@ class _BleConnectState extends State<BleConnect> {
         bleDeviceController.fitnessTracker.disconnectOrCancelConnection();
       }
     }
+
+    setState(() {
+      _connectionTip = new List();
+      _connectionTip.add(new TextSpan(text: CONNECTION_TIP_SELECT_DEVICE));
+    });
 
     BluetoothState currentState = await bleDeviceController.bleManager.bluetoothState();
 

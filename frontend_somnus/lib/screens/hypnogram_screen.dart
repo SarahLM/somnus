@@ -180,23 +180,26 @@ class _HypnogramScreenState extends State<HypnogramScreen>
     return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
   }
 
-  Future<String> uploadFile(String filename, String url) async {
+  Future<String> uploadFile(String filePath, String url) async {
+    http.Response response;
     var request = http.MultipartRequest('POST', Uri.parse(url));
-    var multipartFile = http.MultipartFile.fromBytes(
-      'file',
-      (await rootBundle.load('assets/getrennt.csv')).buffer.asUint8List(),
-      filename: 'getrennt.csv', // use the real name if available, or omit
-    );
+    try {
+      var multipartFile = http.MultipartFile.fromBytes(
+        'file',
+        (await rootBundle.load(filePath)).buffer.asUint8List(),
+        filename: filePath.split("/").last, //filename argument is mandatory!
+      );
+      request.files.add(multipartFile);
+      response = await http.Response.fromStream(await request.send());
+      print("Result: ${response.statusCode}");
+      print(response.body);
+      print(response.body.length);
 
-    //await new File('assets/out.csv').create(recursive: false);
-    //var myFile = File('assets/out.csv');
-    // var out = myFile.openWrite();
-    request.files.add(multipartFile);
-    var res = await request.send();
-    var string = res.stream.transform(new Utf8Decoder()).listen(null);
-    // out.write(string);
-    return res.reasonPhrase;
-    //return string;
+      return response.body;
+    } catch (error) {
+      print('Error uploding file');
+    }
+    return null;
   }
 
   Future<List<Widget>> buildList(var dates) async {
@@ -450,7 +453,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         initialFirstDate: new DateTime.now(),
                         initialLastDate:
                             (new DateTime.now()).add(new Duration(days: 7)),
-                        firstDate: new DateTime(2021),
+                        firstDate: new DateTime(2019),
                         lastDate: new DateTime(2023),
                       );
 
@@ -566,13 +569,19 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                       Scaffold.of(context).showSnackBar(snackBar);
 
                       hideWidget();
-                      var file = 'getrennt.csv';
 
-                      var res =
-                          await uploadFile(file, 'http://10.0.2.2:5000/data');
+                      var res = await uploadFile(
+                          'assets/incoming.csv', 'http://10.0.2.2:5000/data');
 
-                      print(res);
-                      await dbHelper.resultsToDb();
+                      try {
+                        await dbHelper.resultsToDb(res);
+                      } catch (error) {
+                        final snackBar = SnackBar(
+                          content: Text('Fehler bei der Datenverarbeitung'),
+                        );
+
+                        Scaffold.of(context).showSnackBar(snackBar);
+                      }
                       hideWidget();
                       if (_pressedButton1) {
                         dataPoints = await getDataToday();

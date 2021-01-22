@@ -105,22 +105,27 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> queryFirstNRows(int count) async {
     Database db = await instance.database;
-    return await db.rawQuery('SELECT * FROM $table ORDER BY $columnId LIMIT $count');
+    return await db
+        .rawQuery('SELECT * FROM $table ORDER BY $columnId LIMIT $count');
   }
 
   Future<List<Map<String, dynamic>>> queryLastNRows(int count) async {
     Database db = await instance.database;
-    return await db.rawQuery('SELECT * FROM $table ORDER BY $columnId DESC LIMIT $count');
+    return await db
+        .rawQuery('SELECT * FROM $table ORDER BY $columnId DESC LIMIT $count');
   }
 
-  Future<List<Map<String, dynamic>>> queryFirstNRowsOfDay(int count, date) async {
+  Future<List<Map<String, dynamic>>> queryFirstNRowsOfDay(
+      int count, date) async {
     Database db = await instance.database;
-    return await db.rawQuery("SELECT * FROM $table WHERE $columnDate='$date' ORDER BY $columnDate LIMIT $count");
+    return await db.rawQuery(
+        "SELECT * FROM $table WHERE $columnDate='$date' ORDER BY $columnDate LIMIT $count");
   }
 
   Future<List<Map<String, dynamic>>> queryDataOfDay(date) async {
     Database db = await instance.database;
-    return await db.rawQuery("SELECT * FROM $table WHERE $columnDate='$date' ORDER BY $columnTime");
+    return await db.rawQuery(
+        "SELECT * FROM $table WHERE $columnDate='$date' ORDER BY $columnTime");
   }
 
   Future<int> doubleValues(date, time) async {
@@ -196,9 +201,9 @@ class DatabaseHelper {
     return val;
   }
 
-  resultsToDb() async {
-    final myData = await rootBundle.loadString("assets/result.csv");
-    String result = myData.replaceAll(RegExp(' '), ',');
+  resultsToDb(resultFromUpload) async {
+    // final myData = await rootBundle.loadString("assets/result.csv");
+    String result = resultFromUpload.replaceAll(RegExp(' '), ',');
     result = result.substring(0, 5) +
         "clock_time," +
         result.substring(5, result.length);

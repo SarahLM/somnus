@@ -1,25 +1,23 @@
-
-
 import 'dart:io';
 
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
-var db2csv = DBtoCSVConverter();
+var fileWriter = FileWriter();
 
-class DBtoCSVConverter {
-  static DBtoCSVConverter _db2csv = new DBtoCSVConverter
+class FileWriter {
+  static FileWriter _fileWriter = new FileWriter
       ._internal();
 
-  factory DBtoCSVConverter() {
-    return _db2csv;
+  factory FileWriter() {
+    return _fileWriter;
   }
 
-  DBtoCSVConverter._internal();
+  FileWriter._internal();
 
   Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory(); // directory not visible to user
-    //final directory = await getExternalStorageDirectory(); // directory visible to user
+    //final directory = await getApplicationDocumentsDirectory(); // directory not visible to user
+    final directory = await getExternalStorageDirectory(); // directory visible to user
 
     return directory.path;
   }
@@ -35,7 +33,6 @@ class DBtoCSVConverter {
 
   Future<File> writeLine(String line) async {
     final file = await _csvFile;
-    print("Writing");
     return await file.writeAsString(line);
   }
 
@@ -46,10 +43,5 @@ class DBtoCSVConverter {
     } catch (e) {
       return null;
     }
-  }
-
-  String constructLine(String date, String time, String accX, String accY, String accZ) {
-    final String line = date + " " + time + "," + accX + "," + accY + "," + accZ + "\r\n";
-    return line;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/screens/disclaimer_screen.dart';
 import 'package:frontend_somnus/screens/hypnogram_screen.dart';
+import 'package:frontend_somnus/widgets/singletons/accelerometer_data_handler.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'screens/tabs_screen.dart';

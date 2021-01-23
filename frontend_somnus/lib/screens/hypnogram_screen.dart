@@ -295,7 +295,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
+          backgroundColor: Color(0xFF1E1164),
           title: ButtonBar(
             alignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
@@ -304,18 +304,13 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                 child: Text(
                   'Heute',
                   style: TextStyle(
-                    color: _pressedButton1
-                        ? Colors.white
-                        : Theme.of(context).accentColor,
+                    color: _pressedButton1 ? Colors.white : Color(0xFFA0AEC0),
                   ),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
-                  side: BorderSide(color: Theme.of(context).accentColor),
                 ),
-                color: _pressedButton1
-                    ? Theme.of(context).accentColor
-                    : Colors.white,
+                color: _pressedButton1 ? Color(0xFF2752E4) : Colors.transparent,
                 onPressed: () async {
                   setState(() {
                     _pressedButton1 = true;
@@ -344,18 +339,13 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                 child: Text(
                   'Gestern',
                   style: TextStyle(
-                    color: _pressedButton2
-                        ? Colors.white
-                        : Theme.of(context).accentColor,
+                    color: _pressedButton2 ? Colors.white : Color(0xFFA0AEC0),
                   ),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
-                  side: BorderSide(color: Theme.of(context).accentColor),
                 ),
-                color: _pressedButton2
-                    ? Theme.of(context).accentColor
-                    : Colors.white,
+                color: _pressedButton2 ? Color(0xFF2752E4) : Colors.transparent,
                 onPressed: () async {
                   setState(() {
                     _pressedButton2 = true;
@@ -385,18 +375,13 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                 child: Text(
                   '7 Tage',
                   style: TextStyle(
-                    color: _pressedButton3
-                        ? Colors.white
-                        : Theme.of(context).accentColor,
+                    color: _pressedButton3 ? Colors.white : Color(0xFFA0AEC0),
                   ),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
-                  side: BorderSide(color: Theme.of(context).accentColor),
                 ),
-                color: _pressedButton3
-                    ? Theme.of(context).accentColor
-                    : Colors.white,
+                color: _pressedButton3 ? Color(0xFF2752E4) : Colors.transparent,
                 onPressed: () async {
                   setState(() {
                     isLoading = true;
@@ -428,18 +413,16 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     child: new Text(
                       'Custom',
                       style: TextStyle(
-                        color: _pressedButton4
-                            ? Colors.white
-                            : Theme.of(context).accentColor,
+                        color:
+                            _pressedButton4 ? Colors.white : Color(0xFFA0AEC0),
                       ),
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18.0),
-                      side: BorderSide(color: Theme.of(context).accentColor),
                     ),
                     color: _pressedButton4
-                        ? Theme.of(context).accentColor
-                        : Colors.white,
+                        ? Color(0xFF2752E4)
+                        : Colors.transparent,
                     onPressed: () async {
                       setState(() {
                         _pressedButton4 = true;
@@ -490,7 +473,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                backgroundColor: Colors.white,
+                backgroundColor: Color(0xFF1E1164),
                 // expandedHeight: 200.0,
                 floating: false,
                 pinned: true,
@@ -532,9 +515,17 @@ class _HypnogramScreenState extends State<HypnogramScreen>
               ),
             ];
           },
-          body: SingleChildScrollView(
-            child: Container(
-              child: getWidget(),
+          body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF1E1164), Color(0xFF2752E4)]),
+            ),
+            child: SingleChildScrollView(
+              child: Container(
+                child: getWidget(),
+              ),
             ),
           ),
         ),

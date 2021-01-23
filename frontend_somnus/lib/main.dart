@@ -27,7 +27,7 @@ Future<void> main() async {
   //await prefs.setInt("tutorialScreen", 1);
   Intl.defaultLocale = "de_DE";
 
-  await maybeStartFGS();
+  // await maybeStartFGS();
   runApp(MyApp());
 }
 
@@ -118,7 +118,7 @@ class _MyAppState extends State<MyApp> {
 
   void _activateForegroundService() async {
     if (!(await ForegroundService.foregroundServiceIsStarted())) {
-      maybeStartFGS();
+      //maybeStartFGS();
     }
   }
 
@@ -148,8 +148,11 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(
             //primaryColor: Color(0xFF0F24D9),
             //accentColor: Color(0xFF680FD9),
-            primaryColor: Color(0xFF00008B),
-            accentColor: Color(0xFF570899)
+            primaryColor: Color(0xFF1E1164),
+            accentColor: Color(0xFFc753fa),
+            appBarTheme: AppBarTheme(
+              color: Color(0xFF1E1164),
+            )
             //  cardColor: Color(0xFF680FD9),
             ),
       ),

@@ -19,7 +19,7 @@ class NoDataWidget extends StatelessWidget {
           Center(
             child: Icon(
               Icons.sentiment_dissatisfied,
-              color: Colors.orange,
+              color: Color(0xFFEDF2F7),
               size: 60.0,
             ),
           ),
@@ -34,6 +34,7 @@ class NoDataWidget extends StatelessWidget {
                       title +
                       ' liegen keine Daten vor.',
                   textAlign: TextAlign.center,
+                  style: TextStyle(color: Color(0xFFEDF2F7)),
                 ),
               ],
             ),

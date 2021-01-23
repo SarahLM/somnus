@@ -23,8 +23,8 @@ class DatePickerTheme extends Theme {
       : super(
           child: child,
           data: new ThemeData(
-            primaryColor: Color(0xFF00008B),
-            accentColor: Color(0xFF570899),
+            primaryColor: Color(0xFF1E1164),
+            accentColor: Color(0xFFc753fa),
             cardColor: Colors.purple,
             backgroundColor: Colors.purple,
             highlightColor: Colors.purple,

@@ -45,7 +45,7 @@ class _TabsScreenState extends State<TabsScreen> {
     _selectedPageIndex = 0;
     _pages1 = [
       HomeScreen(),
-      HypnogramScreen(Colors.white),
+      HypnogramScreen(Color(0xFF1E1164)),
       EditScreen(Colors.white),
       //DbScreen(Colors.white),
       QuestionScreen()

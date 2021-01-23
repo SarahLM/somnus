@@ -2,22 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/states.dart';
 import 'package:frontend_somnus/screens/disclaimer_screen.dart';
 import 'package:frontend_somnus/screens/hypnogram_screen.dart';
+import 'package:frontend_somnus/widgets/singletons/accelerometer_data_handler.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'screens/tabs_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-<<<<<<< HEAD
 import 'package:foreground_service/foreground_service.dart';
 import 'widgets/singletons/ble_device_controller.dart';
-=======
 import './screens/edit_data_screen.dart';
->>>>>>> Add editData Form
 
 int disclaimerScreen;
 int tutorialScreen;
-List<double> accelData;
-List<double> latestAccelData;
+int deviceNotConnectedCounter = 0;
+
+Status status;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,9 +33,6 @@ Future<void> main() async {
 
 //use an async method so we can await
 void maybeStartFGS() async {
-  accelData = new List();
-  latestAccelData = new List();
-
   ///if the app was killed+relaunched, this function will be executed again
   ///but if the foreground service stayed alive,
   ///this does not need to be re-done
@@ -60,38 +56,47 @@ void maybeStartFGS() async {
   ///this exists solely in the main app/isolate,
   ///so needs to be redone after every app kill+relaunch
   await ForegroundService.setupIsolateCommunication((data) {
-    accelData = new List.from(accelData)..addAll(data);
-    latestAccelData = data;
+    status = data;
   });
 }
 
 void foregroundServiceFunction() async {
   if (!ForegroundService.isIsolateCommunicationSetup) {
-    accelData = new List();
-    latestAccelData = new List();
-
     ForegroundService.setupIsolateCommunication((data) {
-      accelData = new List.from(accelData)..addAll(data);
-      latestAccelData = data;
+      status = data;
     });
   }
 
-  // TODO: check how to communicate in background!
+  switch (status) {
+    case Status.accelDataWrittenToDB:
+      foregroundServiceSetText(DEVICE_CONNECTED);
+      deviceNotConnectedCounter = 0;
+      break;
+    case Status.accelDataNotWrittenToDB:
+      // Counting how often the accel data was not written to the database.
+      // If it was not written more than 3 times, the app should tell the user.
+      // This is because the continious reading of accel data from the MiBand
+      // is only possible, if we send an alive command every 30 seconds. But
+      // this procedure requires a couple seconds, where no data can be
+      // received. So we are ignoring the first 3 status messages.
+      deviceNotConnectedCounter++;
+      if (deviceNotConnectedCounter > 3) {
+        foregroundServiceSetText(DEVICE_NOT_CONNECTED);
 
-  print("Received accelerometer records: " + (accelData.length / 3).toString());
-
-  if (latestAccelData.length > 0) {
-    foregroundServiceSetText(DEVICE_CONNECTED);
-    print("Latest accelerometer record: x=" + latestAccelData[0].toString() +
-        " y=" + latestAccelData[1].toString() + " z=" + latestAccelData[2].toString());
-
-    accelData = new List();
-    latestAccelData = new List();
-  } else {
-    foregroundServiceSetText(DEVICE_NOT_CONNECTED);
+        // If the messages are still not written to the database during 10 min
+        // the user should be notified again and the counter will be resetted.
+        if (deviceNotConnectedCounter >= 603) {
+          ForegroundService.notification.setText(DEVICE_NOT_CONNECTED);
+          deviceNotConnectedCounter = 3;
+        }
+      }
+      break;
+    default:
+      foregroundServiceSetText(DEVICE_NOT_CONNECTED);
+      break;
   }
 
-  //ForegroundService.sendToPort("message from bg isolate");
+  status = null;
 }
 
 void foregroundServiceSetText(String text) async {

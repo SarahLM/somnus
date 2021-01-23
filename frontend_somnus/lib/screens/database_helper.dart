@@ -103,6 +103,26 @@ class DatabaseHelper {
         await db.rawQuery('SELECT COUNT(*) FROM $table'));
   }
 
+  Future<List<Map<String, dynamic>>> queryFirstNRows(int count) async {
+    Database db = await instance.database;
+    return await db.rawQuery('SELECT * FROM $table ORDER BY $columnId LIMIT $count');
+  }
+
+  Future<List<Map<String, dynamic>>> queryLastNRows(int count) async {
+    Database db = await instance.database;
+    return await db.rawQuery('SELECT * FROM $table ORDER BY $columnId DESC LIMIT $count');
+  }
+
+  Future<List<Map<String, dynamic>>> queryFirstNRowsOfDay(int count, date) async {
+    Database db = await instance.database;
+    return await db.rawQuery("SELECT * FROM $table WHERE $columnDate='$date' ORDER BY $columnDate LIMIT $count");
+  }
+
+  Future<List<Map<String, dynamic>>> queryDataOfDay(date) async {
+    Database db = await instance.database;
+    return await db.rawQuery("SELECT * FROM $table WHERE $columnDate='$date' ORDER BY $columnTime");
+  }
+
   Future<int> doubleValues(date, time) async {
     Database db = await instance.database;
     return Sqflite.firstIntValue(await db.rawQuery(

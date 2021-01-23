@@ -100,6 +100,7 @@ class _BleConnectState extends State<BleConnect> {
                   Container(
                     child: new Expanded(
                       child: ListView.builder(
+                        key: Key("DevicesListView"),
                         itemCount: bleDevices.length,
                         padding: EdgeInsets.all(1),
                         itemBuilder: (context, index){

@@ -87,11 +87,12 @@ flutter:
       - assets/images/tutorial_connect.png
       - assets/images/tutorial_hypnogram.png
       - assets/images/tutorial_analysis.png
+      - assets/images/background_home.jpeg
       - assets/result.csv
       - assets/neueresults.csv
+      - assets/incoming.csv
       - assets/getrennt.csv
       - assets/images/refresh_black.png
-      
       
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

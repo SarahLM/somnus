@@ -63,12 +63,10 @@ class _EditScreenState extends State<EditScreen>
       this.dateEntries = dates;
       //timePrinted = DateTime.now().toString();
       // this.title = serverFormater.format(DateTime.now());
-      this.dateEntries.length != 0
-          ? widgetToShow.add(ListWidget(
-              data: dateEntries,
-            ))
-          : widgetToShow.add(NoDataWidget(title: ''));
     });
+    this.dateEntries.length != 0
+        ? buildWidgetList(ListWidget(data: this.dateEntries))
+        : buildWidgetList(NoDataWidget(title: ''));
   }
 
   buildWidgetList(Widget widget) {
@@ -165,9 +163,10 @@ class _EditScreenState extends State<EditScreen>
                   //         ' bis ' +
                   //         DateTime.now().toString();
                 });
-                buildWidgetList(
-                  ListWidget(data: this.dateEntries),
-                );
+
+                this.dateEntries.length != 0
+                    ? buildWidgetList(ListWidget(data: this.dateEntries))
+                    : buildWidgetList(NoDataWidget(title: ''));
 
                 //dataStates.getResult();
               },
@@ -218,9 +217,10 @@ class _EditScreenState extends State<EditScreen>
                   //         .toString();
                   // print(sleepData);
                 });
-                buildWidgetList(
-                  ListWidget(data: this.dateEntries),
-                );
+
+                this.dateEntries.length != 0
+                    ? buildWidgetList(ListWidget(data: this.dateEntries))
+                    : buildWidgetList(NoDataWidget(title: ''));
               },
             ),
             DatePickerTheme(
@@ -280,9 +280,9 @@ class _EditScreenState extends State<EditScreen>
                         this.dateEntries = dates;
                         // timePrinted = title;
                       });
-                      buildWidgetList(
-                        ListWidget(data: this.dateEntries),
-                      );
+                      this.dateEntries.length != 0
+                          ? buildWidgetList(ListWidget(data: this.dateEntries))
+                          : buildWidgetList(NoDataWidget(title: ''));
                     }
                   },
                 ),

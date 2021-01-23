@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
@@ -22,6 +23,7 @@ class _BleConnectState extends State<BleConnect> {
 
   bool _bleManagerScanning = false;
   bool _isLoading = false;
+  bool _connectedToMiBand = false;
   List<Peripheral> bleDevices = new List<Peripheral>();
   List<TextSpan> _connectionTip = new List();
 
@@ -41,6 +43,7 @@ class _BleConnectState extends State<BleConnect> {
   void _localInitStateAsync () async {
     // TODO: automatically reconnect, when device was out of range and then returns
     await bleDeviceController.reset();
+    _connectedToMiBand = false;
 
     if (await _checkPermissions()) {
       bleDeviceController.bleManager = BleManager();
@@ -63,43 +66,53 @@ class _BleConnectState extends State<BleConnect> {
     }
 
     return MaterialApp(
-      title: "test",
         home: LoadingOverlay(
             child: Column(
                 children: <Widget>[
-                RaisedButton(
-                  onPressed: _scanForBleDevicesOnPressed,
-                  child: Text("Scan for BLE devices"),
-                ),
-                RichText(
-                  text: TextSpan(
-                    style: TextStyle(
-                      fontSize: 25,
-                      color: Colors.black
+                  Container(
+                    child: RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: Colors.black,
+                        ),
+                        children: _connectionTip,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    children: _connectionTip
+                    padding: EdgeInsets.fromLTRB(40, 40, 40, 20),
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                Container(
-                  child: new Expanded(
-                    child: ListView.builder(
-                      itemCount: bleDevices.length,
-                      padding: EdgeInsets.all(1),
-                      itemBuilder: (context, index){
-                        return Card(
-                          child: ListTile(
-                            onTap: () async {
-                              _selectBleDevice(bleDevices[index], context);
-                              },
-                            title: Text(bleDevices[index].name),
-                            subtitle: Text("ID: " + bleDevices[index].identifier),
-                          ),
-                        );
-                      },
+                  Container(
+                    alignment: Alignment.centerRight,
+                    padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                    child:FlatButton(
+                      onPressed: _scanForBleDevicesOnPressed,
+                      padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                      child: Image.asset('assets/images/refresh_black.png', width: 48.0),
+                      disabledColor: Colors.grey,
+                      minWidth: 55,
+                      height: 55,
                     ),
                   ),
-                ),
+                  Container(
+                    child: new Expanded(
+                      child: ListView.builder(
+                        itemCount: bleDevices.length,
+                        padding: EdgeInsets.all(1),
+                        itemBuilder: (context, index){
+                          return Card(
+                            child: ListTile(
+                              onTap: () async {
+                                _selectBleDevice(bleDevices[index], context);
+                                },
+                              title: Text(bleDevices[index].name),
+                              subtitle: Text("ID: " + bleDevices[index].identifier),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                 ]
             ),
             isLoading: _isLoading,
@@ -160,6 +173,7 @@ class _BleConnectState extends State<BleConnect> {
   void _authenticationFinish(bool authenticationSuccess) async {
     if (authenticationSuccess) {
       setState(() { _isLoading = false;});
+      _connectedToMiBand = true;
       _showDialog("Connection success", "Your device is connected.");
       await _printServicesAndChars();
     } else {
@@ -189,7 +203,9 @@ class _BleConnectState extends State<BleConnect> {
             child: Text("Okay"),
             onPressed: () {
               Navigator.of(context).pop();
-              Navigator.pop(context);
+              if (_connectedToMiBand) {
+                Navigator.pop(context);
+              }
             },
           )],
         );

@@ -40,10 +40,13 @@ class AccelDataHandler {
     Map<String, dynamic> row = new Map();
 
     final DateFormat serverFormaterDate = DateFormat('yyyy-MM-dd');
-    final DateFormat serverFormaterTime = DateFormat('HH:mm:ss:SS');
+    final DateFormat serverFormaterTime = DateFormat('HH:mm:ss');
     final date = DateTime.now();
     final currentDate = serverFormaterDate.format(date);
-    final currentTime = serverFormaterTime.format(date);
+    // Adding 500 ms manually, because the backend needs exactly the same
+    // value for the ms. Reading the ms from DateTime.now has little variations
+    // that cause strange behaviour.
+    final currentTime = serverFormaterTime.format(date) + ":500";
 
     row[DatabaseHelper.columnDate] = currentDate;
     row[DatabaseHelper.columnTime] = currentTime;

@@ -44,6 +44,7 @@ class _BleConnectState extends State<BleConnect> {
     // TODO: automatically reconnect, when device was out of range and then returns
     await bleDeviceController.reset();
     _connectedToMiBand = false;
+    _connectionTip.add(new TextSpan(text: CONNECTION_TIP_SELECT_DEVICE));
 
     if (await _checkPermissions()) {
       bleDeviceController.bleManager = BleManager();
@@ -71,6 +72,7 @@ class _BleConnectState extends State<BleConnect> {
                 children: <Widget>[
                   Container(
                     child: RichText(
+                      key: Key("ConnectionTipRichText"),
                       text: TextSpan(
                         style: TextStyle(
                           fontSize: 25,
@@ -86,6 +88,7 @@ class _BleConnectState extends State<BleConnect> {
                     alignment: Alignment.centerRight,
                     padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
                     child:FlatButton(
+                      key: Key("RefreshButton"),
                       onPressed: _scanForBleDevicesOnPressed,
                       padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
                       child: Image.asset('assets/images/refresh_black.png', width: 48.0),

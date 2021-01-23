@@ -28,7 +28,7 @@ class FileWriter {
     final DateFormat serverFormaterDate = DateFormat('yyyy-MM-dd');
     final currentDate = serverFormaterDate.format(date);
 
-    return File('$path/accelerometerData_$currentDate.csv');
+    return File('$path/accelerometerData.csv');
   }
 
   Future<File> writeLine(String line) async {
@@ -43,5 +43,16 @@ class FileWriter {
     } catch (e) {
       return null;
     }
+  }
+
+  Future<bool> deleteFile() async {
+    try {
+      final file = await _csvFile;
+      await file.delete();
+    } catch (e) {
+      return false;
+    }
+
+    return true;
   }
 }

@@ -90,11 +90,11 @@ class AccelDataHandler {
 
   Future<void> startDataToCSVTimer() async {
     sharedPrefs = await SharedPreferences.getInstance();
-    _dataToCSV();
     _accelDataToCSVTimer = Timer.periodic((Duration(hours: 1)), (timer) => _dataToCSV);
   }
 
   void _dataToBackend() {
+    // TODO: remove file after it was sent to backend
     // TODO: send data to backend
   }
 

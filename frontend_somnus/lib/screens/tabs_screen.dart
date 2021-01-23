@@ -4,6 +4,7 @@ import 'package:frontend_somnus/screens/home_screen.dart';
 import '../widgets/main_drawer.dart';
 import 'edit_screen.dart';
 import 'hypnogram_screen.dart';
+import 'questionnaire_screen.dart';
 
 class TabsScreen extends StatefulWidget {
   @override
@@ -29,9 +30,13 @@ class _TabsScreenState extends State<TabsScreen> {
       'page': EditScreen(Colors.red),
       'title': 'Bearbeiten',
     },
+    //{
+    // 'page': DbScreen(Colors.blue),
+    // 'title': 'DbScreen',
+    //},
     {
-      'page': DbScreen(Colors.blue),
-      'title': 'DbScreen',
+      'page': QuestionScreen(),
+      'title': 'Fragebögen',
     },
   ];
   @override
@@ -42,7 +47,8 @@ class _TabsScreenState extends State<TabsScreen> {
       HomeScreen(),
       HypnogramScreen(Colors.white),
       EditScreen(Colors.white),
-      DbScreen(Colors.white),
+      //DbScreen(Colors.white),
+      QuestionScreen()
     ];
     _pageController = PageController(initialPage: _selectedPageIndex);
   }
@@ -83,32 +89,36 @@ class _TabsScreenState extends State<TabsScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Color(0xff1E1164),
         onTap: (selectedPageIndex) {
           setState(() {
             _selectedPageIndex = selectedPageIndex;
             _pageController.jumpToPage(selectedPageIndex);
           });
         },
-        unselectedItemColor: Colors.white,
-        selectedItemColor: Colors.yellow,
+        unselectedItemColor: Color(0xff9A97BC),
+        selectedItemColor: Color(0xffEDF2F7),
         currentIndex: _selectedPageIndex,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.analytics),
+            icon: Icon(Icons.insights_outlined),
             label: 'Analyse',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.edit),
+            icon: Icon(Icons.edit_outlined),
             label: 'Bearbeiten',
           ),
-          BottomNavigationBarItem(
+          /* BottomNavigationBarItem(
             icon: Icon(Icons.data_usage),
             label: 'Database',
+          ) */
+          BottomNavigationBarItem(
+            icon: Icon(Icons.question_answer_outlined),
+            label: 'Fragebögen',
           )
         ],
       ),

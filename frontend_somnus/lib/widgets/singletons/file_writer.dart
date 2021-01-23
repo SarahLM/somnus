@@ -33,7 +33,7 @@ class FileWriter {
 
   Future<File> writeLine(String line) async {
     final file = await _csvFile;
-    return await file.writeAsString(line);
+    return await file.writeAsString(line, mode: FileMode.append);
   }
 
   Future<List<String>> readFile() async {

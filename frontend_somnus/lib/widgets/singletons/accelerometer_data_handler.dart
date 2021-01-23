@@ -87,6 +87,7 @@ class AccelDataHandler {
 
   Future<void> startDataToCSVTimer() async {
     sharedPrefs = await SharedPreferences.getInstance();
+    _dataToCSV();
     _accelDataToCSVTimer = Timer.periodic((Duration(hours: 1)), (timer) => _dataToCSV);
   }
 
@@ -104,25 +105,17 @@ class AccelDataHandler {
       allRows.add(allRowsDescendingOrder[i]);
     }
 
-    // allRows.forEach((row) {print(row);});
-
     // if no rows where written
-    if (lastWrittenID == null) {
-      // write all rows
-      await _writeAlltoCSV(allRows);
-    } else {
+    if (lastWrittenID != null) {
       // check if there are already written rows in new allRows list
       // if so, remove them and return the residual rows
       allRows = _removeAlreadyWrittenEntries(allRows, lastWrittenID);
-
-      // if there are rows to write, write them to CSV, else, do nothing
-      if (allRows != null) {
-        await _writeAlltoCSV(allRows);
-      }
     }
 
-    // save last written row ID to shared prefs for next time
+    // if there are rows to write, write them to CSV, else, do nothing
     if (allRows != null) {
+      await _writeAlltoCSV(allRows);
+      // save last written row ID to shared prefs for next time
       sharedPrefs.setInt(SHARED_PREFS_LAST_ID, allRows.last[DatabaseHelper.columnId]);
     }
   }

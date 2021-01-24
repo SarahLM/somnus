@@ -21,11 +21,6 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
-# testvariable = 'hhh'
-# pathToResultFolder = '/home/sarah/results'
-# pathToResultFolder = 'results'
-
-
 # noinspection PyInterpreter
 @app.route('/')
 def hello_world():
@@ -77,7 +72,6 @@ def run_data(src, stamp):
         print("Error processing: {}\nError: {}".format(src, e))
     # return send_file('results/25698fileUpload/result_sleep_prediction.csv')
     # return specific response
-    print('vor senden')
     #return send_file('results/' + stamp +'fileUpload/result_sleep_prediction.csv')
     return send_file('results/' + stamp +'fileUpload.csv')
 
@@ -91,11 +85,6 @@ def clearbackend():
     for f in resultfiles:
         print('löschen results')
         os.remove(f)
-    #dir_path = PROJECT_ROOT + "/results/*"
-    #try:
-     #   shutil.rmtree(dir_path)
-    #except OSError as e:
-     #   print("Error: %s : %s" % (dir_path, e.strerror))
 
 
 

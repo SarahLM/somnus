@@ -154,6 +154,11 @@ class _MyAppState extends State<MyApp> {
             color: Color(0xFF1E1164),
           ),
           cardColor: Color.fromRGBO(0, 0, 0, 0.3),
+          textTheme: TextTheme(
+            bodyText2: TextStyle(
+              color: Color(0xFFEDF2F7),
+            ),
+          ),
         ),
       ),
     );

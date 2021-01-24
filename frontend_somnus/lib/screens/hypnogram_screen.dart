@@ -304,7 +304,11 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                 child: Text(
                   'Heute',
                   style: TextStyle(
-                    color: _pressedButton1 ? Colors.white : Color(0xFFA0AEC0),
+                    color: _pressedButton1
+                        ? Colors.white
+                        : Color(
+                            0xFFA0AEC0,
+                          ),
                   ),
                 ),
                 shape: RoundedRectangleBorder(

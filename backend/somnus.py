@@ -95,7 +95,9 @@ class Somnus:
         self.dst = results_directory  # save output location
         self.src_name = input_file.split("/")[-1][0:-4]  # save naming convention
         self.sub_dst = (
-            results_directory + "/" + self.src_name
+            #results_directory + "/" + self.src_name
+            results_directory
+
         )  # create output directory
         self.fs = sampling_frequency  # save sampling frequency
         self.window_size = 30  # define window size in seconds
@@ -315,7 +317,9 @@ class Somnus:
                 key="sleep_wake_data_24hr",
                 mode="w",
             )
-            df.to_csv(self.sub_dst + "/result_sleep_prediction.csv")
+            #df.to_csv(self.sub_dst + "/result_sleep_prediction.csv")
+            df.to_csv(self.sub_dst + "/"+ self.src_name + ".csv")
+
 
     def clear_data(self):
         """

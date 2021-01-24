@@ -77,7 +77,7 @@ class AccelDataHandler {
   }
 
   void startDataToBackendTimer() {
-    _accelDataToBackendTimer = Timer.periodic((Duration(hours: 24)), (timer) => _dataToBackend);
+    _accelDataToBackendTimer = Timer.periodic((Duration(hours: 24)), (Timer t) => _dataToBackend());
   }
 
   bool isDataToCSVTimerActive() {
@@ -90,7 +90,7 @@ class AccelDataHandler {
 
   Future<void> startDataToCSVTimer() async {
     sharedPrefs = await SharedPreferences.getInstance();
-    _accelDataToCSVTimer = Timer.periodic((Duration(hours: 1)), (timer) => _dataToCSV);
+    _accelDataToCSVTimer = Timer.periodic((Duration(hours: 1)), (Timer t) => _dataToCSV());
   }
 
   void _dataToBackend() {
@@ -137,7 +137,6 @@ class AccelDataHandler {
           row[DatabaseHelper.columnZ].toString());
     });
 
-    // TODO: dont override file, but add
     // write one line to file
     await fileWriter.writeLine(fileContentStr);
   }

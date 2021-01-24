@@ -626,5 +626,5 @@ class _HypnogramScreenState extends State<HypnogramScreen>
   }
 
   @override
-  bool get wantKeepAlive => false;
+  bool get wantKeepAlive => true;
 }

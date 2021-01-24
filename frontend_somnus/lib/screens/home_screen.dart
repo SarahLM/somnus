@@ -12,6 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   List<bool> _isChecked;
   List<bool> _isCheckedMeds;
   @override
@@ -64,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   image: AssetImage("assets/images/background_home.png"),
                   fit: BoxFit.cover)),
           child: Scaffold(
+            key: _scaffoldKey,
             backgroundColor: Colors.transparent,
             body: StaggeredGridView.count(
               physics: NeverScrollableScrollPhysics(), //disable scrolling
@@ -324,9 +326,17 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               actions: <Widget>[
                 FlatButton(
-                  child: Text('Ok'),
+                  child: Text(
+                    'Ok',
+                    style: TextStyle(color: Theme.of(context).accentColor),
+                  ),
                   onPressed: () {
                     Navigator.pop(context);
+                    final snackBar = SnackBar(
+                      content: Text('Aktivitäten hinzugefügt'),
+                    );
+
+                    _scaffoldKey.currentState.showSnackBar(snackBar);
                   },
                 ),
               ],
@@ -367,8 +377,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               actions: <Widget>[
                 FlatButton(
-                  child: Text('Ok'),
+                  child: Text(
+                    'Ok',
+                    style: TextStyle(color: Theme.of(context).accentColor),
+                  ),
                   onPressed: () {
+                    final snackBar = SnackBar(
+                      content: Text('Medikamente hinzugefügt'),
+                    );
+                    _scaffoldKey.currentState.showSnackBar(snackBar);
                     Navigator.pop(context);
                   },
                 ),

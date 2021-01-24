@@ -6,8 +6,8 @@ import 'package:intl/intl.dart';
 class Sync extends StatelessWidget {
   final String title;
   final List<DataPoint> sleepData;
-  final Color colorAsleep = Color(0xFF0529B3);
-  final Color colorAwake = Color(0xFFFF9221);
+  final Color colorAsleep = Color(0xFF0353ed);
+  final Color colorAwake = Color(0xFFf01d7e);
   final DateFormat formatter = DateFormat('kk:mm');
 
   Sync({
@@ -34,8 +34,10 @@ class Sync extends StatelessWidget {
                     ),
                     Text(
                       this.title,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFEDF2F7)),
                     ),
                     //this.title != '' ? Text(this.title) : Text(''),
                     SfCartesianChart(

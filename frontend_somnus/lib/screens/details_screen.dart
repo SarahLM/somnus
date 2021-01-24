@@ -119,110 +119,130 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
       key: _scaffoldKey,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(title: Text('Daten bearbeiten')),
-      body: Center(
-        child: Column(
-          children: [
-            Sync(
-              title: widget.title,
-              sleepData: widget.sleepData,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            FlatButton(
-                child: Text('Daten bearbeiten'),
-                onPressed: () {
-                  showModalBottomSheet(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    context: context,
-                    builder: (context) {
-                      return StatefulBuilder(builder:
-                          (BuildContext context, StateSetter setModalState) {
-                        return Container(
-                          height: MediaQuery.of(context).size.height * 0.3,
-                          child: ListView(
-                            children: [
-                              SizedBox(height: 10),
-                              ListTile(
-                                leading: Icon(Icons.schedule),
-                                title: Text(
-                                    "Startzeit: ${twoDigits(startTime.hour)}:${twoDigits(startTime.minute)}"),
-                                trailing: Icon(Icons.keyboard_arrow_down),
-                                onTap: _pickStartTime,
-                              ),
-                              ListTile(
-                                leading: Icon(Icons.schedule),
-                                title: Text(
-                                    "Endzeit: ${twoDigits(endTime.hour)}:${twoDigits(endTime.minute)}"),
-                                trailing: Icon(Icons.keyboard_arrow_down),
-                                onTap: _pickEndTime,
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: ListTile(
-                                      title: const Text('Schlaf'),
-                                      leading: Radio(
-                                        value: States.schlaf,
-                                        groupValue: _site,
-                                        onChanged: (States value) {
-                                          setModalState(() {
-                                            _site = value;
-                                          });
-                                        },
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF1E1164), Color(0xFF2752E4)]),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Sync(
+                  title: widget.title,
+                  sleepData: widget.sleepData,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              FlatButton(
+                  child: Text(
+                    'Daten bearbeiten',
+                    style: TextStyle(color: Color(0xFFEDF2F7)),
+                  ),
+                  color: Theme.of(context).primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      context: context,
+                      builder: (context) {
+                        return StatefulBuilder(builder:
+                            (BuildContext context, StateSetter setModalState) {
+                          return Container(
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            child: ListView(
+                              children: [
+                                SizedBox(height: 10),
+                                ListTile(
+                                  leading: Icon(Icons.schedule),
+                                  title: Text(
+                                      "Startzeit: ${twoDigits(startTime.hour)}:${twoDigits(startTime.minute)}"),
+                                  trailing: Icon(Icons.keyboard_arrow_down),
+                                  onTap: _pickStartTime,
+                                ),
+                                ListTile(
+                                  leading: Icon(Icons.schedule),
+                                  title: Text(
+                                      "Endzeit: ${twoDigits(endTime.hour)}:${twoDigits(endTime.minute)}"),
+                                  trailing: Icon(Icons.keyboard_arrow_down),
+                                  onTap: _pickEndTime,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: ListTile(
+                                        title: const Text('Schlaf'),
+                                        leading: Radio(
+                                          value: States.schlaf,
+                                          groupValue: _site,
+                                          onChanged: (States value) {
+                                            setModalState(() {
+                                              _site = value;
+                                            });
+                                          },
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: ListTile(
-                                      title: const Text('Wach'),
-                                      leading: Radio(
-                                        value: States.wach,
-                                        groupValue: _site,
-                                        onChanged: (States value) {
-                                          setModalState(() {
-                                            _site = value;
-                                          });
-                                        },
+                                    Expanded(
+                                      child: ListTile(
+                                        title: const Text('Wach'),
+                                        leading: Radio(
+                                          value: States.wach,
+                                          groupValue: _site,
+                                          onChanged: (States value) {
+                                            setModalState(() {
+                                              _site = value;
+                                            });
+                                          },
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              FlatButton(
-                                onPressed: () async {
-                                  await _updateRows();
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                FlatButton(
+                                  onPressed: () async {
+                                    await _updateRows();
 
-                                  final snackBar = SnackBar(
-                                    content: this.rowsAffected > 0
-                                        ? Text(
-                                            "$rowsAffected Datensätze wurden bearbeitet")
-                                        : Text(
-                                            'Für den ausgewählten Zetraum liegen keine Datensätze vor'),
-                                  );
+                                    final snackBar = SnackBar(
+                                      content: this.rowsAffected > 0
+                                          ? Text(
+                                              "$rowsAffected Datensätze wurden bearbeitet")
+                                          : Text(
+                                              'Für den ausgewählten Zetraum liegen keine Datensätze vor'),
+                                    );
 
-                                  // Find the Scaffold in the widget tree and use
-                                  // it to show a SnackBar.
-                                  _scaffoldKey.currentState
-                                      .showSnackBar(snackBar);
-                                },
-                                child: Text('Daten ändern'),
-                              )
-                            ],
-                          ),
-                        );
-                      });
-                    },
-                  );
+                                    // Find the Scaffold in the widget tree and use
+                                    // it to show a SnackBar.
+                                    _scaffoldKey.currentState
+                                        .showSnackBar(snackBar);
+                                  },
+                                  child: Text('Daten ändern'),
+                                )
+                              ],
+                            ),
+                          );
+                        });
+                      },
+                    );
 
-                  // Navigator.of(context).pushNamed(EditDataScreen.routeName);
-                })
-          ],
+                    // Navigator.of(context).pushNamed(EditDataScreen.routeName);
+                  })
+            ],
+          ),
         ),
       ),
     );

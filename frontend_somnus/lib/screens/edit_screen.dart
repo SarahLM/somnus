@@ -80,7 +80,7 @@ class _EditScreenState extends State<EditScreen>
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFF1E1164),
         title: ButtonBar(
           alignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
@@ -133,16 +133,15 @@ class _EditScreenState extends State<EditScreen>
                 style: TextStyle(
                   color: _pressedButton2
                       ? Colors.white
-                      : Theme.of(context).accentColor,
+                      : Color(
+                          0xFFA0AEC0,
+                        ),
                 ),
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18.0),
-                side: BorderSide(color: Theme.of(context).accentColor),
               ),
-              color: _pressedButton2
-                  ? Theme.of(context).accentColor
-                  : Colors.white,
+              color: _pressedButton2 ? Color(0xFF2752E4) : Colors.transparent,
               onPressed: () async {
                 dates = await Provider.of<DataStates>(context, listen: false)
                     .getEditDataForDateRange(
@@ -175,18 +174,13 @@ class _EditScreenState extends State<EditScreen>
               child: Text(
                 '30 Tage',
                 style: TextStyle(
-                  color: _pressedButton3
-                      ? Colors.white
-                      : Theme.of(context).accentColor,
+                  color: _pressedButton3 ? Colors.white : Color(0xFFA0AEC0),
                 ),
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18.0),
-                side: BorderSide(color: Theme.of(context).accentColor),
               ),
-              color: _pressedButton3
-                  ? Theme.of(context).accentColor
-                  : Colors.white,
+              color: _pressedButton3 ? Color(0xFF2752E4) : Colors.transparent,
               onPressed: () async {
                 // final dataPoints =
                 //     await Provider.of<DataStates>(context, listen: false)
@@ -231,16 +225,16 @@ class _EditScreenState extends State<EditScreen>
                     style: TextStyle(
                       color: _pressedButton4
                           ? Colors.white
-                          : Theme.of(context).accentColor,
+                          : Color(
+                              0xFFA0AEC0,
+                            ),
                     ),
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
-                    side: BorderSide(color: Theme.of(context).accentColor),
                   ),
-                  color: _pressedButton4
-                      ? Theme.of(context).accentColor
-                      : Colors.white,
+                  color:
+                      _pressedButton4 ? Color(0xFF2752E4) : Colors.transparent,
                   onPressed: () async {
                     setState(() {
                       _pressedButton4 = true;
@@ -291,8 +285,15 @@ class _EditScreenState extends State<EditScreen>
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
+      body: Container(
+        constraints: BoxConstraints.expand(),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF1E1164), Color(0xFF2752E4)]),
+        ),
+        child: SingleChildScrollView(
           child: Column(
             children: [
               SizedBox(
@@ -301,6 +302,7 @@ class _EditScreenState extends State<EditScreen>
               Text(
                 'Im ausgewählten Zeitraum liegen Daten für die folgenden Tage vor:',
                 textAlign: TextAlign.center,
+                style: TextStyle(color: Color(0xFFEDF2F7)),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),

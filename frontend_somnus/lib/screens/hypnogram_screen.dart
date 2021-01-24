@@ -492,8 +492,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                           style: TextStyle(
                               color: (selectedWidgetMarker ==
                                       WidgetMarker.hypnogram)
-                                  ? Colors.black
-                                  : Colors.grey),
+                                  ? Color(0xFFEDF2F7)
+                                  : Color(0xFFA0AEC0)),
                         )),
                     FlatButton(
                       onPressed: () {
@@ -506,8 +506,8 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         style: TextStyle(
                             color:
                                 (selectedWidgetMarker == WidgetMarker.piechart)
-                                    ? Colors.black
-                                    : Colors.grey),
+                                    ? Color(0xFFEDF2F7)
+                                    : Color(0xFFA0AEC0)),
                       ),
                     )
                   ],
@@ -561,9 +561,10 @@ class _HypnogramScreenState extends State<HypnogramScreen>
 
                       hideWidget();
 
-                      var res = await uploadFile(
-                          'assets/incoming.csv', 'http://10.0.2.2:5000/data');
-
+                      // var res = await uploadFile(
+                      //     'assets/incoming.csv', 'http://10.0.2.2:5000/data');
+                      final res =
+                          await rootBundle.loadString("assets/result.csv");
                       try {
                         await dbHelper.resultsToDb(res);
                       } catch (error) {
@@ -621,5 +622,5 @@ class _HypnogramScreenState extends State<HypnogramScreen>
   }
 
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => false;
 }

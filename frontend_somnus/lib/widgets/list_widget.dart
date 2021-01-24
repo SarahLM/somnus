@@ -54,7 +54,6 @@ class _ListWidgetState extends State<ListWidget> {
                     await Provider.of<DataStates>(context, listen: false)
                         .getDataForSingleDate(d.date);
                 title = formatter.format(d.date);
-                print(title);
                 setState(() {
                   this.sleepData = sleepData;
                   this.title = title;
@@ -79,15 +78,22 @@ class _ListWidgetState extends State<ListWidget> {
                     child: Text(
                       formatDay.format(d.date).toString(),
                       // _getInitials(user),
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                      style: TextStyle(color: Color(0xFFEDF2F7), fontSize: 18),
                     ),
                     backgroundColor: _getColor(d.date),
                   ),
                   title: Text(
                     formatter.format(d.date).toString(),
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFFEDF2F7),
+                    ),
                   ),
-                  trailing: Icon(Icons.arrow_forward_ios),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Color(0xFFEDF2F7),
+                  ),
                 ),
               ),
             ),

@@ -20,8 +20,8 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
   bool buttonPercent = false;
 
   List<Color> colorList = [
-    Color(0xFF0529B3),
-    Color(0xFFFF9221),
+    Color(0xFF0353ed),
+    Color(0xFFf01d7e),
   ];
 
   Map<String, double> getDataList() {
@@ -87,7 +87,7 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
       @required String icon}) {
     return IconButton(
         icon: FaIcon(iconMapping[icon]),
-        color: buttonUsed ? Colors.black : Colors.grey,
+        color: buttonUsed ? Color(0xFFEDF2F7) : Color(0xFFA0AEC0),
         iconSize: 24,
         onPressed: () {
           setState(
@@ -102,68 +102,74 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 8,
-      child: Column(
-        children: [
-          SizedBox(height: 20),
-          Text(
-            'Schlafdauer',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            'Gesamtlänge der Aufzeichnung:  ' +
-                durationToStringAlternative(widget.sleepData.length ~/ 2)
-                    .toString(),
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 12.0,
-            ),
-          ),
-          ButtonBar(mainAxisSize: MainAxisSize.min, children: <Widget>[
-            buildButton(
-                buttonUsed: buttonTime,
-                text: "Zeit in Minuten",
-                timeButton: true,
-                percentButton: false,
-                icon: 'time'),
-            buildButton(
-                buttonUsed: buttonPercent,
-                text: "Prozent",
-                timeButton: false,
-                percentButton: true,
-                icon: 'percent')
-          ]),
-          Container(
-            child: PieChart(
-              dataMap: getDataList(),
-              animationDuration: Duration(milliseconds: 3000),
-              chartLegendSpacing: 32,
-              chartRadius: MediaQuery.of(context).size.width / 3.2,
-              colorList: colorList,
-              initialAngleInDegree: 0,
-              chartType: ChartType.ring,
-              ringStrokeWidth: 32,
-              centerText: textLabel,
-              legendOptions: LegendOptions(
-                showLegendsInRow: true,
-                legendPosition: LegendPosition.bottom,
-                showLegends: true,
-                //legendShape: LegendShape.circle,
-                legendTextStyle: TextStyle(
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Card(
+        elevation: 8,
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            Text(
+              'Schlafdauer',
+              style: TextStyle(
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  color: Color(0xFFEDF2F7)),
+            ),
+            Text(
+              'Gesamtlänge der Aufzeichnung:  ' +
+                  durationToStringAlternative(widget.sleepData.length ~/ 2)
+                      .toString(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 12.0,
+                color: Color(0xFFEDF2F7),
+              ),
+            ),
+            ButtonBar(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              buildButton(
+                  buttonUsed: buttonTime,
+                  text: "Zeit in Minuten",
+                  timeButton: true,
+                  percentButton: false,
+                  icon: 'time'),
+              buildButton(
+                  buttonUsed: buttonPercent,
+                  text: "Prozent",
+                  timeButton: false,
+                  percentButton: true,
+                  icon: 'percent')
+            ]),
+            Container(
+              child: PieChart(
+                dataMap: getDataList(),
+                animationDuration: Duration(milliseconds: 3000),
+                chartLegendSpacing: 32,
+                chartRadius: MediaQuery.of(context).size.width / 3.2,
+                colorList: colorList,
+                initialAngleInDegree: 0,
+                chartType: ChartType.ring,
+                ringStrokeWidth: 32,
+                centerText: textLabel,
+                legendOptions: LegendOptions(
+                  showLegendsInRow: true,
+                  legendPosition: LegendPosition.bottom,
+                  showLegends: true,
+                  //legendShape: LegendShape.circle,
+                  legendTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold, color: Color(0xFFEDF2F7)),
+                ),
+                chartValuesOptions: ChartValuesOptions(
+                  showChartValueBackground: true,
+                  showChartValues: true,
+                  showChartValuesInPercentage: this.buttonPercent,
+                  showChartValuesOutside: true,
                 ),
               ),
-              chartValuesOptions: ChartValuesOptions(
-                showChartValueBackground: true,
-                showChartValues: true,
-                showChartValuesInPercentage: this.buttonPercent,
-                showChartValuesOutside: true,
-              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

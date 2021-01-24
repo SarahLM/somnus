@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/screens/connect_device_screen.dart';
 import 'package:frontend_somnus/screens/database_helper.dart';
+import 'package:frontend_somnus/widgets/add_activities_widget.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -32,6 +33,21 @@ class _HomeScreenState extends State<HomeScreen> {
     "Spätes Essen",
     "Multimedia"
   ];
+  _pressOK() {
+    Navigator.of(context).pop();
+    final snackBar = SnackBar(
+        content: Text('Aktivitäten hinzugefügt'),
+        duration: const Duration(seconds: 1));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  _pressOKMeds() {
+    Navigator.of(context).pop();
+    final snackBar = SnackBar(
+        content: Text('Medikamente hinzugefügt'),
+        duration: const Duration(seconds: 1));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
 
   List<String> _meds = ["A", "B", "C", "D", "E", "F"];
 
@@ -298,50 +314,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return showDialog<void>(
         context: context,
         builder: (context) {
-          return StatefulBuilder(builder: (context, setState) {
-            return AlertDialog(
-              title: Text('Aktivitäten'),
-              content: Container(
-                height: 300,
-                width: 300,
-                child: Scrollbar(
-                  child: ListView.builder(
-                    itemCount: _texts.length,
-                    itemBuilder: (context, index) {
-                      return CheckboxListTile(
-                        title: Text(_texts[index]),
-                        secondary: _icons[index],
-                        value: _isChecked[index],
-                        onChanged: (val) {
-                          setState(
-                            () {
-                              _isChecked[index] = val;
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text(
-                    'Ok',
-                    style: TextStyle(color: Theme.of(context).accentColor),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    final snackBar = SnackBar(
-                      content: Text('Aktivitäten hinzugefügt'),
-                    );
-
-                    _scaffoldKey.currentState.showSnackBar(snackBar);
-                  },
-                ),
-              ],
-            );
-          });
+          return AddActivities(
+            title: 'Aktivitäten',
+            texts: _texts,
+            icons: _icons,
+            isChecked: _isChecked,
+            pressOK: _pressOK,
+          );
         });
   }
 
@@ -349,49 +328,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return showDialog<void>(
         context: context,
         builder: (context) {
-          return StatefulBuilder(builder: (context, setState) {
-            return AlertDialog(
-              title: Text('Medikamente'),
-              content: Container(
-                height: 300,
-                width: 300,
-                child: Scrollbar(
-                  child: ListView.builder(
-                    itemCount: _meds.length,
-                    itemBuilder: (context, index) {
-                      return CheckboxListTile(
-                        title: Text(_meds[index]),
-                        secondary: _iconsMeds[index],
-                        value: _isCheckedMeds[index],
-                        onChanged: (val) {
-                          setState(
-                            () {
-                              _isCheckedMeds[index] = val;
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text(
-                    'Ok',
-                    style: TextStyle(color: Theme.of(context).accentColor),
-                  ),
-                  onPressed: () {
-                    final snackBar = SnackBar(
-                      content: Text('Medikamente hinzugefügt'),
-                    );
-                    _scaffoldKey.currentState.showSnackBar(snackBar);
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            );
-          });
+          return AddActivities(
+            title: 'Medikamente',
+            texts: _meds,
+            icons: _iconsMeds,
+            isChecked: _isCheckedMeds,
+            pressOK: _pressOKMeds,
+          );
         });
   }
 }

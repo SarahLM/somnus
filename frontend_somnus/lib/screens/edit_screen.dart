@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/providers/dates.dart';
 import 'package:frontend_somnus/providers/states.dart';
-import 'package:frontend_somnus/screens/hypnogram_screen.dart';
 import 'package:frontend_somnus/widgets/list_widget.dart';
 import 'package:frontend_somnus/widgets/no_data_widget.dart';
-import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:frontend_somnus/widgets/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
-import 'details_screen.dart';
 
 class EditScreen extends StatefulWidget {
   final Color color;

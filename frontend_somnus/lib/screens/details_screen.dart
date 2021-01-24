@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:frontend_somnus/providers/states.dart';
+import 'package:frontend_somnus/widgets/add_activities_widget.dart';
 import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -31,12 +32,61 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
   String twoDigits(int n) => n.toString().padLeft(2, "0");
   var singleDay = new DateFormat('kk:mm');
 
+  List<String> _texts = [
+    "Laufen",
+    "Schwimmen",
+    "Alkohol",
+    "Rauchen",
+    "Spätes Essen",
+    "Multimedia"
+  ];
+  _pressOK() {
+    Navigator.of(context).pop();
+    final snackBar = SnackBar(
+        content: Text('Aktivitäten hinzugefügt'),
+        duration: const Duration(seconds: 1));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  _pressOKMeds() {
+    Navigator.of(context).pop();
+    final snackBar = SnackBar(
+        content: Text('Medikamente hinzugefügt'),
+        duration: const Duration(seconds: 1));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  List<String> _meds = ["A", "B", "C", "D", "E", "F"];
+
+  List<Icon> _icons = [
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+  ];
+
+  List<Icon> _iconsMeds = [
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+  ];
+
+  List<bool> _isChecked;
+  List<bool> _isCheckedMeds;
+
   @override
   void initState() {
     super.initState();
     startTime = TimeOfDay.now();
     endTime = TimeOfDay.now();
-    print(widget.date);
+    _isChecked = List<bool>.filled(_texts.length, false);
+    _isCheckedMeds = List<bool>.filled(_texts.length, false);
+    //print(widget.date);
   }
 
   _pickStartTime() async {
@@ -93,11 +143,6 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
     };
     String startTimeNew = formatTimeOfDay(startTime);
     String endTimeNew = formatTimeOfDay(endTime);
-
-    print('this date');
-    print(widget.date);
-    print(startTimeNew);
-    print(endTimeNew);
     this.rowsAffected = await dbHelper.updateDataPerRange(
         row, startTimeNew, endTimeNew, widget.date);
     print('updated $rowsAffected row(s)');
@@ -111,6 +156,34 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
 
     Navigator.of(context).pop();
     return rowsAffected;
+  }
+
+  Future<void> _showDialogActivity(BuildContext context) {
+    return showDialog<void>(
+        context: context,
+        builder: (context) {
+          return AddActivities(
+            title: 'Aktivitäten',
+            texts: _texts,
+            icons: _icons,
+            isChecked: _isChecked,
+            pressOK: _pressOK,
+          );
+        });
+  }
+
+  Future<void> _showDialogMeds(BuildContext context) {
+    return showDialog<void>(
+        context: context,
+        builder: (context) {
+          return AddActivities(
+            title: 'Medikamente',
+            texts: _meds,
+            icons: _iconsMeds,
+            isChecked: _isCheckedMeds,
+            pressOK: _pressOKMeds,
+          );
+        });
   }
 
   @override
@@ -160,7 +233,7 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
                         return StatefulBuilder(builder:
                             (BuildContext context, StateSetter setModalState) {
                           return Container(
-                            height: MediaQuery.of(context).size.height * 0.3,
+                            height: MediaQuery.of(context).size.height * 0.5,
                             child: ListView(
                               children: [
                                 SizedBox(height: 10),
@@ -213,6 +286,13 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
                                 SizedBox(
                                   height: 10,
                                 ),
+                                // FlatButton(
+                                //     onPressed: () =>
+                                //         _showDialogActivity(context),
+                                //     child: Text('Aktivät hinzufügen')),
+                                // FlatButton(
+                                //     onPressed: () => _showDialogMeds(context),
+                                //     child: Text('Medikament hinzufügen')),
                                 FlatButton(
                                   onPressed: () async {
                                     await _updateRows();
@@ -240,7 +320,60 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
                     );
 
                     // Navigator.of(context).pushNamed(EditDataScreen.routeName);
-                  })
+                  }),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  FlatButton(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: Icon(
+                            Icons.add,
+                            color: Color(0xFFEDF2F7),
+                          ),
+                        ),
+                        Text(
+                          'Aktivität',
+                          style: TextStyle(color: Color(0xFFEDF2F7)),
+                        ),
+                      ],
+                    ),
+                    color: Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                    ),
+                    onPressed: () => _showDialogActivity(context),
+                  ),
+                  FlatButton(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: Icon(
+                            Icons.add,
+                            color: Color(0xFFEDF2F7),
+                          ),
+                        ),
+                        Text(
+                          'Medikament',
+                          style: TextStyle(color: Color(0xFFEDF2F7)),
+                        ),
+                      ],
+                    ),
+                    color: Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                    ),
+                    onPressed: () => _showDialogMeds(context),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

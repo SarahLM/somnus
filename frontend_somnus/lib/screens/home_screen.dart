@@ -235,11 +235,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: <Widget>[
                           FlatButton(
                             onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => ConnectDeviceScreen(),
-                                ),
-                              );
+                              // Navigator.of(context).push(
+                              //   MaterialPageRoute(
+                              //     builder: (context) => ConnectDeviceScreen(),
+                              //   ),
+                              // );
                             },
                             child: Text(
                               'Mit Gerät verbinden',

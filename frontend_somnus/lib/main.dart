@@ -27,7 +27,7 @@ Future<void> main() async {
   //await prefs.setInt("tutorialScreen", 1);
   Intl.defaultLocale = "de_DE";
 
-  // await maybeStartFGS();
+  await maybeStartFGS();
   runApp(MyApp());
 }
 
@@ -118,7 +118,7 @@ class _MyAppState extends State<MyApp> {
 
   void _activateForegroundService() async {
     if (!(await ForegroundService.foregroundServiceIsStarted())) {
-      //maybeStartFGS();
+      maybeStartFGS();
     }
   }
 
@@ -146,8 +146,6 @@ class _MyAppState extends State<MyApp> {
           HypnogramScreen.routeName: (ctx) => HypnogramScreen(Colors.white)
         },
         theme: ThemeData(
-          //primaryColor: Color(0xFF0F24D9),
-          //accentColor: Color(0xFF680FD9),
           primaryColor: Color(0xFF1E1164),
           accentColor: Color(0xFFf01d7e),
           appBarTheme: AppBarTheme(

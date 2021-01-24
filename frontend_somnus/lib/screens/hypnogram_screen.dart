@@ -568,7 +568,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                       // var res = await uploadFile(
                       //     'assets/incoming.csv', 'http://10.0.2.2:5000/data');
                       final res =
-                          await rootBundle.loadString("assets/result.csv");
+                          await rootBundle.loadString("assets/neueresults.csv");
                       try {
                         await dbHelper.resultsToDb(res);
                       } catch (error) {

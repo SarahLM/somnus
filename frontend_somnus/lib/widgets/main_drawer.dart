@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/screens/connect_device_screen.dart';
 import 'package:frontend_somnus/screens/disclaimer_screen.dart';
+import 'package:frontend_somnus/screens/questionnaire_screen.dart';
 import '../screens/tutorial_screen.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -44,6 +45,7 @@ class MainDrawer extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
               onTap: () {
@@ -55,12 +57,14 @@ class MainDrawer extends StatelessWidget {
               leading: Icon(
                 Icons.school,
                 size: 26,
+                color: Colors.white,
               ),
               title: Text(
                 'Tutorial',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
               onTap: () {
@@ -72,17 +76,38 @@ class MainDrawer extends StatelessWidget {
               leading: Icon(
                 Icons.bluetooth_searching,
                 size: 26,
+                color: Colors.white,
               ),
               title: Text(
-                'Connect Device',
+                'Gerät verbinden',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => ConnectDeviceScreen()));
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.question_answer_outlined,
+                size: 26,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Fragebögen',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => QuestionScreen()));
               },
             ),
           ],

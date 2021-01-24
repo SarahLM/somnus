@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_somnus/screens/analyse_activity.dart';
 import 'package:frontend_somnus/screens/home_screen.dart';
 import '../widgets/main_drawer.dart';
 import 'edit_screen.dart';
@@ -29,14 +30,18 @@ class _TabsScreenState extends State<TabsScreen> {
       'page': EditScreen(Colors.red),
       'title': 'Bearbeiten',
     },
+    {
+      'page': ActivityScreen(),
+      'title': 'Aktivitäten',
+    },
     //{
     // 'page': DbScreen(Colors.blue),
     // 'title': 'DbScreen',
     //},
-    {
-      'page': QuestionScreen(),
-      'title': 'Fragebögen',
-    },
+    //{
+    //  'page': QuestionScreen(),
+    //  'title': 'Fragebögen',
+    //},
   ];
   @override
   void initState() {
@@ -47,7 +52,8 @@ class _TabsScreenState extends State<TabsScreen> {
       HypnogramScreen(Color(0xFF1E1164)),
       EditScreen(Colors.white),
       //DbScreen(Colors.white),
-      QuestionScreen()
+      ActivityScreen(),
+      //QuestionScreen()
     ];
     _pageController = PageController(initialPage: _selectedPageIndex);
   }
@@ -115,10 +121,14 @@ class _TabsScreenState extends State<TabsScreen> {
             icon: Icon(Icons.data_usage),
             label: 'Database',
           ) */
-          BottomNavigationBarItem(
+          /*BottomNavigationBarItem(
             icon: Icon(Icons.question_answer_outlined),
             label: 'Fragebögen',
-          )
+          )*/
+          BottomNavigationBarItem(
+            icon: Icon(Icons.help_center_outlined),
+            label: 'Aktivitäten',
+          ),
         ],
       ),
     );

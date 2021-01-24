@@ -13,10 +13,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<bool> _isChecked;
+  List<bool> _isCheckedMeds;
   @override
   void initState() {
     super.initState();
     _isChecked = List<bool>.filled(_texts.length, false);
+    _isCheckedMeds = List<bool>.filled(_texts.length, false);
   }
 
   final dbHelper = DatabaseHelper.instance;
@@ -30,7 +32,18 @@ class _HomeScreenState extends State<HomeScreen> {
     "Multimedia"
   ];
 
+  List<String> _meds = ["A", "B", "C", "D", "E", "F"];
+
   List<Icon> _icons = [
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+    Icon(Icons.ac_unit),
+  ];
+
+  List<Icon> _iconsMeds = [
     Icon(Icons.ac_unit),
     Icon(Icons.ac_unit),
     Icon(Icons.ac_unit),
@@ -140,6 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontSize: 24.0)),
                           ]),
                     ),
+                    onTap: () => _showDialogMeds(context),
                     color: Color.fromRGBO(0, 0, 0, 0.4)),
                 // _buildTile(
                 //   Padding(
@@ -300,6 +314,49 @@ class _HomeScreenState extends State<HomeScreen> {
                           setState(
                             () {
                               _isChecked[index] = val;
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Ok'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
+        });
+  }
+
+  Future<void> _showDialogMeds(BuildContext context) {
+    return showDialog<void>(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Medikamente'),
+              content: Container(
+                height: 300,
+                width: 300,
+                child: Scrollbar(
+                  child: ListView.builder(
+                    itemCount: _meds.length,
+                    itemBuilder: (context, index) {
+                      return CheckboxListTile(
+                        title: Text(_meds[index]),
+                        secondary: _iconsMeds[index],
+                        value: _isCheckedMeds[index],
+                        onChanged: (val) {
+                          setState(
+                            () {
+                              _isCheckedMeds[index] = val;
                             },
                           );
                         },

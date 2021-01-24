@@ -12,7 +12,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          "Fragebogen",
+          "Fragebögen",
           style: TextStyle(fontSize: 26, fontWeight: FontWeight.normal),
         ),
       ),

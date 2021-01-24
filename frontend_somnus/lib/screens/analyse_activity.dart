@@ -11,10 +11,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(
-          "Aktivitäten",
-          style: TextStyle(fontSize: 26, fontWeight: FontWeight.normal),
-        ),
+        //title: Text(
+        //"Analyse deiner Aktivitäten",
+        //style: TextStyle(fontSize: 26, fontWeight: FontWeight.normal),
+        //),
       ),
       body: Center(),
     );

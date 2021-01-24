@@ -22,23 +22,19 @@ class FileWriter {
     return directory.path;
   }
 
-  Future<File> get _csvFile async {
+  Future<String> getFilePath() async {
     final path = await _localPath;
-    final date = DateTime.now();
-    final DateFormat serverFormaterDate = DateFormat('yyyy-MM-dd');
-    final currentDate = serverFormaterDate.format(date);
-
-    return File('$path/accelerometerData.csv');
+    return '$path/accelerometerData.csv';
   }
 
   Future<File> writeLine(String line) async {
-    final file = await _csvFile;
+    final file = File(await getFilePath());
     return await file.writeAsString(line, mode: FileMode.append);
   }
 
   Future<List<String>> readFile() async {
     try {
-      final file = await _csvFile;
+      final file = File(await getFilePath());
       return await file.readAsLines();
     } catch (e) {
       return null;
@@ -47,7 +43,7 @@ class FileWriter {
 
   Future<bool> deleteFile() async {
     try {
-      final file = await _csvFile;
+      final file = File(await getFilePath());
       await file.delete();
     } catch (e) {
       return false;

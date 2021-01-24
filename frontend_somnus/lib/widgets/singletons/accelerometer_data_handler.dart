@@ -6,6 +6,7 @@ import 'package:frontend_somnus/screens/database_helper.dart';
 import 'package:frontend_somnus/widgets/singletons/file_writer.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 enum Status {
   accelDataWrittenToDB,
@@ -93,9 +94,10 @@ class AccelDataHandler {
     _accelDataToCSVTimer = Timer.periodic((Duration(hours: 1)), (Timer t) => _dataToCSV());
   }
 
-  void _dataToBackend() {
-    // TODO: remove file after it was sent to backend
-    // TODO: send data to backend
+  Future<void> _dataToBackend() async {
+    var res = await _uploadFile();
+    await dbHelper.resultsToDb(res);
+    await fileWriter.deleteFile();
   }
 
   Future<void> _dataToCSV() async {
@@ -159,5 +161,29 @@ class AccelDataHandler {
     }
 
     return allRows;
+  }
+
+  Future<String> _uploadFile() async {
+    http.Response response;
+    var request = http.MultipartRequest('POST', Uri.parse('http://192.168.1.78:5000/data'));
+    final filePath = await fileWriter.getFilePath();
+
+    try {
+      var multipartFile = http.MultipartFile.fromBytes(
+        'file',
+        File(filePath).readAsBytesSync(),
+        filename: filePath.split("/").last, //filename argument is mandatory!
+      );
+      request.files.add(multipartFile);
+      response = await http.Response.fromStream(await request.send());
+      print("Result: ${response.statusCode}");
+      print(response.body);
+      print(response.body.length);
+
+      return response.body;
+    } catch (error) {
+      print('Error uploading file');
+    }
+    return null;
   }
 }

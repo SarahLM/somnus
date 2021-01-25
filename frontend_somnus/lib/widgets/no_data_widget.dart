@@ -14,12 +14,11 @@ class NoDataWidget extends StatelessWidget {
       height: MediaQuery.of(context).size.height / 2,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        //crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Center(
             child: Icon(
               Icons.sentiment_dissatisfied,
-              color: Colors.orange,
+              color: Color(0xFFEDF2F7),
               size: 60.0,
             ),
           ),
@@ -34,6 +33,7 @@ class NoDataWidget extends StatelessWidget {
                       title +
                       ' liegen keine Daten vor.',
                   textAlign: TextAlign.center,
+                  style: TextStyle(color: Color(0xFFEDF2F7)),
                 ),
               ],
             ),

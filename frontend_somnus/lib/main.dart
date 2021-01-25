@@ -10,7 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:foreground_service/foreground_service.dart';
 import 'widgets/singletons/ble_device_controller.dart';
-import './screens/edit_data_screen.dart';
 
 int disclaimerScreen;
 int tutorialScreen;
@@ -23,8 +22,6 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   disclaimerScreen = prefs.getInt("disclaimerScreen");
   await prefs.setInt("disclaimerScreen", 1);
-  //tutorialScreen = prefs.getInt("tutorialScreen");
-  //await prefs.setInt("tutorialScreen", 1);
   Intl.defaultLocale = "de_DE";
 
   await maybeStartFGS();
@@ -42,10 +39,8 @@ void maybeStartFGS() async {
     //necessity of editMode is dubious (see function comments)
     await ForegroundService.notification.startEditMode();
 
-    await ForegroundService.notification
-        .setTitle("Somnus");
-    await ForegroundService.notification
-        .setText(DEVICE_NOT_CONNECTED);
+    await ForegroundService.notification.setTitle("Somnus");
+    await ForegroundService.notification.setText(DEVICE_NOT_CONNECTED);
 
     await ForegroundService.notification.finishEditMode();
 
@@ -110,7 +105,7 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp>{
+class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
@@ -129,6 +124,7 @@ class _MyAppState extends State<MyApp>{
     return ChangeNotifierProvider(
       create: (ctx) => DataStates(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
@@ -144,16 +140,24 @@ class _MyAppState extends State<MyApp>{
         routes: {
           '/': (context) => TabsScreen(),
           'disclaimerScreen': (context) => DisclaimerScreen(),
-          EditDataScreen.routeName: (ctx) => EditDataScreen(),
-          HypnogramScreen.routeName: (ctx) => HypnogramScreen(Colors.white)
+          HypnogramScreen.routeName: (ctx) => HypnogramScreen()
         },
         theme: ThemeData(
-            //primaryColor: Color(0xFF0F24D9),
-            //accentColor: Color(0xFF680FD9),
-            primaryColor: Color(0xFF00008B),
-            accentColor: Color(0xFF570899)
-            //  cardColor: Color(0xFF680FD9),
+          primaryColor: Color(0xFF1E1164),
+          accentColor: Color(0xFFf01d7e),
+          appBarTheme: AppBarTheme(
+            color: Color(0xFF1E1164),
+          ),
+          iconTheme: new IconThemeData(
+            color: Color(0xFFEDF2F7),
+          ),
+          cardColor: Color.fromRGBO(0, 0, 0, 0.3),
+          textTheme: TextTheme(
+            bodyText2: TextStyle(
+              color: Color(0xFFEDF2F7),
             ),
+          ),
+        ),
       ),
     );
   }

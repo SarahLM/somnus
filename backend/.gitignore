@@ -4,5 +4,5 @@
 venv
 venv2
 /.idea/*
-%results/*
-%/fileUploads/*
+results/
+fileUploads/

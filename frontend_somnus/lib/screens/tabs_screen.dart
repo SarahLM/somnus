@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_somnus/screens/db_analyse_screen.dart';
+import 'package:frontend_somnus/screens/analyse_activity.dart';
 import 'package:frontend_somnus/screens/home_screen.dart';
 import '../widgets/main_drawer.dart';
 import 'edit_screen.dart';
@@ -22,17 +22,25 @@ class _TabsScreenState extends State<TabsScreen> {
       'title': 'Home',
     },
     {
-      'page': HypnogramScreen(Colors.white),
-      'title': 'Hypnogramm',
+      'page': HypnogramScreen(),
+      'title': 'Analyse',
     },
     {
-      'page': EditScreen(Colors.red),
+      'page': EditScreen(),
       'title': 'Bearbeiten',
     },
     {
-      'page': DbScreen(Colors.blue),
-      'title': 'DbScreen',
+      'page': ActivityScreen(),
+      'title': 'Aktivitäten',
     },
+    //{
+    // 'page': DbScreen(Colors.blue),
+    // 'title': 'DbScreen',
+    //},
+    //{
+    //  'page': QuestionScreen(),
+    //  'title': 'Fragebögen',
+    //},
   ];
   @override
   void initState() {
@@ -40,9 +48,11 @@ class _TabsScreenState extends State<TabsScreen> {
     _selectedPageIndex = 0;
     _pages1 = [
       HomeScreen(),
-      HypnogramScreen(Colors.white),
-      EditScreen(Colors.white),
-      DbScreen(Colors.white),
+      HypnogramScreen(),
+      EditScreen(),
+      //DbScreen(Colors.white),
+      ActivityScreen(),
+      //QuestionScreen()
     ];
     _pageController = PageController(initialPage: _selectedPageIndex);
   }
@@ -51,12 +61,6 @@ class _TabsScreenState extends State<TabsScreen> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
-  }
-
-  void _selectPage(int index) {
-    setState(() {
-      _selectedPageIndex = index;
-    });
   }
 
   @override
@@ -83,33 +87,41 @@ class _TabsScreenState extends State<TabsScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Color(0xff1E1164),
         onTap: (selectedPageIndex) {
           setState(() {
             _selectedPageIndex = selectedPageIndex;
             _pageController.jumpToPage(selectedPageIndex);
           });
         },
-        unselectedItemColor: Colors.white,
-        selectedItemColor: Colors.yellow,
+        unselectedItemColor: Color(0xff9A97BC),
+        selectedItemColor: Color(0xffEDF2F7),
         currentIndex: _selectedPageIndex,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Hypnogramm',
+            icon: Icon(Icons.insights_outlined),
+            label: 'Analyse',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.edit),
+            icon: Icon(Icons.edit_outlined),
             label: 'Bearbeiten',
           ),
-          BottomNavigationBarItem(
+          /* BottomNavigationBarItem(
             icon: Icon(Icons.data_usage),
             label: 'Database',
-          )
+          ) */
+          /*BottomNavigationBarItem(
+            icon: Icon(Icons.question_answer_outlined),
+            label: 'Fragebögen',
+          )*/
+          BottomNavigationBarItem(
+            icon: Icon(Icons.help_center_outlined),
+            label: 'Aktivitäten',
+          ),
         ],
       ),
     );

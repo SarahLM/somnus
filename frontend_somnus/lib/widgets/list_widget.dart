@@ -6,11 +6,12 @@ import 'package:frontend_somnus/screens/details_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class ListWidget extends StatefulWidget {
   ListWidget({
-    this.data1,
+    this.data,
   });
-  List<DateEntry> data1;
+  List<DateEntry> data;
 
   @override
   _ListWidgetState createState() => _ListWidgetState();
@@ -24,21 +25,6 @@ class _ListWidgetState extends State<ListWidget> {
   final DateFormat formatter = DateFormat('dd.MM.yyyy');
 
   final DateFormat formatDay = DateFormat('EE');
-
-  final List<DateEntry> data = [
-    DateEntry(
-      date: DateTime(2021, 12, 21),
-    ),
-    DateEntry(
-      date: DateTime(2021, 12, 22),
-    ),
-    DateEntry(
-      date: DateTime(2021, 12, 23),
-    ),
-    DateEntry(
-      date: DateTime(2021, 12, 24),
-    ),
-  ];
 
   List<Color> colorList = [
     Color(0xFF141F9C),
@@ -60,7 +46,7 @@ class _ListWidgetState extends State<ListWidget> {
   Widget build(BuildContext context) {
     return Container(
       child: Column(
-        children: widget.data1.map((d) {
+        children: widget.data.map((d) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: InkWell(
@@ -68,9 +54,10 @@ class _ListWidgetState extends State<ListWidget> {
                 final sleepData =
                     await Provider.of<DataStates>(context, listen: false)
                         .getDataForSingleDate(d.date);
+                title = formatter.format(d.date);
                 setState(() {
                   this.sleepData = sleepData;
-                  this.title = '';
+                  this.title = title;
                 });
 
                 Navigator.of(context).push(
@@ -90,17 +77,23 @@ class _ListWidgetState extends State<ListWidget> {
                       horizontal: 18, vertical: 10.0),
                   leading: CircleAvatar(
                     child: Text(
-                      formatDay.format(d.date).toString(),
-                      // _getInitials(user),
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                      formatDay.format(d.date),
+                      style: TextStyle(color: Color(0xFFEDF2F7), fontSize: 18),
                     ),
                     backgroundColor: _getColor(d.date),
                   ),
                   title: Text(
-                    formatter.format(d.date).toString(),
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                    formatter.format(d.date),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFFEDF2F7),
+                    ),
                   ),
-                  trailing: Icon(Icons.arrow_forward_ios),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Color(0xFFEDF2F7),
+                  ),
                 ),
               ),
             ),

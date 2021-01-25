@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -40,7 +39,6 @@ class DatabaseHelper {
   _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
-    //print('db location : ' + path);
     return await openDatabase(path,
         version: _databaseVersion, onCreate: _onCreate);
   }
@@ -105,22 +103,27 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> queryFirstNRows(int count) async {
     Database db = await instance.database;
-    return await db.rawQuery('SELECT * FROM $table ORDER BY $columnId LIMIT $count');
+    return await db
+        .rawQuery('SELECT * FROM $table ORDER BY $columnId LIMIT $count');
   }
 
   Future<List<Map<String, dynamic>>> queryLastNRows(int count) async {
     Database db = await instance.database;
-    return await db.rawQuery('SELECT * FROM $table ORDER BY $columnId DESC LIMIT $count');
+    return await db
+        .rawQuery('SELECT * FROM $table ORDER BY $columnId DESC LIMIT $count');
   }
 
-  Future<List<Map<String, dynamic>>> queryFirstNRowsOfDay(int count, date) async {
+  Future<List<Map<String, dynamic>>> queryFirstNRowsOfDay(
+      int count, date) async {
     Database db = await instance.database;
-    return await db.rawQuery("SELECT * FROM $table WHERE $columnDate='$date' ORDER BY $columnDate LIMIT $count");
+    return await db.rawQuery(
+        "SELECT * FROM $table WHERE $columnDate='$date' ORDER BY $columnDate LIMIT $count");
   }
 
   Future<List<Map<String, dynamic>>> queryDataOfDay(date) async {
     Database db = await instance.database;
-    return await db.rawQuery("SELECT * FROM $table WHERE $columnDate='$date' ORDER BY $columnTime");
+    return await db.rawQuery(
+        "SELECT * FROM $table WHERE $columnDate='$date' ORDER BY $columnTime");
   }
 
   Future<int> doubleValues(date, time) async {
@@ -146,13 +149,8 @@ class DatabaseHelper {
   Future<int> updateDataPerRange(
       Map<String, dynamic> row, time1, time2, date) async {
     Database db = await instance.database;
-    print(time1);
-    print(time2);
     var dateArray = date.toString().split(' ');
     var dateToQuery = dateArray[0];
-    print('date2 in update ' + dateToQuery.toString());
-
-    print('date in update ' + dateArray.toString());
     return await db.update(results, row,
         where:
             "$columnDate='$dateToQuery' AND $columnTime BETWEEN '$time1' AND '$time2'");
@@ -171,16 +169,12 @@ class DatabaseHelper {
   }
 
   Future<List<Map<String, dynamic>>> queryResultsDayRange(date1, date2) async {
-    print('Date in helper ' + date1);
-    print('Date in helper ' + date2);
     Database db = await instance.database;
     return await db.query(results,
         where: "$columnDate BETWEEN '$date1' AND '$date2'");
   }
 
   Future<List<Map<String, dynamic>>> queryDatesDayRange(date1, date2) async {
-    print('Date in helper ' + date1);
-    print('Date in helper ' + date2);
     Database db = await instance.database;
     return await db.query(results,
         where: "$columnDate BETWEEN '$date1' AND '$date2'",
@@ -191,14 +185,12 @@ class DatabaseHelper {
 
   checkValue(date, time) async {
     final val = await doubleValues(date, time);
-    //print('count');
-    //print(val);
     return val;
   }
 
-  resultsToDb() async {
-    final myData = await rootBundle.loadString("assets/result.csv");
-    String result = myData.replaceAll(RegExp(' '), ',');
+  resultsToDb(resultFromUpload) async {
+    // final myData = await rootBundle.loadString("assets/result.csv");
+    String result = resultFromUpload.replaceAll(RegExp(' '), ',');
     result = result.substring(0, 5) +
         "clock_time," +
         result.substring(5, result.length);
@@ -213,10 +205,7 @@ class DatabaseHelper {
       };
       int count = await checkValue(insertArray[0], insertArray[1]);
       if (count == 0) {
-        //  print('Insert');
         await insertsleepwake(row);
-      } else {
-        // print('No insert');
       }
     }
     print('Done');

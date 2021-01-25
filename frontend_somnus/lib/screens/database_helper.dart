@@ -39,7 +39,6 @@ class DatabaseHelper {
   _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
-    //print('db location : ' + path);
     return await openDatabase(path,
         version: _databaseVersion, onCreate: _onCreate);
   }
@@ -150,13 +149,8 @@ class DatabaseHelper {
   Future<int> updateDataPerRange(
       Map<String, dynamic> row, time1, time2, date) async {
     Database db = await instance.database;
-    print(time1);
-    print(time2);
     var dateArray = date.toString().split(' ');
     var dateToQuery = dateArray[0];
-    print('date2 in update ' + dateToQuery.toString());
-
-    print('date in update ' + dateArray.toString());
     return await db.update(results, row,
         where:
             "$columnDate='$dateToQuery' AND $columnTime BETWEEN '$time1' AND '$time2'");
@@ -175,16 +169,12 @@ class DatabaseHelper {
   }
 
   Future<List<Map<String, dynamic>>> queryResultsDayRange(date1, date2) async {
-    print('Date in helper ' + date1);
-    print('Date in helper ' + date2);
     Database db = await instance.database;
     return await db.query(results,
         where: "$columnDate BETWEEN '$date1' AND '$date2'");
   }
 
   Future<List<Map<String, dynamic>>> queryDatesDayRange(date1, date2) async {
-    print('Date in helper ' + date1);
-    print('Date in helper ' + date2);
     Database db = await instance.database;
     return await db.query(results,
         where: "$columnDate BETWEEN '$date1' AND '$date2'",
@@ -195,8 +185,6 @@ class DatabaseHelper {
 
   checkValue(date, time) async {
     final val = await doubleValues(date, time);
-    //print('count');
-    //print(val);
     return val;
   }
 
@@ -217,10 +205,7 @@ class DatabaseHelper {
       };
       int count = await checkValue(insertArray[0], insertArray[1]);
       if (count == 0) {
-        //  print('Insert');
         await insertsleepwake(row);
-      } else {
-        // print('No insert');
       }
     }
     print('Done');

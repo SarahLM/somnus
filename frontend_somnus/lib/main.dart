@@ -127,6 +127,7 @@ class _MyAppState extends State<MyApp> {
     return ChangeNotifierProvider(
       create: (ctx) => DataStates(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,

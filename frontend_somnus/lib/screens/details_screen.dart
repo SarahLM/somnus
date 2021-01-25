@@ -117,7 +117,6 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
     _isCheckedMeds = List<bool>.filled(_texts.length, false);
     _acivity_visible = false;
     _meds_visible = false;
-    //print(widget.date);
   }
 
   _pickStartTime() async {
@@ -126,11 +125,18 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
       initialEntryMode: TimePickerEntryMode.input,
       initialTime: TimeOfDay(hour: 00, minute: 00),
       builder: (BuildContext context, Widget child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            alwaysUse24HourFormat: true,
+        return Theme(
+          data: Theme.of(context).copyWith(
+            timePickerTheme: TimePickerTheme.of(context).copyWith(
+              backgroundColor: Colors.white,
+            ),
           ),
-          child: child,
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              alwaysUse24HourFormat: true,
+            ),
+            child: child,
+          ),
         );
       },
     );
@@ -146,11 +152,18 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
       initialEntryMode: TimePickerEntryMode.input,
       initialTime: TimeOfDay(hour: 00, minute: 00),
       builder: (BuildContext context, Widget child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            alwaysUse24HourFormat: true,
+        return Theme(
+          data: Theme.of(context).copyWith(
+            timePickerTheme: TimePickerTheme.of(context).copyWith(
+              backgroundColor: Colors.white,
+            ),
           ),
-          child: child,
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              alwaysUse24HourFormat: true,
+            ),
+            child: child,
+          ),
         );
       },
     );
@@ -176,7 +189,6 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
     String endTimeNew = formatTimeOfDay(endTime);
     this.rowsAffected = await dbHelper.updateDataPerRange(
         row, startTimeNew, endTimeNew, widget.date);
-    print('updated $rowsAffected row(s)');
 
     final dataPoints = await Provider.of<DataStates>(context, listen: false)
         .getDataForSingleDate(widget.date);

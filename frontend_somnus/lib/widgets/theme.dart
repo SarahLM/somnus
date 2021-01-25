@@ -30,7 +30,7 @@ class DatePickerTheme extends Theme {
             highlightColor: Colors.purple,
             splashColor: Color(0xFF570899),
             colorScheme: ColorScheme.light(
-              primary: Color(0xFF570899), //FlatButton Text Color!
+              primary: Color(0xFFf01d7e), //FlatButton Text Color!
             ),
           ),
         );

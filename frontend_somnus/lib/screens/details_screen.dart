@@ -33,6 +33,9 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
   var singleDay = new DateFormat('kk:mm');
 
   _pressOK() {
+    setState(() {
+      _acivity_visible = true;
+    });
     Navigator.of(context).pop();
     final snackBar = SnackBar(
         content: Text('Aktivitäten hinzugefügt'),
@@ -41,6 +44,9 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
   }
 
   _pressOKMeds() {
+    setState(() {
+      _meds_visible = true;
+    });
     Navigator.of(context).pop();
     final snackBar = SnackBar(
         content: Text('Medikamente hinzugefügt'),
@@ -99,6 +105,9 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
   List<bool> _isChecked;
   List<bool> _isCheckedMeds;
 
+  bool _acivity_visible;
+  bool _meds_visible;
+
   @override
   void initState() {
     super.initState();
@@ -106,6 +115,8 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
     endTime = TimeOfDay.now();
     _isChecked = List<bool>.filled(_texts.length, false);
     _isCheckedMeds = List<bool>.filled(_texts.length, false);
+    _acivity_visible = false;
+    _meds_visible = false;
     //print(widget.date);
   }
 
@@ -225,32 +236,67 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.all(15.0),
+                padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
                 child: Sync(
                   title: widget.title,
                   sleepData: widget.sleepData,
                 ),
               ),
               SizedBox(
-                height: 5,
+                height: 2,
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text('Aktivitäten:'),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.local_bar_outlined),
-                          Icon(Icons.directions_run_outlined),
-                          Icon(Icons.self_improvement_outlined),
-                        ],
-                      ),
-                    ],
-                  ),
+                  _acivity_visible
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Aktivitäten:',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.local_bar_outlined),
+                                    Icon(Icons.directions_run_outlined),
+                                    Icon(Icons.self_improvement_outlined),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        )
+                      : SizedBox.shrink(),
+                  _meds_visible
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Medikamente:',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.spa_outlined),
+                                    Icon(Icons.science_outlined),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        )
+                      : SizedBox.shrink(),
                 ],
+              ),
+              SizedBox(
+                height: 30,
               ),
               FlatButton(
                   child: Text(
@@ -376,7 +422,9 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
                         ),
                         Text(
                           'Aktivität',
-                          style: TextStyle(color: Color(0xFFEDF2F7)),
+                          style: TextStyle(
+                            color: Color(0xFFEDF2F7),
+                          ),
                         ),
                       ],
                     ),

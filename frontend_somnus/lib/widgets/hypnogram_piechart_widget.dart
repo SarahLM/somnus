@@ -89,8 +89,8 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
         onPressed: () {
           setState(
             () {
-              this.buttonTime = timeButton;
-              this.buttonPercent = percentButton;
+              buttonTime = timeButton;
+              buttonPercent = percentButton;
               textLabel = text;
             },
           );
@@ -158,7 +158,7 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
                 chartValuesOptions: ChartValuesOptions(
                   showChartValueBackground: true,
                   showChartValues: true,
-                  showChartValuesInPercentage: this.buttonPercent,
+                  showChartValuesInPercentage: buttonPercent,
                   showChartValuesOutside: true,
                 ),
               ),

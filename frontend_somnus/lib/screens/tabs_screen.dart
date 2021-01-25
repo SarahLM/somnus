@@ -52,7 +52,6 @@ class _TabsScreenState extends State<TabsScreen> {
       EditScreen(),
       //DbScreen(Colors.white),
       ActivityScreen(),
-      //QuestionScreen()
     ];
     _pageController = PageController(initialPage: _selectedPageIndex);
   }

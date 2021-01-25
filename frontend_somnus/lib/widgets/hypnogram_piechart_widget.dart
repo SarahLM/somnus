@@ -44,7 +44,7 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
     String twoDigitMinutes = twoDigits(d.inMinutes.remainder(60));
     String twoDigitSeconds = twoDigits(d.inSeconds.remainder(60));
-    return "${twoDigits(d.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+    return "${twoDigits(d.inHours)} Std.: $twoDigitMinutes min";
   }
 
   String durationToStringAlternative(int min) {
@@ -115,8 +115,7 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
             ),
             Text(
               'Gesamtlänge der Aufzeichnung:  ' +
-                  durationToStringAlternative(widget.sleepData.length ~/ 2)
-                      .toString(),
+                  durationToString(widget.sleepData.length ~/ 2),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.w600,

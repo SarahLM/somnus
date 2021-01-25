@@ -33,7 +33,6 @@ class _EditScreenState extends State<EditScreen>
   List<DateEntry> dateEntries = [];
   List<DateEntry> dates;
   DateFormat dateFormat;
-  var formatter = new DateFormat('dd.MM.yyyy');
 
   List<Widget> widgetToShow = [];
   final DateFormat serverFormater = DateFormat('dd.MM.yyyy');
@@ -53,13 +52,10 @@ class _EditScreenState extends State<EditScreen>
     );
     setState(() {
       _pressedButton2 = true;
-      //_pressedButton1 = false;
       _pressedButton3 = false;
       _pressedButton4 = false;
       title = '';
       this.dateEntries = dates;
-      //timePrinted = DateTime.now().toString();
-      // this.title = serverFormater.format(DateTime.now());
     });
     this.dateEntries.length != 0
         ? buildWidgetList(ListWidget(data: this.dateEntries))
@@ -82,48 +78,6 @@ class _EditScreenState extends State<EditScreen>
           alignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            // FlatButton(
-            //   child: Text(
-            //     'Heute',
-            //     style: TextStyle(
-            //       color: _pressedButton1
-            //           ? Colors.white
-            //           : Theme.of(context).accentColor,
-            //     ),
-            //   ),
-            //   shape: RoundedRectangleBorder(
-            //     borderRadius: BorderRadius.circular(18.0),
-            //     side: BorderSide(color: Theme.of(context).accentColor),
-            //   ),
-            //   color: _pressedButton1
-            //       ? Theme.of(context).accentColor
-            //       : Colors.white,
-            //   onPressed: () async {
-            //     final dataPoints =
-            //         await Provider.of<DataStates>(context, listen: false)
-            //             .getDataForSingleDate(DateTime.now());
-            //     setState(() {
-            //       _pressedButton1 = true;
-            //       _pressedButton2 = false;
-            //       _pressedButton3 = false;
-            //       _pressedButton4 = false;
-            //       title = DateTime.now().toString();
-            //       sleepData = dataPoints;
-            //       this.sleepData.length == 0
-            //           ? buildWidgetList(NoDataWidget(title: ''))
-            //           : Navigator.of(context).push(
-            //               MaterialPageRoute(
-            //                 builder: (_) => EditDetailsScreen(
-            //                   title: this.title,
-            //                   sleepData: this.sleepData,
-            //                   date: DateTime.now(),
-            //                 ),
-            //               ),
-            //             );
-            //       //timePrinted = (DateTime.now().toString());
-            //     });
-            //   },
-            // ),
             FlatButton(
               child: Text(
                 '7 Tage',
@@ -147,24 +101,15 @@ class _EditScreenState extends State<EditScreen>
                 );
                 setState(() {
                   _pressedButton2 = true;
-                  //  _pressedButton1 = false;
                   _pressedButton3 = false;
                   _pressedButton4 = false;
                   title = '';
                   this.dateEntries = dates;
-
-                  // sleepData = dataPoints;
-                  // timePrinted =
-                  //     (DateTime.now()).add(new Duration(days: -2)).toString() +
-                  //         ' bis ' +
-                  //         DateTime.now().toString();
                 });
 
                 this.dateEntries.length != 0
                     ? buildWidgetList(ListWidget(data: this.dateEntries))
                     : buildWidgetList(NoDataWidget(title: ''));
-
-                //dataStates.getResult();
               },
             ),
             FlatButton(
@@ -179,12 +124,6 @@ class _EditScreenState extends State<EditScreen>
               ),
               color: _pressedButton3 ? Color(0xFF2752E4) : Colors.transparent,
               onPressed: () async {
-                // final dataPoints =
-                //     await Provider.of<DataStates>(context, listen: false)
-                //         .getDataForDateRange(
-                //   DateTime.now(),
-                //   (new DateTime.now()).add(new Duration(days: -30)),
-                // );
                 dates = await Provider.of<DataStates>(context, listen: false)
                     .getEditDataForDateRange(
                   DateTime.now(),
@@ -193,20 +132,10 @@ class _EditScreenState extends State<EditScreen>
 
                 setState(() {
                   _pressedButton3 = true;
-                  // _pressedButton1 = false;
                   _pressedButton2 = false;
                   _pressedButton4 = false;
                   title = '';
                   this.dateEntries = dates;
-                  //sleepData = dataPoints;
-                  // timePrinted = DateFormat('dd.MM. yyyy')
-                  //         .format((DateTime.now()).add(new Duration(days: -7)))
-                  //         .toString() +
-                  //     ' bis ' +
-                  //     DateFormat('dd.MM. yyyy')
-                  //         .format(DateTime.now())
-                  //         .toString();
-                  // print(sleepData);
                 });
 
                 this.dateEntries.length != 0
@@ -235,7 +164,6 @@ class _EditScreenState extends State<EditScreen>
                   onPressed: () async {
                     setState(() {
                       _pressedButton4 = true;
-                      //   _pressedButton1 = false;
                       _pressedButton2 = false;
                       _pressedButton3 = false;
                     });
@@ -251,8 +179,6 @@ class _EditScreenState extends State<EditScreen>
                     );
 
                     if (picked != null && picked.length == 2) {
-                      print(picked);
-                      print(picked.runtimeType);
                       dataPoints =
                           await Provider.of<DataStates>(context, listen: false)
                               .getDataForDateRange((picked[1]), (picked[0]));
@@ -260,20 +186,15 @@ class _EditScreenState extends State<EditScreen>
                               listen: false)
                           .getEditDataForDateRange((picked[1]), (picked[0]));
                       setState(() {
-                        title = DateFormat('dd.MM. yyyy')
-                                .format(picked[0])
-                                .toString() +
+                        title = serverFormater.format(picked[0]) +
                             ' bis ' +
-                            DateFormat('dd.MM. yyyy')
-                                .format(picked[1])
-                                .toString();
+                            serverFormater.format(picked[1]);
                         sleepData = dataPoints;
                         this.dateEntries = dates;
-                        // timePrinted = title;
                       });
                       this.dateEntries.length != 0
                           ? buildWidgetList(ListWidget(data: this.dateEntries))
-                          : buildWidgetList(NoDataWidget(title: ''));
+                          : buildWidgetList(NoDataWidget(title: title));
                     }
                   },
                 ),

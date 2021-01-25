@@ -5,7 +5,6 @@ import 'package:frontend_somnus/widgets/add_activities_widget.dart';
 import 'package:frontend_somnus/widgets/syncfusion.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import './edit_data_screen.dart';
 import 'database_helper.dart';
 
 class EditDetailsScreen extends StatefulWidget {
@@ -19,14 +18,15 @@ class EditDetailsScreen extends StatefulWidget {
   _EditDetailsScreenState createState() => _EditDetailsScreenState();
 }
 
+enum States { schlaf, wach }
+
 class _EditDetailsScreenState extends State<EditDetailsScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   TimeOfDay startTime;
   TimeOfDay endTime;
+  States _site = States.schlaf;
 
   final dbHelper = DatabaseHelper.instance;
-
-  States _site = States.schlaf;
   int rowsAffected;
 
   String twoDigits(int n) => n.toString().padLeft(2, "0");
@@ -56,11 +56,12 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
 
   List<String> _texts = [
     "Alkohol getrunken",
-    "Koffein",
+    "Kaffee",
     "keine Elektronik",
     "seelische Konflikte",
     "Sport getrieben",
     "Entspannungsübungen",
+    "Yoga",
     "andere Umgebung",
     "zu kalt",
     "zu warm",
@@ -84,6 +85,7 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
     Icon(Icons.no_cell_outlined),
     Icon(Icons.psychology),
     Icon(Icons.directions_run_outlined),
+    Icon(Icons.self_improvement_outlined),
     Icon(Icons.self_improvement_outlined),
     Icon(Icons.find_replace_outlined),
     Icon(Icons.ac_unit),
@@ -176,7 +178,7 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
   String formatTimeOfDay(TimeOfDay tod) {
     final now = new DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
-    final format = DateFormat.jm(); //"6:00 AM"
+    final format = DateFormat.jm();
     return format.format(dt);
   }
 
@@ -382,13 +384,6 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                // FlatButton(
-                                //     onPressed: () =>
-                                //         _showDialogActivity(context),
-                                //     child: Text('Aktivät hinzufügen')),
-                                // FlatButton(
-                                //     onPressed: () => _showDialogMeds(context),
-                                //     child: Text('Medikament hinzufügen')),
                                 FlatButton(
                                   onPressed: () async {
                                     await _updateRows();
@@ -401,8 +396,6 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
                                               'Für den ausgewählten Zetraum liegen keine Datensätze vor'),
                                     );
 
-                                    // Find the Scaffold in the widget tree and use
-                                    // it to show a SnackBar.
                                     _scaffoldKey.currentState
                                         .showSnackBar(snackBar);
                                   },
@@ -414,8 +407,6 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
                         });
                       },
                     );
-
-                    // Navigator.of(context).pushNamed(EditDataScreen.routeName);
                   }),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,

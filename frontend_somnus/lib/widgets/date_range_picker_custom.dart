@@ -1105,15 +1105,6 @@ class _DatePickerDialogState extends State<_DatePickerDialog> {
     Navigator.pop(context);
   }
 
-  void _handleCancel1() {
-    List<DateTime> result = [];
-    print('In cancell 1');
-    result.add(new DateTime.now());
-    result.add((new DateTime.now()).add(new Duration(days: 7)));
-    print(result);
-    Navigator.pop(context, result);
-  }
-
   void _handleOk() {
     List<DateTime> result = [];
     if (_selectedFirstDate != null) {
@@ -1199,7 +1190,6 @@ class _DatePickerDialogState extends State<_DatePickerDialog> {
           new FlatButton(
             child: new Text(localizations.cancelButtonLabel),
             onPressed: _handleCancel,
-            //onPressed: _handleCancel1,
           ),
           new FlatButton(
             child: new Text(localizations.okButtonLabel),

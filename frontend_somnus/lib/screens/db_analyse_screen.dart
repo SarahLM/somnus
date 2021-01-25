@@ -129,13 +129,11 @@ class MyHomePage extends StatelessWidget {
 
   void _query() async {
     final allRows = await dbHelper.queryAllRows();
-    print('query all rows:');
     allRows.forEach((row) => print(row));
   }
 
   void _queryresults() async {
     final allRows = await dbHelper.queryAllRowsSleep();
-    print('query all rows:');
     allRows.forEach((row) => print(row));
   }
 
@@ -155,15 +153,7 @@ class MyHomePage extends StatelessWidget {
     print('updated $rowsAffected row(s)');
   }
 
-  // void _delete() async {
-  //   // Assuming that the number of rows is the id for the last row.
-  //   final id = await dbHelper.queryRowCount();
-  //   final rowsDeleted = await dbHelper.delete(id);
-  //   print('deleted $rowsDeleted row(s): row $id');
-  // }
-
   void _deleteAll() async {
     await dbHelper.cleanDatabase();
-    print('all results deleted');
   }
 }

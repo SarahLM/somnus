@@ -10,7 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:foreground_service/foreground_service.dart';
 import 'widgets/singletons/ble_device_controller.dart';
-import './screens/edit_data_screen.dart';
 
 int disclaimerScreen;
 int tutorialScreen;
@@ -23,8 +22,6 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   disclaimerScreen = prefs.getInt("disclaimerScreen");
   await prefs.setInt("disclaimerScreen", 1);
-  //tutorialScreen = prefs.getInt("tutorialScreen");
-  //await prefs.setInt("tutorialScreen", 1);
   Intl.defaultLocale = "de_DE";
 
   await maybeStartFGS();
@@ -143,7 +140,6 @@ class _MyAppState extends State<MyApp> {
         routes: {
           '/': (context) => TabsScreen(),
           'disclaimerScreen': (context) => DisclaimerScreen(),
-          EditDataScreen.routeName: (ctx) => EditDataScreen(),
           HypnogramScreen.routeName: (ctx) => HypnogramScreen(Colors.white)
         },
         theme: ThemeData(

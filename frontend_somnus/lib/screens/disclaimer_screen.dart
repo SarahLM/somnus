@@ -13,18 +13,13 @@ class DisclaimerScreen extends StatefulWidget {
 class _DisclaimerScreenState extends State<DisclaimerScreen> {
   @override
   void initState() {
-    _getTutorialScreenStatus().then((value) {
-      print('Async done');
-    });
+    _getTutorialScreenStatus().then((value) {});
     super.initState();
   }
 
   Future<void> _getTutorialScreenStatus() async {
-    print('I am in _getTutorialScreen Status');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    tutorialScreen = await prefs.getInt('tutorialScreen');
-    print('int tutorialScreen is ');
-    print(tutorialScreen);
+    tutorialScreen = prefs.getInt('tutorialScreen');
     return tutorialScreen;
   }
 

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend_somnus/providers/datapoint.dart';
@@ -193,7 +192,6 @@ class _HypnogramScreenState extends State<HypnogramScreen>
       response = await http.Response.fromStream(await request.send());
       print("Result: ${response.statusCode}");
       print(response.body);
-      print(response.body.length);
 
       return response.body;
     } catch (error) {
@@ -205,7 +203,6 @@ class _HypnogramScreenState extends State<HypnogramScreen>
   Future<List<Widget>> buildList(var dates) async {
     list = [];
     for (int i = 0; i < dates.length; i++) {
-      print('Date ' + dates[i].date.toString());
       var data = await Provider.of<DataStates>(context, listen: false)
           .getDataForSingleDate(dates[i].date);
       list.add(Sync(title: formatter.format(dates[i].date), sleepData: data));
@@ -220,7 +217,10 @@ class _HypnogramScreenState extends State<HypnogramScreen>
             ? Column(
                 children: [
                   ((this.sleepData == null || this.sleepData.length == 0)
-                      ? NoDataWidget(title: this.title)
+                      ? Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: NoDataWidget(title: this.title),
+                        )
                       : Column(
                           children: [
                             Container(
@@ -448,7 +448,6 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                         setState(() {
                           isLoading = true;
                         });
-                        //print(picked);
                         dataPoints = await Provider.of<DataStates>(context,
                                 listen: false)
                             .getDataForDateRange((picked[1]), (picked[0]));
@@ -570,9 +569,10 @@ class _HypnogramScreenState extends State<HypnogramScreen>
 
                       // var res = await uploadFile(
                       //     'assets/incoming.csv', 'http://10.0.2.2:5000/data');
-                      final res =
-                          await rootBundle.loadString("assets/neueresults.csv");
+
                       try {
+                        final res =
+                            await rootBundle.loadString("assets/result.csv");
                         await dbHelper.resultsToDb(res);
                       } catch (error) {
                         final snackBar = SnackBar(

@@ -45,8 +45,6 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
     String twoDigitMinutes = twoDigits(d.inMinutes.remainder(60));
     String twoDigitSeconds = twoDigits(d.inSeconds.remainder(60));
     return "${twoDigits(d.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
-    // List<String> parts = d.toString().split(':');
-    // return '${parts[0].padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
   }
 
   String durationToStringAlternative(int min) {
@@ -69,7 +67,6 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
     if (tokens.isNotEmpty || minutes != 0) {
       tokens.add('$minutes min');
     }
-    //tokens.add('${seconds}s');
 
     return tokens.join(':');
   }
@@ -156,7 +153,6 @@ class _HypnogramPieChartState extends State<HypnogramPieChart> {
                   showLegendsInRow: true,
                   legendPosition: LegendPosition.bottom,
                   showLegends: true,
-                  //legendShape: LegendShape.circle,
                   legendTextStyle: TextStyle(
                       fontWeight: FontWeight.bold, color: Color(0xFFEDF2F7)),
                 ),

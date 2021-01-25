@@ -4,7 +4,6 @@ import 'package:frontend_somnus/screens/home_screen.dart';
 import '../widgets/main_drawer.dart';
 import 'edit_screen.dart';
 import 'hypnogram_screen.dart';
-import 'questionnaire_screen.dart';
 
 class TabsScreen extends StatefulWidget {
   @override
@@ -62,12 +61,6 @@ class _TabsScreenState extends State<TabsScreen> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
-  }
-
-  void _selectPage(int index) {
-    setState(() {
-      _selectedPageIndex = index;
-    });
   }
 
   @override

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend_somnus/screens/connect_device_screen.dart';
 import 'package:frontend_somnus/screens/disclaimer_screen.dart';
@@ -18,19 +17,6 @@ class MainDrawer extends StatelessWidget {
         ),
         child: Column(
           children: <Widget>[
-            // Container(
-            //   color: Colors.blue,
-            //   height: 120,
-            //   width: double.infinity,
-            //   padding: EdgeInsets.all(20),
-            //   alignment: Alignment.centerLeft,
-            //   child: Text(
-            //     'Gehe zu ..',
-            //     style: TextStyle(
-            //       fontWeight: FontWeight.bold,
-            //       fontSize: 30,
-            //     ),
-            // ),
             SizedBox(
               height: 50,
             ),

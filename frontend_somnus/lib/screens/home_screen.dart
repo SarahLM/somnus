@@ -27,11 +27,12 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = false;
   List<String> _texts = [
     "Alkohol getrunken",
-    "Koffein",
+    "Kaffee",
     "keine Elektronik",
     "seelische Konflikte",
     "Sport getrieben",
     "Entspannungsübungen",
+    "Yoga",
     "andere Umgebung",
     "zu kalt",
     "zu warm",
@@ -55,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Icon(Icons.no_cell_outlined),
     Icon(Icons.psychology),
     Icon(Icons.directions_run_outlined),
+    Icon(Icons.self_improvement_outlined),
     Icon(Icons.self_improvement_outlined),
     Icon(Icons.find_replace_outlined),
     Icon(Icons.ac_unit),
@@ -110,34 +112,34 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisSpacing: 12.0,
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 40.0),
               children: <Widget>[
-                _buildTile(
-                    Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            'Willkommen!',
-                            style: TextStyle(
-                                color: Color(0xFFEDF2F7),
-                                fontWeight: FontWeight.w700,
-                                fontSize: 30.0),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Text('Letzte Aufzeichnung',
-                              style: Theme.of(context).textTheme.bodyText2),
-                          Text('23.01.2021',
-                              style: TextStyle(
-                                  color: Color(0xFFEDF2F7),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 20.0))
-                        ],
+                Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'Willkommen!',
+                        style: TextStyle(
+                            color: Color(0xFFEDF2F7),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 30.0),
                       ),
-                    ),
-                    color: Colors.transparent),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text('Letzte Aufzeichnung',
+                          style: Theme.of(context).textTheme.bodyText2),
+                      Text(
+                        '23.01.2021',
+                        style: TextStyle(
+                            color: Color(0xFFEDF2F7),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 20.0),
+                      )
+                    ],
+                  ),
+                ),
                 _buildTile(
                     Padding(
                       padding: const EdgeInsets.all(24.0),
@@ -165,102 +167,35 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () => _showDialogActivity(context),
                     color: Color.fromRGBO(0, 0, 0, 0.4)),
                 _buildTile(
-                    Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Material(
-                              color: Color(0xFF1E1164),
-                              shape: CircleBorder(),
-                              child: Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: Icon(
-                                  Icons.science,
-                                  color: Colors.white,
-                                  size: 30.0,
-                                ),
+                  Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Material(
+                            color: Color(0xFF1E1164),
+                            shape: CircleBorder(),
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Icon(
+                                Icons.science,
+                                color: Colors.white,
+                                size: 30.0,
                               ),
                             ),
-                            Padding(padding: EdgeInsets.only(bottom: 16.0)),
-                            Text('Medikament hinzufügen',
-                                style: TextStyle(
-                                    color: Color(0xFFEDF2F7),
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 24.0)),
-                          ]),
-                    ),
-                    onTap: () => _showDialogMeds(context),
-                    color: Color.fromRGBO(0, 0, 0, 0.4)),
-                // _buildTile(
-                //   Padding(
-                //       padding: const EdgeInsets.all(24.0),
-                //       child: Column(
-                //         mainAxisAlignment: MainAxisAlignment.start,
-                //         crossAxisAlignment: CrossAxisAlignment.start,
-                //         children: <Widget>[
-                //           Row(
-                //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //             crossAxisAlignment: CrossAxisAlignment.start,
-                //             children: <Widget>[
-                //               Column(
-                //                 mainAxisAlignment: MainAxisAlignment.start,
-                //                 crossAxisAlignment: CrossAxisAlignment.start,
-                //                 children: <Widget>[
-                //                   Text('Revenue',
-                //                       style: TextStyle(color: Colors.green)),
-                //                   Text('\$16K',
-                //                       style: TextStyle(
-                //                           color: Colors.black,
-                //                           fontWeight: FontWeight.w700,
-                //                           fontSize: 34.0)),
-                //                 ],
-                //               ),
-                //             ],
-                //           ),
-                //           Padding(padding: EdgeInsets.only(bottom: 4.0)),
-                //         ],
-                //       )),
-                // ),
-                // _buildTile(
-                //   Padding(
-                //     padding: const EdgeInsets.all(24.0),
-                //     child: Row(
-                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //         crossAxisAlignment: CrossAxisAlignment.center,
-                //         children: <Widget>[
-                //           Column(
-                //             mainAxisAlignment: MainAxisAlignment.center,
-                //             crossAxisAlignment: CrossAxisAlignment.start,
-                //             children: <Widget>[
-                //               Text('Shop Items',
-                //                   style: TextStyle(color: Colors.redAccent)),
-                //               Text('173',
-                //                   style: TextStyle(
-                //                       color: Colors.black,
-                //                       fontWeight: FontWeight.w700,
-                //                       fontSize: 34.0))
-                //             ],
-                //           ),
-                //           Material(
-                //             color: Colors.red,
-                //             borderRadius: BorderRadius.circular(24.0),
-                //             child: Center(
-                //               child: Padding(
-                //                 padding: EdgeInsets.all(16.0),
-                //                 child: Icon(Icons.store,
-                //                     color: Colors.white, size: 30.0),
-                //               ),
-                //             ),
-                //           )
-                //         ]),
-                //   ),
-                //   // onTap: () => Navigator.of(context)
-                //   //     .push(MaterialPageRoute(builder: (_) => null)),
-                //   color: Color(0xFF20d2f4),
-                // ),
-                //   _buildTile(
+                          ),
+                          Padding(padding: EdgeInsets.only(bottom: 16.0)),
+                          Text('Medikament hinzufügen',
+                              style: TextStyle(
+                                  color: Color(0xFFEDF2F7),
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 24.0)),
+                        ]),
+                  ),
+                  onTap: () => _showDialogMeds(context),
+                  color: Color.fromRGBO(0, 0, 0, 0.4),
+                ),
                 Container(
                   color: Color.fromRGBO(0, 0, 0, 0.4),
                   child: Padding(
@@ -300,8 +235,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 StaggeredTile.extent(2, 160.0),
                 StaggeredTile.extent(1, 190.0),
                 StaggeredTile.extent(1, 190.0),
-                //StaggeredTile.extent(2, 220.0),
-                StaggeredTile.extent(2, 110.0),
                 StaggeredTile.extent(2, 110.0), //Buttons
               ],
             ),
@@ -318,10 +251,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Material(
         color: color,
         elevation: 14.0,
-        //borderRadius: BorderRadius.circular(5.0), //original: 12
         shadowColor: Color(0x802196F3),
         child: InkWell(
-            // Do onTap() if it isn't null, otherwise do print()
             onTap: onTap != null
                 ? () => onTap()
                 : () {

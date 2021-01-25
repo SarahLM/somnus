@@ -6,6 +6,7 @@ import 'package:frontend_somnus/screens/details_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class ListWidget extends StatefulWidget {
   ListWidget({
     this.data,
@@ -76,14 +77,13 @@ class _ListWidgetState extends State<ListWidget> {
                       horizontal: 18, vertical: 10.0),
                   leading: CircleAvatar(
                     child: Text(
-                      formatDay.format(d.date).toString(),
-                      // _getInitials(user),
+                      formatDay.format(d.date),
                       style: TextStyle(color: Color(0xFFEDF2F7), fontSize: 18),
                     ),
                     backgroundColor: _getColor(d.date),
                   ),
                   title: Text(
-                    formatter.format(d.date).toString(),
+                    formatter.format(d.date),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,

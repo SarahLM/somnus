@@ -56,11 +56,6 @@ class AddActivities extends StatelessWidget {
               style: TextStyle(color: Theme.of(context).accentColor),
             ),
             onPressed: _pressOK,
-            // final snackBar = SnackBar(
-            //   content: Text(_snackBarText),
-            // );
-            // _scaffoldKey.currentState.showSnackBar(snackBar);
-            //Navigator.pop(context);
           ),
         ],
       );

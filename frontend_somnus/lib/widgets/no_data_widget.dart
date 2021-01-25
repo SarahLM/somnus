@@ -14,7 +14,6 @@ class NoDataWidget extends StatelessWidget {
       height: MediaQuery.of(context).size.height / 2,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        //crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Center(
             child: Icon(

@@ -3,14 +3,14 @@ import 'package:frontend_somnus/providers/datapoint.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 
-class Syncfusion extends StatelessWidget {
+class Sync extends StatelessWidget {
   final String title;
   final List<DataPoint> sleepData;
   final Color colorAsleep = Color(0xFF0353ed);
   final Color colorAwake = Color(0xFFf01d7e);
   final DateFormat formatter = DateFormat('kk:mm');
 
-  Syncfusion({
+  Sync({
     @required this.title,
     @required this.sleepData,
   });

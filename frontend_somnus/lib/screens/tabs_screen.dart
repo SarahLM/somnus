@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_somnus/screens/analyse_activity.dart';
+import 'package:frontend_somnus/screens/analyse_activity_screen.dart';
 import 'package:frontend_somnus/screens/home_screen.dart';
 import '../widgets/main_drawer.dart';
 import 'edit_screen.dart';

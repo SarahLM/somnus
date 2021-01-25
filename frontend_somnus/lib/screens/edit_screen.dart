@@ -7,7 +7,7 @@ import 'package:frontend_somnus/widgets/no_data_widget.dart';
 import 'package:frontend_somnus/widgets/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
+import '../widgets/date_range_picker_custom.dart' as DateRangePicker;
 
 class EditScreen extends StatefulWidget {
   EditScreen();
@@ -166,7 +166,7 @@ class _EditScreenState extends State<EditScreen>
                       _pressedButton3 = false;
                     });
                     final List<DateTime> picked =
-                        await DateRagePicker.showDatePicker(
+                        await DateRangePicker.showDatePicker(
                       locale: const Locale("de", "DE"),
                       context: context,
                       initialFirstDate: new DateTime.now(),

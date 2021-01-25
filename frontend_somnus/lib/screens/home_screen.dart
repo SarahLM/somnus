@@ -131,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text('Letzte Aufzeichnung',
                           style: Theme.of(context).textTheme.bodyText2),
                       Text(
-                        '23.01.2021',
+                        '26.01.2021',
                         style: TextStyle(
                             color: Color(0xFFEDF2F7),
                             fontWeight: FontWeight.w700,

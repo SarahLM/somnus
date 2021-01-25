@@ -161,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: TextStyle(
                                     color: Color(0xFFEDF2F7),
                                     fontWeight: FontWeight.w700,
-                                    fontSize: 24.0)),
+                                    fontSize: 22.0)),
                           ]),
                     ),
                     onTap: () => _showDialogActivity(context),
@@ -190,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: TextStyle(
                                   color: Color(0xFFEDF2F7),
                                   fontWeight: FontWeight.w700,
-                                  fontSize: 24.0)),
+                                  fontSize: 22.0)),
                         ]),
                   ),
                   onTap: () => _showDialogMeds(context),

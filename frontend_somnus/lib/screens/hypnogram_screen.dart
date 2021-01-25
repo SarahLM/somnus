@@ -547,82 +547,82 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                   )
                 : const SizedBox.shrink(),
             !_canShowButton
-                ? CircularProgressIndicator()
-                // FloatingActionButton(
-                //     backgroundColor: Colors.grey,
-                //     onPressed: null,
-                //     child: const Icon(
-                //       Icons.upload_file,
-                //     ),
-                //   )
-                : FloatingActionButton(
-                    heroTag: null,
-                    child: const Icon(Icons.upload_file),
-                    onPressed: () async {
-                      final snackBar = SnackBar(
-                        content: Text('Daten werden verarbeitet'),
-                      );
-
-                      Scaffold.of(context).showSnackBar(snackBar);
-
-                      hideWidget();
-
-                      // var res = await uploadFile(
-                      //     'assets/incoming.csv', 'http://10.0.2.2:5000/data');
-
-                      try {
-                        final res =
-                            await rootBundle.loadString("assets/result.csv");
-                        await dbHelper.resultsToDb(res);
-                      } catch (error) {
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: FloatingActionButton(
+                      heroTag: null,
+                      child: const Icon(Icons.upload_file),
+                      onPressed: () async {
                         final snackBar = SnackBar(
-                          content: Text('Fehler bei der Datenverarbeitung'),
+                          content: Text('Daten werden verarbeitet'),
                         );
 
                         Scaffold.of(context).showSnackBar(snackBar);
-                      }
-                      hideWidget();
-                      if (_pressedButton1) {
-                        dataPoints = await getDataToday();
-                        list = [];
-                        list.add(Sync(
-                          sleepData: dataPoints,
-                          title: formatter.format(DateTime.now()),
-                        ));
-                      }
-                      if (_pressedButton2) {
-                        dataPoints = await getDataYesterday();
-                        list = [];
-                        list.add(Sync(
-                          sleepData: dataPoints,
-                          title: formatter.format(
-                              DateTime.now().add(new Duration(days: -1))),
-                        ));
-                      }
-                      if (_pressedButton3) {
-                        dataPoints = await getDataSevenDays();
-                        var dates = await Provider.of<DataStates>(context,
-                                listen: false)
-                            .getEditDataForDateRange(
-                                DateTime.now(),
-                                (new DateTime.now())
-                                    .add(new Duration(days: -7)));
-                        await buildList(dates);
-                      }
-                      if (_pressedButton4) {
-                        dataPoints = await Provider.of<DataStates>(context,
-                                listen: false)
-                            .getDataForDateRange((picked[1]), (picked[0]));
-                        var dates = await Provider.of<DataStates>(context,
-                                listen: false)
-                            .getEditDataForDateRange((picked[1]), (picked[0]));
-                        await buildList(dates);
-                      }
-                      setState(() {
-                        sleepData = dataPoints;
-                        this.syncList = list;
-                      });
-                    },
+
+                        hideWidget();
+
+                        // var res = await uploadFile(
+                        //     'assets/incoming.csv', 'http://10.0.2.2:5000/data');
+
+                        try {
+                          final res =
+                              await rootBundle.loadString("assets/result.csv");
+                          await dbHelper.resultsToDb(res);
+                        } catch (error) {
+                          final snackBar = SnackBar(
+                            content: Text('Fehler bei der Datenverarbeitung'),
+                          );
+
+                          Scaffold.of(context).showSnackBar(snackBar);
+                        }
+                        hideWidget();
+                        if (_pressedButton1) {
+                          dataPoints = await getDataToday();
+                          list = [];
+                          list.add(Sync(
+                            sleepData: dataPoints,
+                            title: formatter.format(DateTime.now()),
+                          ));
+                        }
+                        if (_pressedButton2) {
+                          dataPoints = await getDataYesterday();
+                          list = [];
+                          list.add(Sync(
+                            sleepData: dataPoints,
+                            title: formatter.format(
+                                DateTime.now().add(new Duration(days: -1))),
+                          ));
+                        }
+                        if (_pressedButton3) {
+                          dataPoints = await getDataSevenDays();
+                          var dates = await Provider.of<DataStates>(context,
+                                  listen: false)
+                              .getEditDataForDateRange(
+                                  DateTime.now(),
+                                  (new DateTime.now())
+                                      .add(new Duration(days: -7)));
+                          await buildList(dates);
+                        }
+                        if (_pressedButton4) {
+                          dataPoints = await Provider.of<DataStates>(context,
+                                  listen: false)
+                              .getDataForDateRange((picked[1]), (picked[0]));
+                          var dates = await Provider.of<DataStates>(context,
+                                  listen: false)
+                              .getEditDataForDateRange(
+                                  (picked[1]), (picked[0]));
+                          await buildList(dates);
+                        }
+                        setState(() {
+                          sleepData = dataPoints;
+                          this.syncList = list;
+                        });
+                      },
+                    ),
                   ),
           ],
         ));

@@ -140,7 +140,7 @@ class _MyAppState extends State<MyApp> {
         routes: {
           '/': (context) => TabsScreen(),
           'disclaimerScreen': (context) => DisclaimerScreen(),
-          HypnogramScreen.routeName: (ctx) => HypnogramScreen(Colors.white)
+          HypnogramScreen.routeName: (ctx) => HypnogramScreen()
         },
         theme: ThemeData(
           primaryColor: Color(0xFF1E1164),

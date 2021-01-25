@@ -10,9 +10,7 @@ import 'package:provider/provider.dart';
 import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
 
 class EditScreen extends StatefulWidget {
-  final Color color;
-
-  EditScreen(this.color);
+  EditScreen();
 
   @override
   _EditScreenState createState() => _EditScreenState();

@@ -524,7 +524,10 @@ class _HypnogramScreenState extends State<HypnogramScreen>
               gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Color(0xFF1E1164), Color(0xFF2752E4)]),
+                  colors: [
+                    Color(0xFF1E1164),
+                    Color(0xFF2752E4),
+                  ]),
             ),
             child: SingleChildScrollView(
               child: Container(

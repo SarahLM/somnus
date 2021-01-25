@@ -26,12 +26,15 @@ class _HomeScreenState extends State<HomeScreen> {
   final dbHelper = DatabaseHelper.instance;
   bool _isLoading = false;
   List<String> _texts = [
-    "Laufen",
-    "Schwimmen",
-    "Alkohol",
-    "Rauchen",
-    "Spätes Essen",
-    "Multimedia"
+    "Alkohol getrunken",
+    "Koffein",
+    "keine Elektronik",
+    "seelische Konflikte",
+    "Sport getrieben",
+    "Entspannungsübungen",
+    "andere Umgebung",
+    "zu kalt",
+    "zu warm",
   ];
   _pressOK() {
     Navigator.of(context).pop();
@@ -49,24 +52,40 @@ class _HomeScreenState extends State<HomeScreen> {
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
-  List<String> _meds = ["A", "B", "C", "D", "E", "F"];
+  List<String> _meds = [
+    "Baldrian",
+    "CBD",
+    "Johanniskraut",
+    "Melatonin",
+    "Modafinil",
+    "Wakix",
+    "Xyrem",
+    "Zopiclon",
+    "Zolpidem"
+  ];
 
   List<Icon> _icons = [
+    Icon(Icons.local_bar_outlined),
+    Icon(Icons.free_breakfast_outlined),
+    Icon(Icons.no_cell_outlined),
+    Icon(Icons.psychology),
+    Icon(Icons.directions_run_outlined),
+    Icon(Icons.self_improvement_outlined),
+    Icon(Icons.find_replace_outlined),
     Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
+    Icon(Icons.fireplace_outlined),
   ];
 
   List<Icon> _iconsMeds = [
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
+    Icon(Icons.spa_outlined),
+    Icon(Icons.spa_outlined),
+    Icon(Icons.spa_outlined),
+    Icon(Icons.spa_outlined),
+    Icon(Icons.science_outlined),
+    Icon(Icons.science_outlined),
+    Icon(Icons.science_outlined),
+    Icon(Icons.science_outlined),
+    Icon(Icons.science_outlined),
   ];
 
   @override

@@ -86,6 +86,7 @@ flutter:
   # assets:
   assets:
       - assets/images/somnus_logo.png
+      - assets/images/somnus_fragen.png
       - assets/images/tutorial_connect.png
       - assets/images/tutorial_hypnogram.png
       - assets/images/tutorial_analysis.png

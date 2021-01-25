@@ -36,21 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
     "zu kalt",
     "zu warm",
   ];
-  _pressOK() {
-    Navigator.of(context).pop();
-    final snackBar = SnackBar(
-        content: Text('Aktivitäten hinzugefügt'),
-        duration: const Duration(seconds: 1));
-    _scaffoldKey.currentState.showSnackBar(snackBar);
-  }
-
-  _pressOKMeds() {
-    Navigator.of(context).pop();
-    final snackBar = SnackBar(
-        content: Text('Medikamente hinzugefügt'),
-        duration: const Duration(seconds: 1));
-    _scaffoldKey.currentState.showSnackBar(snackBar);
-  }
 
   List<String> _meds = [
     "Baldrian",
@@ -87,6 +72,22 @@ class _HomeScreenState extends State<HomeScreen> {
     Icon(Icons.science_outlined),
     Icon(Icons.science_outlined),
   ];
+
+  _pressOK() {
+    Navigator.of(context).pop();
+    final snackBar = SnackBar(
+        content: Text('Aktivitäten hinzugefügt'),
+        duration: const Duration(seconds: 1));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  _pressOKMeds() {
+    Navigator.of(context).pop();
+    final snackBar = SnackBar(
+        content: Text('Medikamente hinzugefügt'),
+        duration: const Duration(seconds: 1));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
 
   @override
   Widget build(BuildContext context) {

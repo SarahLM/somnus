@@ -50,7 +50,7 @@ class _TutorialPageState extends State<TutorialPage> {
   Widget _buildImage(String assetName) {
     return Align(
       child: Image.asset('assets/images/$assetName.png', width: 350.0),
-      alignment: Alignment.center,
+      alignment: Alignment.bottomCenter,
     );
   }
 
@@ -64,7 +64,7 @@ class _TutorialPageState extends State<TutorialPage> {
           child: Icon(iconMapping[iconName], color: Colors.white, size: 130.0),
         ),
       ),
-      alignment: Alignment.center,
+      alignment: Alignment.bottomCenter,
     );
   }
 
@@ -90,14 +90,14 @@ class _TutorialPageState extends State<TutorialPage> {
           title: "Willkommen bei Somnus!",
           body:
               "Verschaff dir einen Überblick, wie die App dir helfen kann, dein Schlafmuster besser zu verstehen.",
-          image: _buildImage('somnus_logo'),
+          image: _buildImage('somnus_logo_neu'),
           decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Home",
           body:
               "Hier erhältst du einen kurzen Überblick über aktuelle Aufzeichnungen und kannst dich mit deinem Xiaomi-Band verbinden",
-          image: _buildIcon('home', Color(0xFF1E1164)),
+          image: _buildIcon('home', Theme.of(context).primaryColor),
           decoration: pageDecoration,
         ),
         PageViewModel(
@@ -115,7 +115,7 @@ class _TutorialPageState extends State<TutorialPage> {
           body: "Bearbeite deine Hypnogramme.",
           image: _buildIcon(
             'edit',
-            Color(0xFFf01d7e),
+            Theme.of(context).accentColor,
           ),
           decoration: pageDecoration,
         ),
@@ -125,7 +125,7 @@ class _TutorialPageState extends State<TutorialPage> {
               "Schau dir an, wie verschiedene Aktivitäten deinen Schlaf beeinflussen.",
           image: _buildIcon(
             'activity',
-            Color(0xFF1E1164),
+            Theme.of(context).primaryColor,
           ),
           decoration: pageDecoration,
         ),

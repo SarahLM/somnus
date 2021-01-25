@@ -32,14 +32,6 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
   String twoDigits(int n) => n.toString().padLeft(2, "0");
   var singleDay = new DateFormat('kk:mm');
 
-  List<String> _texts = [
-    "Laufen",
-    "Schwimmen",
-    "Alkohol",
-    "Rauchen",
-    "Spätes Essen",
-    "Multimedia"
-  ];
   _pressOK() {
     Navigator.of(context).pop();
     final snackBar = SnackBar(
@@ -56,24 +48,52 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
-  List<String> _meds = ["A", "B", "C", "D", "E", "F"];
+  List<String> _texts = [
+    "Alkohol getrunken",
+    "Koffein",
+    "keine Elektronik",
+    "seelische Konflikte",
+    "Sport getrieben",
+    "Entspannungsübungen",
+    "andere Umgebung",
+    "zu kalt",
+    "zu warm",
+  ];
+
+  List<String> _meds = [
+    "Baldrian",
+    "CBD",
+    "Johanniskraut",
+    "Melatonin",
+    "Modafinil",
+    "Wakix",
+    "Xyrem",
+    "Zopiclon",
+    "Zolpidem"
+  ];
 
   List<Icon> _icons = [
+    Icon(Icons.local_bar_outlined),
+    Icon(Icons.free_breakfast_outlined),
+    Icon(Icons.no_cell_outlined),
+    Icon(Icons.psychology),
+    Icon(Icons.directions_run_outlined),
+    Icon(Icons.self_improvement_outlined),
+    Icon(Icons.find_replace_outlined),
     Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
+    Icon(Icons.fireplace_outlined),
   ];
 
   List<Icon> _iconsMeds = [
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
-    Icon(Icons.ac_unit),
+    Icon(Icons.spa_outlined),
+    Icon(Icons.spa_outlined),
+    Icon(Icons.spa_outlined),
+    Icon(Icons.spa_outlined),
+    Icon(Icons.science_outlined),
+    Icon(Icons.science_outlined),
+    Icon(Icons.science_outlined),
+    Icon(Icons.science_outlined),
+    Icon(Icons.science_outlined),
   ];
 
   List<bool> _isChecked;
@@ -212,7 +232,25 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 5,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Aktivitäten:'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.local_bar_outlined),
+                          Icon(Icons.directions_run_outlined),
+                          Icon(Icons.self_improvement_outlined),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
               ),
               FlatButton(
                   child: Text(

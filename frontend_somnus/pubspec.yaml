@@ -66,7 +66,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/somnus_logo.png"
+  image_path: "assets/images/somnus_logo_neu.png"
 
 
 
@@ -86,14 +86,16 @@ flutter:
   # assets:
   assets:
       - assets/images/somnus_logo.png
+      - assets/images/somnus_logo_neu.png
       - assets/images/somnus_fragen.png
       - assets/images/analyse.png
       - assets/images/background_home.png
+      - assets/images/refresh_black.png
       - assets/result.csv
       - assets/neueresults.csv
       - assets/incoming.csv
       - assets/getrennt.csv
-      - assets/images/refresh_black.png
+      
       
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

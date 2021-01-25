@@ -53,10 +53,10 @@ class _EditScreenState extends State<EditScreen>
       _pressedButton3 = false;
       _pressedButton4 = false;
       title = '';
-      this.dateEntries = dates;
+      dateEntries = dates;
     });
-    this.dateEntries.length != 0
-        ? buildWidgetList(ListWidget(data: this.dateEntries))
+    dateEntries.length != 0
+        ? buildWidgetList(ListWidget(data: dateEntries))
         : buildWidgetList(NoDataWidget(title: ''));
   }
 
@@ -102,11 +102,11 @@ class _EditScreenState extends State<EditScreen>
                   _pressedButton3 = false;
                   _pressedButton4 = false;
                   title = '';
-                  this.dateEntries = dates;
+                  dateEntries = dates;
                 });
 
-                this.dateEntries.length != 0
-                    ? buildWidgetList(ListWidget(data: this.dateEntries))
+                dateEntries.length != 0
+                    ? buildWidgetList(ListWidget(data: dateEntries))
                     : buildWidgetList(NoDataWidget(title: ''));
               },
             ),
@@ -133,11 +133,11 @@ class _EditScreenState extends State<EditScreen>
                   _pressedButton2 = false;
                   _pressedButton4 = false;
                   title = '';
-                  this.dateEntries = dates;
+                  dateEntries = dates;
                 });
 
-                this.dateEntries.length != 0
-                    ? buildWidgetList(ListWidget(data: this.dateEntries))
+                dateEntries.length != 0
+                    ? buildWidgetList(ListWidget(data: dateEntries))
                     : buildWidgetList(NoDataWidget(title: ''));
               },
             ),
@@ -188,10 +188,10 @@ class _EditScreenState extends State<EditScreen>
                             ' bis ' +
                             serverFormater.format(picked[1]);
                         sleepData = dataPoints;
-                        this.dateEntries = dates;
+                        dateEntries = dates;
                       });
-                      this.dateEntries.length != 0
-                          ? buildWidgetList(ListWidget(data: this.dateEntries))
+                      dateEntries.length != 0
+                          ? buildWidgetList(ListWidget(data: dateEntries))
                           : buildWidgetList(NoDataWidget(title: title));
                     }
                   },

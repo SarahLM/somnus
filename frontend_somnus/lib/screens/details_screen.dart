@@ -251,7 +251,7 @@ class _EditDetailsScreenState extends State<EditDetailsScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-                child: Sync(
+                child: Syncfusion(
                   title: widget.title,
                   sleepData: widget.sleepData,
                 ),

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:foreground_service/foreground_service.dart';
 import 'package:frontend_somnus/screens/database_helper.dart';
 import 'package:frontend_somnus/widgets/singletons/file_writer.dart';
 import 'package:intl/intl.dart';
@@ -29,6 +28,7 @@ class AccelDataHandler {
 
   SharedPreferences sharedPrefs;
   final dbHelper = DatabaseHelper.instance;
+  Timer _firstAccelDataToBackendTimer;
   Timer _accelDataToBackendTimer;
   Timer _accelDataToCSVTimer;
 
@@ -59,14 +59,6 @@ class AccelDataHandler {
 
     //print(row);
     await dbHelper.insert(row);
-
-    try {
-      ForegroundService.sendToPort(Status.accelDataWrittenToDB);
-    } catch (e) {
-      // exit -> user will restart the app
-      // pretty bad practice, but due to time issues
-      exit(0);
-    }
   }
 
   bool isDataToBackendTimerActive() {
@@ -78,7 +70,29 @@ class AccelDataHandler {
   }
 
   void startDataToBackendTimer() {
-    _accelDataToBackendTimer = Timer.periodic((Duration(hours: 24)), (Timer t) => _dataToBackend());
+    final DateFormat dateFormaterHours = new DateFormat("HH");
+    final DateTime currentDate = new DateTime.now();
+    DateTime twelfAm = new DateTime(
+        currentDate.year, currentDate.month, currentDate.day, 12, 0, 0);
+    DateTime twelfPm = new DateTime(
+        currentDate.year, currentDate.month, currentDate.day, 24, 0, 0);
+    Duration durationTillFirstExecution;
+    int currentHour = int.parse(dateFormaterHours.format(currentDate));
+
+    // calculate duration until 12 am or pm, to write data the first time
+    if (currentHour < 12) {
+      durationTillFirstExecution = twelfAm.difference(currentDate);
+    } else {
+      durationTillFirstExecution = twelfPm.difference(currentDate);
+    }
+
+    _firstAccelDataToBackendTimer = Timer.periodic((durationTillFirstExecution), (Timer t) {
+      // after the timer was executed the first time, cancel it and set a new timer that
+      // executes every 12 hours
+      _accelDataToBackendTimer = Timer.periodic((Duration(hours: 12)), (Timer t) => _dataToBackend());
+      _dataToBackend();
+      _firstAccelDataToBackendTimer.cancel();
+    });
   }
 
   bool isDataToCSVTimerActive() {

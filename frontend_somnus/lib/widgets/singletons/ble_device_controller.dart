@@ -334,10 +334,15 @@ class BleDeviceController {
     // don't write an entry to database when no data was received
     if (latestAccelData[0] != null && latestAccelData[1] != null && latestAccelData[2] != null) {
       await accelDataHandler.writeAccelDataToDB(latestAccelData[0], latestAccelData[1], latestAccelData[2]);
+      ForegroundService.sendToPort(Status.accelDataWrittenToDB);
       accelDataSinceLastDBAccess = new List();
       latestAccelData = new List(3);
     } else {
+      // send to port, so that user gets notified that no real data was written to database
       ForegroundService.sendToPort(Status.accelDataNotWrittenToDB);
+
+      // for now write fake data in database, so the backend is not confused why there is no data
+      await accelDataHandler.writeAccelDataToDB(1, 0, 0);
 
       if (!(await fitnessTracker.isConnected())){
         fitnessTracker.connect();

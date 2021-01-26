@@ -41,7 +41,8 @@ class Syncfusion extends StatelessWidget {
                     SfCartesianChart(
                         plotAreaBorderColor: Colors.transparent,
                         zoomPanBehavior: ZoomPanBehavior(
-                            // Performs zooming on double tap
+                            enablePinching: true,
+                            enableDoubleTapZooming: true,
                             enableSelectionZooming: true,
                             selectionRectBorderColor: Colors.red,
                             selectionRectBorderWidth: 1,

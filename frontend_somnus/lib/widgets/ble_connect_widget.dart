@@ -74,7 +74,7 @@ class _BleConnectState extends State<BleConnect> {
                       text: TextSpan(
                         style: TextStyle(
                           fontSize: 25,
-                          color: Colors.black,
+                          color: Colors.white,
                         ),
                         children: _connectionTip,
                       ),

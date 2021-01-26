@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:foreground_service/foreground_service.dart';
 import 'package:frontend_somnus/screens/database_helper.dart';
 import 'package:frontend_somnus/widgets/singletons/file_writer.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 enum Status {
   accelDataWrittenToDB,
@@ -28,7 +28,9 @@ class AccelDataHandler {
 
   SharedPreferences sharedPrefs;
   final dbHelper = DatabaseHelper.instance;
+  Timer _firstAccelDataToBackendTimer;
   Timer _accelDataToBackendTimer;
+  Timer _firstAccelDataToCSVTimer;
   Timer _accelDataToCSVTimer;
 
   String _constructStringForCSVOneLine(String date, String time, String accX, String accY, String accZ) {
@@ -58,14 +60,6 @@ class AccelDataHandler {
 
     //print(row);
     await dbHelper.insert(row);
-
-    try {
-      ForegroundService.sendToPort(Status.accelDataWrittenToDB);
-    } catch (e) {
-      // exit -> user will restart the app
-      // pretty bad practice, but due to time issues
-      exit(0);
-    }
   }
 
   bool isDataToBackendTimerActive() {
@@ -77,7 +71,29 @@ class AccelDataHandler {
   }
 
   void startDataToBackendTimer() {
-    _accelDataToBackendTimer = Timer.periodic((Duration(hours: 24)), (timer) => _dataToBackend);
+    final DateFormat dateFormaterHours = new DateFormat("HH");
+    final DateTime currentDate = new DateTime.now();
+    DateTime twelfAm = new DateTime(
+        currentDate.year, currentDate.month, currentDate.day, 12, 5, 0);
+    DateTime twelfPm = new DateTime(
+        currentDate.year, currentDate.month, currentDate.day, 24, 5, 0);
+    Duration durationTillFirstExecution;
+    int currentHour = int.parse(dateFormaterHours.format(currentDate));
+
+    // calculate duration until 12 am or pm, to write data the first time
+    if (currentHour < 12) {
+      durationTillFirstExecution = twelfAm.difference(currentDate);
+    } else {
+      durationTillFirstExecution = twelfPm.difference(currentDate);
+    }
+
+    _firstAccelDataToBackendTimer = Timer.periodic((durationTillFirstExecution), (Timer t) {
+      // after the timer was executed the first time, cancel it and set a new timer that
+      // executes every 12 hours
+      _accelDataToBackendTimer = Timer.periodic((Duration(hours: 12)), (Timer t) => _dataToBackend());
+      _dataToBackend();
+      _firstAccelDataToBackendTimer.cancel();
+    });
   }
 
   bool isDataToCSVTimerActive() {
@@ -90,12 +106,29 @@ class AccelDataHandler {
 
   Future<void> startDataToCSVTimer() async {
     sharedPrefs = await SharedPreferences.getInstance();
-    _accelDataToCSVTimer = Timer.periodic((Duration(hours: 1)), (timer) => _dataToCSV);
+
+    final DateFormat dateFormaterHours = new DateFormat("HH");
+    final DateTime currentDate = new DateTime.now();
+    int currentHour = int.parse(dateFormaterHours.format(currentDate));
+    DateTime nextFullHour = new DateTime(
+        currentDate.year, currentDate.month, currentDate.day, currentHour + 1, 0, 0);
+    Duration durationTillFirstExecution = nextFullHour.difference(currentDate);
+
+    print("Duration: " + durationTillFirstExecution.toString());
+
+    _firstAccelDataToCSVTimer = Timer.periodic((durationTillFirstExecution), (Timer t) {
+      // after the timer was executed the first time, cancel it and set a new timer that
+      // executes every hour
+      _accelDataToCSVTimer = Timer.periodic((Duration(hours: 1)), (Timer t) => _dataToCSV());
+      _dataToCSV();
+      _firstAccelDataToCSVTimer.cancel();
+    });
   }
 
-  void _dataToBackend() {
-    // TODO: remove file after it was sent to backend
-    // TODO: send data to backend
+  Future<void> _dataToBackend() async {
+    var res = await _uploadFile();
+    await dbHelper.resultsToDb(res);
+    await fileWriter.deleteFile();
   }
 
   Future<void> _dataToCSV() async {
@@ -137,7 +170,6 @@ class AccelDataHandler {
           row[DatabaseHelper.columnZ].toString());
     });
 
-    // TODO: dont override file, but add
     // write one line to file
     await fileWriter.writeLine(fileContentStr);
   }
@@ -160,5 +192,29 @@ class AccelDataHandler {
     }
 
     return allRows;
+  }
+
+  Future<String> _uploadFile() async {
+    http.Response response;
+    var request = http.MultipartRequest('POST', Uri.parse('http://192.168.1.78:5000/data'));
+    final filePath = await fileWriter.getFilePath();
+
+    try {
+      var multipartFile = http.MultipartFile.fromBytes(
+        'file',
+        File(filePath).readAsBytesSync(),
+        filename: filePath.split("/").last, //filename argument is mandatory!
+      );
+      request.files.add(multipartFile);
+      response = await http.Response.fromStream(await request.send());
+      print("Result: ${response.statusCode}");
+      print(response.body);
+      print(response.body.length);
+
+      return response.body;
+    } catch (error) {
+      print('Error uploading file');
+    }
+    return null;
   }
 }

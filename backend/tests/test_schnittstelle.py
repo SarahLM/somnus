@@ -9,6 +9,7 @@ sys.path.append(root_folder)
 import server
 
 
+# create a test client
 @pytest.fixture(scope='module')
 def test_client():
     flask_app = server.app
@@ -18,7 +19,7 @@ def test_client():
     yield testing_client
     ctx.pop()
 
-
+#test with right csv
 def test_file_upload(test_client):
     data = {
         'field': 'value',
@@ -30,6 +31,7 @@ def test_file_upload(test_client):
                           data=data)
     assert rv.status_code == 200
 
+#test errorhandling with wrong filetype
 def test_wrong_filetype(test_client):
     data = {
         'field': 'value',
@@ -41,6 +43,8 @@ def test_wrong_filetype(test_client):
                           data=data)
     assert rv.status_code == 415
 
+
+#test errorhandling when no file is selected
 def test_no_file(test_client):
     data = {
     }
@@ -49,6 +53,9 @@ def test_no_file(test_client):
                           content_type='multipart/form-data',
                           data=data)
     assert rv.status_code == 412
+
+
+#test if key 'file' is selected, but no file attached
 def test_file_empty(test_client):
     data = {
         'field': 'value',

@@ -11,11 +11,7 @@ __all__ = ["Somnus", "ColeKripke", "band_pass_filter", "activity_index"]
 
 class Somnus:
     """
-    Processes raw GeneActiv accelerometer data from the wrist to determine various sleep metrics and endpoints.
-
-    *** Support for data from other wrist worn accelerometers will be added in the future. To maximize generality an
-    input format will be specified. As long as the input specifications are met, the package should produce the proper
-    results. ***
+    Processes raw accelerometer data from the wrist to determine various sleep metrics and endpoints.
 
     The sleep window detection and wear detection functions of this package are based off of the following papers, as
     well as their implementation in the R package GGIR:
@@ -42,14 +38,6 @@ class Somnus:
     Bai J, Di C, Xiao L, Evenson KR, LaCroix AZ, Crainiceanu CM, et al. (2016) An Activity Index for Raw Accelerometry
     Data and Its Comparison with Other Activity Metrics. PLoS ONE 11(8): e0160644.
     https://doi.org/10.1371/journal.pone.0160644
-
-    The test data provided for this package is available from:
-
-    Vincent van Hees, Sarah Charman, & Kirstie Anderson. (2018). Newcastle polysomnography and accelerometer data
-    (Version 1.0) [Data set]. Zenodo. http://doi.org/10.5281/zenodo.1160410
-
-
-
     """
 
     def __init__(
@@ -95,7 +83,6 @@ class Somnus:
         self.dst = results_directory  # save output location
         self.src_name = input_file.split("/")[-1][0:-4]  # save naming convention
         self.sub_dst = (
-            #results_directory + "/" + self.src_name
             results_directory
 
         )  # create output directory
@@ -125,7 +112,7 @@ class Somnus:
         Runs the full package on the provided file.
 
         # """
-        print('Sleep Detection gestartet')
+        print('Sleep Detection started')
         try:
             rmtree(self.sub_dst)  # removes old files from result directory.
             print('emptied result directory')
@@ -159,12 +146,8 @@ class Somnus:
             self.src,
             # Column(s) to use as the row labels of the DataFrame, either given as string name or column index.
             index_col=0,
-            #skiprows=100,
             header=None,
-            #names=["Time", "X", "Y", "Z", "LUX", "Button", "T", "A", "B", "C", "D", "E"],
             names=["Time", "X", "Y", "Z"],
-
-            #usecols=["Time", "X", "Y", "Z", "LUX", "T"],
             usecols=["Time", "X", "Y", "Z"],
             dtype={
                 "Time": object,
@@ -202,7 +185,7 @@ class Somnus:
             )
             data = data.loc[: self.stop_time]
         # split data into days from noon to noon
-        days = data.groupby(pd.Grouper(level=0, freq="24h", base=12))
+        days = data.groupby(pd.Grouper(level=0, freq="24h", base=24))
 
         # iterate through days keeping track of the day
         count = 0
@@ -246,8 +229,6 @@ class Somnus:
             activity = []
             header = ["Time", "activity_index"]
             idx = 0
-            # window = int(window_size * fs)
-            # incrementer = int(window_size * fs)
             window = int(self.window_size)
             incrementer = int(self.window_size)
 
@@ -317,7 +298,6 @@ class Somnus:
                 key="sleep_wake_data_24hr",
                 mode="w",
             )
-            #df.to_csv(self.sub_dst + "/result_sleep_prediction.csv")
             df.to_csv(self.sub_dst + "/"+ self.src_name + ".csv")
 
 

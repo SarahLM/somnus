@@ -74,9 +74,7 @@ def run_data(src, stamp):
 def clearbackend():
     upfiles = glob.glob('fileUploads/*.csv')
     for f in upfiles:
-        print('löschen')
         os.remove(f)
     resultfiles = glob.glob('results/*.csv')
     for f in resultfiles:
-        print('löschen results')
         os.remove(f)

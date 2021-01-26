@@ -30,6 +30,7 @@ class AccelDataHandler {
   final dbHelper = DatabaseHelper.instance;
   Timer _firstAccelDataToBackendTimer;
   Timer _accelDataToBackendTimer;
+  Timer _firstAccelDataToCSVTimer;
   Timer _accelDataToCSVTimer;
 
   String _constructStringForCSVOneLine(String date, String time, String accX, String accY, String accZ) {
@@ -73,9 +74,9 @@ class AccelDataHandler {
     final DateFormat dateFormaterHours = new DateFormat("HH");
     final DateTime currentDate = new DateTime.now();
     DateTime twelfAm = new DateTime(
-        currentDate.year, currentDate.month, currentDate.day, 12, 0, 0);
+        currentDate.year, currentDate.month, currentDate.day, 12, 5, 0);
     DateTime twelfPm = new DateTime(
-        currentDate.year, currentDate.month, currentDate.day, 24, 0, 0);
+        currentDate.year, currentDate.month, currentDate.day, 24, 5, 0);
     Duration durationTillFirstExecution;
     int currentHour = int.parse(dateFormaterHours.format(currentDate));
 
@@ -105,7 +106,23 @@ class AccelDataHandler {
 
   Future<void> startDataToCSVTimer() async {
     sharedPrefs = await SharedPreferences.getInstance();
-    _accelDataToCSVTimer = Timer.periodic((Duration(hours: 1)), (Timer t) => _dataToCSV());
+
+    final DateFormat dateFormaterHours = new DateFormat("HH");
+    final DateTime currentDate = new DateTime.now();
+    int currentHour = int.parse(dateFormaterHours.format(currentDate));
+    DateTime nextFullHour = new DateTime(
+        currentDate.year, currentDate.month, currentDate.day, currentHour + 1, 0, 0);
+    Duration durationTillFirstExecution = nextFullHour.difference(currentDate);
+
+    print("Duration: " + durationTillFirstExecution.toString());
+
+    _firstAccelDataToCSVTimer = Timer.periodic((durationTillFirstExecution), (Timer t) {
+      // after the timer was executed the first time, cancel it and set a new timer that
+      // executes every hour
+      _accelDataToCSVTimer = Timer.periodic((Duration(hours: 1)), (Timer t) => _dataToCSV());
+      _dataToCSV();
+      _firstAccelDataToCSVTimer.cancel();
+    });
   }
 
   Future<void> _dataToBackend() async {

@@ -280,6 +280,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               FlatButton(
+                key: Key("FlatButtonHeute"),
                 child: Text(
                   'Heute',
                   style: TextStyle(
@@ -319,6 +320,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                 },
               ),
               FlatButton(
+                key: Key("FlatButtonGestern"),
                 child: Text(
                   'Gestern',
                   style: TextStyle(

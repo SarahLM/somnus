@@ -77,6 +77,7 @@ class _EditScreenState extends State<EditScreen>
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             FlatButton(
+              key: Key("FlatButton7Tage"),
               child: Text(
                 '7 Tage',
                 style: TextStyle(
@@ -111,6 +112,7 @@ class _EditScreenState extends State<EditScreen>
               },
             ),
             FlatButton(
+              key: Key("FlatButton30Tage"),
               child: Text(
                 '30 Tage',
                 style: TextStyle(

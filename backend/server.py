@@ -62,17 +62,12 @@ def upload_file():
 
 
 def run_data(src, stamp):
-    # def run_data():
-    # src = __file__.split(".py")[0] + ".bin"
     src = PROJECT_ROOT + '/fileUploads/' + src
-    st = time.time()
     try:
         somnus.Somnus(input_file=src, sampling_frequency=100, verbose=True)
     except Exception as e:
         print("Error processing: {}\nError: {}".format(src, e))
-    # return send_file('results/25698fileUpload/result_sleep_prediction.csv')
     # return specific response
-    #return send_file('results/' + stamp +'fileUpload/result_sleep_prediction.csv')
     return send_file('results/' + stamp +'fileUpload.csv')
 
 
@@ -85,6 +80,3 @@ def clearbackend():
     for f in resultfiles:
         print('löschen results')
         os.remove(f)
-
-
-

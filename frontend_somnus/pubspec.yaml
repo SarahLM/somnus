@@ -84,7 +84,7 @@ flutter:
       - assets/images/somnus_fragen.png
       - assets/images/analyse.png
       - assets/images/background_home.png
-      - assets/images/refresh_black.png
+      - assets/images/refresh_white.png
       - assets/result.csv
       - assets/neueresults.csv
       - assets/incoming.csv

@@ -12,7 +12,7 @@ class _ConnectDeviceScreenState extends State<ConnectDeviceScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Connect Device",
+          "Gerät verbinden",
           style: TextStyle(fontSize: 26, fontWeight: FontWeight.normal),
         ),
       ),

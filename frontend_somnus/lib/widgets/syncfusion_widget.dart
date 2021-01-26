@@ -40,7 +40,6 @@ class Syncfusion extends StatelessWidget {
                     ),
                     SfCartesianChart(
                         plotAreaBorderColor: Colors.transparent,
-                        //plotAreaBackgroundColor: Colors.grey,
                         zoomPanBehavior: ZoomPanBehavior(
                             // Performs zooming on double tap
                             enableSelectionZooming: true,
@@ -57,7 +56,6 @@ class Syncfusion extends StatelessWidget {
                           labelRotation: 90,
                           plotBands: <PlotBand>[
                             /*   Plot band: different height for sleep and awake */
-
                             PlotBand(
                               isVisible: true,
                               associatedAxisStart: 0.5,
@@ -66,8 +64,6 @@ class Syncfusion extends StatelessWidget {
                               color: colorAsleep,
                               opacity: 1.0,
                             ),
-
-                            /* Plot band same height for sleep and awake */
                           ],
                         ),
                         primaryYAxis: NumericAxis(
@@ -78,13 +74,13 @@ class Syncfusion extends StatelessWidget {
                         series: <ChartSeries>[
                           // Initialize line series
                           StepAreaSeries<DataPoint, DateTime>(
-                              color: colorAwake,
-                              //Color of awake periods
-                              opacity: 1.0,
-                              dataSource: sleepData,
-                              xValueMapper: (DataPoint sales, _) => sales.date,
-                              yValueMapper: (DataPoint sales, _) => sales.state,
-                              name: '24 Stunden')
+                            color: colorAwake,
+                            //Color of awake periods
+                            opacity: 1.0,
+                            dataSource: sleepData,
+                            xValueMapper: (DataPoint sleeps, _) => sleeps.date,
+                            yValueMapper: (DataPoint sleeps, _) => sleeps.state,
+                          )
                         ]),
                   ],
                 ),

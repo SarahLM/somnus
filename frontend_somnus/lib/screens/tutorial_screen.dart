@@ -39,8 +39,6 @@ class _TutorialPageState extends State<TutorialPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     tutorialScreen = prefs.getInt("tutorialScreen");
     await prefs.setInt("tutorialScreen", 1);
-    print('Value of TutorialScreen: ');
-    print(tutorialScreen);
 
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => TabsScreen()),

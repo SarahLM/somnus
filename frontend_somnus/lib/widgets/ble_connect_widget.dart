@@ -9,8 +9,24 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'singletons/ble_device_controller.dart';
 
-const String CONNECTION_TIP_SELECT_DEVICE = "Select your device from the list.";
-const String CONNECTION_TIP_PRESS_BUTTON = "Press the button on the MiBand when it vibrates.";
+const String CONNECTION_TIP_SELECT_DEVICE = "Wähle dein Gerät aus der Liste.";
+const String CONNECTION_TIP_PRESS_BUTTON = "Drücke den Knopf auf dem MiBand 2, sobald es vibriert.";
+
+const String CAPTION_DEVICE_NOT_COMPATIBLE = "Gerät nicht kompatibel";
+const String CAPTION_CONNECTION_SUCCESS = "Verbindung erfolgreich";
+const String CAPTION_CONNECTION_FAILED = "Verbindung fehlgeschlagen";
+const String CAPTION_AUTHENTICATION_FAILED = "Authentifizierung fehlgeschlagen";
+const String TEXT_DEVICE_NOT_COMPATIBLE = "Das ausgewählte Gerät ist nicht mit dieser App "
+    "kompatibel. Wähle ein anderes Gerät oder schau im Handbuch nach kompatiblen Geräten.";
+const String TEXT_CONNECTION_SUCCESS = "Dein Gerät ist nun einsatzbereit.";
+const String TEXT_AUTHENTICATION_FAILED = "Der Authentifizierungsprozess ist fehlgeschlagen. "
+    "Vergewissere dich, dass das Gerät in deiner Nähe ist und Bluetooth auf deinem Gerät "
+    "aktiviert ist.\n\nTritt der Fehler weiterhin auf, prüfe, ob das Gerät kompatibel ist. "
+    "Für weitere Informationen, sieh im Handbuch nach.";
+/*"The authentication process failed. " +
+"Make sure the device is near and Bluetooth is enabled. Then try " +
+"again.\n\nIf the error remains, make sure the device is compatible " +
+"(For more information see the manual)."*/
 
 class BleConnect extends StatefulWidget {
   @override
@@ -25,7 +41,7 @@ class _BleConnectState extends State<BleConnect> {
   bool _isLoading = false;
   bool _connectedToMiBand = false;
   List<Peripheral> bleDevices = new List<Peripheral>();
-  List<TextSpan> _connectionTip = new List();
+  List<TextSpan> _connectionTip = List.from({new TextSpan(text: CONNECTION_TIP_SELECT_DEVICE)});
 
   @override
   void initState() {
@@ -42,9 +58,9 @@ class _BleConnectState extends State<BleConnect> {
 
   void _localInitStateAsync () async {
     // TODO: automatically reconnect, when device was out of range and then returns
+    print("Init wird aufgerufen");
     await bleDeviceController.reset();
     _connectedToMiBand = false;
-    _connectionTip.add(new TextSpan(text: CONNECTION_TIP_SELECT_DEVICE));
 
     if (await _checkPermissions()) {
       bleDeviceController.bleManager = BleManager();
@@ -91,7 +107,7 @@ class _BleConnectState extends State<BleConnect> {
                       key: Key("RefreshButton"),
                       onPressed: _scanForBleDevicesOnPressed,
                       padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
-                      child: Image.asset('assets/images/refresh_black.png', width: 48.0),
+                      child: Image.asset('assets/images/refresh_white.png', width: 48.0),
                       disabledColor: Colors.grey,
                       minWidth: 55,
                       height: 55,
@@ -156,9 +172,10 @@ class _BleConnectState extends State<BleConnect> {
           _connectionTip = new List();
           _connectionTip.add(new TextSpan(text: CONNECTION_TIP_SELECT_DEVICE));
         });
-        _showDialog("Device not compatible", "The selected device is not "
+        _showDialog(CAPTION_DEVICE_NOT_COMPATIBLE, TEXT_DEVICE_NOT_COMPATIBLE
+            /*"Device not compatible", "The selected device is not "
             "compatible with this app. Choose another device or check the "
-            "manual for compatible devices.");
+            "manual for compatible devices."*/);
         print("Disconnected from BLE device.");
       }
     } else {
@@ -167,9 +184,10 @@ class _BleConnectState extends State<BleConnect> {
         _connectionTip = new List();
         _connectionTip.add(new TextSpan(text: CONNECTION_TIP_SELECT_DEVICE));
       });
-      _showDialog("Device not compatible", "The selected device is not "
+      _showDialog(CAPTION_DEVICE_NOT_COMPATIBLE, TEXT_DEVICE_NOT_COMPATIBLE
+          /*"Device not compatible", "The selected device is not "
           "compatible with this app. Choose another device or check the "
-          "manual for compatible devices.");
+          "manual for compatible devices."*/);
       print("Disconnected from BLE device.");
     }
   }
@@ -178,7 +196,7 @@ class _BleConnectState extends State<BleConnect> {
     if (authenticationSuccess) {
       setState(() { _isLoading = false;});
       _connectedToMiBand = true;
-      _showDialog("Connection success", "Your device is connected.");
+      _showDialog(CAPTION_CONNECTION_SUCCESS, TEXT_CONNECTION_SUCCESS);
       await _printServicesAndChars();
     } else {
       if (await bleDeviceController.fitnessTracker.isConnected()) {
@@ -189,10 +207,7 @@ class _BleConnectState extends State<BleConnect> {
         _connectionTip = new List();
         _connectionTip.add(new TextSpan(text: CONNECTION_TIP_SELECT_DEVICE));
       });
-      _showDialog("Connection error", "The authentication process failed. " +
-          "Make sure the device is near and Bluetooth is enabled. Then try " +
-          "again.\n\nIf the error remains, make sure the device is compatible " +
-          "(For more information see the manual).");
+      _showDialog(CAPTION_CONNECTION_FAILED, TEXT_AUTHENTICATION_FAILED);
     }
   }
 

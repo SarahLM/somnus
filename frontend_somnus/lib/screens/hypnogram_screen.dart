@@ -12,7 +12,6 @@ import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:provider/provider.dart';
 import '../widgets/date_range_picker_custom.dart' as DateRagePicker;
-import 'package:frontend_somnus/widgets/syncfusion_widget.dart';
 import 'package:frontend_somnus/widgets/theme.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:http/http.dart' as http;
@@ -225,7 +224,10 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                           children: [
                             Container(
                               padding: EdgeInsets.only(
-                                  left: 15, right: 15, bottom: 15),
+                                left: 15,
+                                right: 15,
+                                bottom: 15,
+                              ),
                               child: RepaintBoundary(
                                 key: _printKey,
                                 child: Column(
@@ -301,7 +303,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     _pressedButton2 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
-                    //isLoading = true;
+                    isLoading = true;
                   });
                   dataPoints = await getDataToday();
                   list = [];
@@ -337,7 +339,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
                     _pressedButton1 = false;
                     _pressedButton3 = false;
                     _pressedButton4 = false;
-                    // isLoading = true;
+                    isLoading = true;
                   });
                   dataPoints = await getDataYesterday();
                   list = [];
@@ -457,7 +459,7 @@ class _HypnogramScreenState extends State<HypnogramScreen>
             return <Widget>[
               SliverAppBar(
                 backgroundColor: Color(0xFF1E1164),
-                // expandedHeight: 200.0,
+                automaticallyImplyLeading: false,
                 floating: false,
                 pinned: true,
                 centerTitle: true,

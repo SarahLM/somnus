@@ -33,14 +33,6 @@ class _TabsScreenState extends State<TabsScreen> {
       'page': ActivityScreen(),
       'title': 'Aktivitäten',
     },
-    //{
-    // 'page': DbScreen(Colors.blue),
-    // 'title': 'DbScreen',
-    //},
-    //{
-    //  'page': QuestionScreen(),
-    //  'title': 'Fragebögen',
-    //},
   ];
   @override
   void initState() {
@@ -50,7 +42,6 @@ class _TabsScreenState extends State<TabsScreen> {
       HomeScreen(),
       HypnogramScreen(),
       EditScreen(),
-      //DbScreen(Colors.white),
       ActivityScreen(),
     ];
     _pageController = PageController(initialPage: _selectedPageIndex);
@@ -68,7 +59,6 @@ class _TabsScreenState extends State<TabsScreen> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text(_pages[_selectedPageIndex]['title']),
-        // backgroundColor: Colors.purple,
         automaticallyImplyLeading: false,
         actions: <Widget>[
           new IconButton(
@@ -78,8 +68,7 @@ class _TabsScreenState extends State<TabsScreen> {
         ],
       ),
       endDrawer: MainDrawer(),
-      body: //_pages[_selectedPageIndex]['page'],
-          PageView(
+      body: PageView(
         controller: _pageController,
         physics: NeverScrollableScrollPhysics(),
         children: _pages1,
@@ -109,14 +98,6 @@ class _TabsScreenState extends State<TabsScreen> {
             icon: Icon(Icons.edit_outlined),
             label: 'Bearbeiten',
           ),
-          /* BottomNavigationBarItem(
-            icon: Icon(Icons.data_usage),
-            label: 'Database',
-          ) */
-          /*BottomNavigationBarItem(
-            icon: Icon(Icons.question_answer_outlined),
-            label: 'Fragebögen',
-          )*/
           BottomNavigationBarItem(
             icon: Icon(Icons.help_center_outlined),
             label: 'Aktivitäten',

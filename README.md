@@ -13,16 +13,19 @@ A project by Stephanie Scheibe, Sarah-Lee Mendenhall, Nele Herzog and Matthias K
 1. [Introduction](#general-info)
 2. [Technologies](#technologies)
 3. [Installation](#installation)
-4. [Collaboration](#collaboration)
-5. [FAQs](#faqs)
+
+![Image text](https://github.com/SarahLM/somnus/blob/master/frontend_somnus/assets/images/somnus_logo.png)
+
+
 ### General Info
 ***
-The Somnus app enables the user to use an activity tracker to get information about his sleep. 
+The Somnus app enables the user to use an activity tracker(MiBand 2 in this case) to get information about his sleep. 
 
 The application is divided into different architectures. The real one
 Logic that makes the analysis of the collected activity data is
-currently outsourced to an external backend. The interaction with the user
-and the results are visualized in the Android app.
+currently outsourced to an external backend based on the project [Sleeppy](https://github.com/elyiorgos/sleeppy).
+
+The interaction with the user and the results are visualized in the Android app.
 In order for the analysis of the data to take place, the following steps are necessary
 run through:
 *  **Data collection** 
@@ -49,14 +52,14 @@ Evaluations can be viewed, changed or exported graphically.
 stored in the database. On the app's analysis screens, the
 Evaluations can be viewed, changed or exported graphically.
 
-### Screenshot
-![Image text](https://github.com/SarahLM/somnus/blob/master/frontend_somnus/assets/images/somnus_logo.png)
+
 ## Technologies
 ***
 A list of technologies used within the project:
 * [Flutter](https://flutter.dev/docs/get-started/install): Version 12.3 
-* [Technology name](https://example.com): Version 2.34
-* [Library name](https://example.com): Version 1234
+* [Python](https://example.com): Version 3.8
+
+
 ## Installation
 ***
 In order to be able to edit and run the app, the following steps are necessary
@@ -67,7 +70,7 @@ required:
 * [a code editor](https://code.visualstudio.com/)
 
 
-2. Android Setup
+#### Android Setup
 
 Start Android Studio and follow the instructions of the setup wizard.
 This will bring the latest Android SDK, Android
@@ -76,4 +79,22 @@ Flutter needed in development for Android.
 Set up an Android (physical) device or an Android Emulators
 In order to be able to run the app, you must first have a corresponding
 Set up and start the device. Information on how to proceed
-you [here](https://flutter.dev/docs/get-started/install).
+you will find [here](https://flutter.dev/docs/get-started/install).
+
+
+
+####  Download the Somnus app from Github
+
+You can then look at the source code using:
+```
+$ git clone https://github.com/SarahLM/somnus.git
+```
+####  App start
+
+Go to the directory *somnus/frontend_somnus/* and open your
+Editor here. Open a terminal and execute the command flutter run,
+to install the app and on the Android device that has been set up
+to start. You can then make changes to the code
+and see them directly on the device.
+
+For more detailled Instructions and pictures of the App, please read the [documentation](https://github.com/SarahLM/somnus/blob/master/dokumentation_somnus.pdf).
